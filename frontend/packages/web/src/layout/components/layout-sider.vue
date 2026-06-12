@@ -2,39 +2,37 @@
   <n-layout-sider
     v-model:collapsed="collapsed"
     collapse-mode="width"
-    :collapsed-width="56"
-    :width="180"
+    :collapsed-width="72"
+    :width="230"
     :native-scrollbar="false"
-    class="crm-layout-sider"
+    class="crm-layout-sider stariver-sider"
     @update-collapsed="appStore.setMenuCollapsed"
   >
-    <div class="flex h-full flex-col justify-between">
-      <div
-        v-if="
-          route.name?.toString().includes(DashboardRouteEnum.DASHBOARD) ||
-          route.name?.toString().includes(TenderRouteEnum.TENDER)
-        "
-        :class="`flex justify-center py-[14px] ${appStore.menuCollapsed ? 'px-[16px]' : 'px-[24px]'}`"
-      >
-        <CrmSvg v-if="appStore.menuCollapsed" name="CORDYS" height="40px" width="40px" />
-        <CrmSvg v-else name="logo_CORDYS" height="28px" width="130px" />
+    <div class="stariver-sider__inner">
+      <div class="stariver-sider__brand" @click="router.push({ name: AppRouteEnum.WORKBENCH_INDEX })">
+        <div class="stariver-sider__brand-mark">SR</div>
+        <div v-if="!collapsed" class="min-w-0">
+          <div class="stariver-sider__brand-title">StaRiver CRM</div>
+          <div class="stariver-sider__brand-version">v2.3</div>
+        </div>
       </div>
+      <div v-if="!collapsed" class="stariver-sider__section">销售 CRM</div>
       <n-scrollbar content-style="min-height: 500px;height: 100%;width: 100%">
         <n-menu
           v-model:value="menuValue"
           v-model:expanded-keys="expandedKeys"
-          :root-indent="24"
-          :indent="appStore.getMenuIconStatus ? 38 : 8"
-          :collapsed-width="appStore.collapsedWidth"
+          :root-indent="18"
+          :indent="appStore.getMenuIconStatus ? 28 : 8"
+          :collapsed-width="72"
           :icon-size="18"
-          :collapsed-icon-size="28"
+          :collapsed-icon-size="22"
           :options="menuOptions"
           :render-label="renderLabel"
           accordion
           @update-value="menuChange"
         />
       </n-scrollbar>
-      <div class="flex flex-col items-start p-[8px]">
+      <div class="stariver-sider__bottom">
         <n-dropdown
           class="personal-dropdown"
           trigger="hover"
@@ -43,10 +41,7 @@
           @select="personalMenuChange"
           @update-show="personalMenuUpdateShow"
         >
-          <div
-            class="personal-info-menu relative flex w-full cursor-pointer items-center gap-[8px] rounded-[var(--border-radius-small)] bg-[var(--text-n9)] p-[8px] hover:bg-[var(--primary-7)]"
-            :class="personalMenuShow ? 'bg-[var(--primary-6)]' : ''"
-          >
+          <div class="stariver-sider__user" :class="personalMenuShow ? 'stariver-sider__user--active' : ''">
             <CrmPopConfirm
               v-model:show="showPopModal"
               :title="t('system.personal.addNewExport')"
@@ -60,27 +55,18 @@
               <span class="personal-export-pop"></span>
             </CrmPopConfirm>
             <CrmAvatar :size="collapsed ? 25 : 40" class="flex-shrink-0 transition-all" />
-            <div v-if="!collapsed" class="one-line-text">
-              <div class="one-line-text max-w-[110px]">{{ userStore.userInfo.name }}</div>
-              <!-- <n-tag
-                v-if="userStore.userInfo.id === 'admin' || (userStore.userInfo.roles[0] as any)?.name"
-                :bordered="false"
-                size="small"
-                :color="{
-                  color: 'var(--primary-6)',
-                  textColor: 'var(--primary-8)',
-                }"
-                class="max-w-[110px]"
-              >
-                {{ userStore.userInfo.id === 'admin' ? t('common.admin') : (userStore.userInfo.roles[0] as any)?.name }}
-              </n-tag> -->
+            <div v-if="!collapsed" class="min-w-0 flex-1">
+              <div class="one-line-text stariver-sider__user-name">{{ userStore.userInfo.name }}</div>
+              <div class="one-line-text stariver-sider__user-role">
+                {{ userStore.userInfo.departmentName || t('common.currentUser') }}
+              </div>
             </div>
+            <CrmIcon v-if="!collapsed" type="iconicon_chevron_right" :size="14" class="text-[#94a3b8]" />
           </div>
         </n-dropdown>
-        <n-divider />
-        <div class="ml-[8px] w-full cursor-pointer px-[8px]" @click="() => appStore.setMenuCollapsed(!collapsed)">
+        <button class="stariver-sider__collapse" @click="() => appStore.setMenuCollapsed(!collapsed)">
           <CrmIcon :type="collapsed ? 'iconicon_menu_fold1' : 'iconicon_menu_unfold1'" :size="16" />
-        </div>
+        </button>
       </div>
     </div>
   </n-layout-sider>
@@ -88,8 +74,8 @@
 </template>
 
 <script setup lang="ts">
-  import { RouteLocationNormalizedGeneric, useRoute, useRouter } from 'vue-router';
-  import { NDivider, NDropdown, NLayoutSider, NMenu, NScrollbar, NTooltip } from 'naive-ui';
+  import { RouteLocationNormalizedGeneric, useRouter } from 'vue-router';
+  import { NDropdown, NLayoutSider, NMenu, NScrollbar, NTooltip } from 'naive-ui';
 
   import { PersonalEnum } from '@lib/shared/enums/systemEnum';
   import { useI18n } from '@lib/shared/hooks/useI18n';
@@ -98,7 +84,6 @@
 
   import CrmIcon from '@/components/pure/crm-icon-font/index.vue';
   import CrmPopConfirm from '@/components/pure/crm-pop-confirm/index.vue';
-  import CrmSvg from '@/components/pure/crm-svg/index.vue';
   import CrmAvatar from '@/components/business/crm-avatar/index.vue';
   import personalExportDrawer from '@/views/system/business/components/personalExportDrawer.vue';
 
@@ -111,14 +96,7 @@
   import useUserStore from '@/store/modules/user';
   import { getFirstRouterNameByCurrentRoute, hasAnyPermission } from '@/utils/permission';
 
-  import {
-    AppRouteEnum,
-    ClueRouteEnum,
-    CustomerRouteEnum,
-    DashboardRouteEnum,
-    OpportunityRouteEnum,
-    TenderRouteEnum,
-  } from '@/enums/routeEnum';
+  import { AppRouteEnum, ClueRouteEnum, CustomerRouteEnum, OpportunityRouteEnum } from '@/enums/routeEnum';
 
   import { MenuGroupOption, MenuOption } from 'naive-ui/es/menu/src/interface';
 
@@ -133,7 +111,6 @@
   const userStore = useUserStore();
   const licenseStore = useLicenseStore();
   const router = useRouter();
-  const route = useRoute();
   const collapsed = ref(appStore.getMenuCollapsed);
   const menuValue = ref<string>(AppRouteEnum.SYSTEM_ORG);
   const expandedKeys = ref<string[]>([]);
@@ -380,18 +357,138 @@
 <style lang="less">
   .crm-layout-sider {
     font-weight: 500;
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0;
     .n-scrollbar-content {
       @apply h-full;
     }
-    .n-divider:not(.n-divider--vertical) {
-      margin: 12px 0;
+    .n-menu {
+      --n-item-height: 36px !important;
+      --n-border-radius: 6px !important;
+      --n-item-text-color: #475569 !important;
+      --n-item-text-color-hover: #0f172a !important;
+      --n-item-text-color-active: #3730a3 !important;
+      --n-item-icon-color: #64748b !important;
+      --n-item-icon-color-active: #4f46e5 !important;
+      --n-item-color-active: #eef2ff !important;
+      --n-item-color-active-hover: #eef2ff !important;
+    }
+    .n-menu .n-menu-item-content {
+      margin: 2px 12px;
+      padding-right: 12px !important;
+    }
+    .n-menu .n-menu-item-content-header {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .n-menu-item-content::before {
+      left: 0 !important;
+      right: 0 !important;
     }
   }
-  .n-menu-item-content--selected,
-  .n-menu-item-content--child-active {
+  .crm-layout-sider .n-menu-item-content--selected,
+  .crm-layout-sider .n-menu-item-content--child-active {
     .n-icon {
       color: var(--n-item-text-color-active) !important;
     }
+  }
+  .stariver-sider__inner {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .stariver-sider__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 64px;
+    padding: 12px 18px;
+    cursor: pointer;
+  }
+  .stariver-sider__brand-mark {
+    display: flex;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  .stariver-sider__brand-title {
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 20px;
+  }
+  .stariver-sider__brand-version {
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 16px;
+  }
+  .stariver-sider__section {
+    padding: 4px 18px 8px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  .stariver-sider__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .stariver-sider__user {
+    position: relative;
+    display: flex;
+    width: 100%;
+    cursor: pointer;
+    align-items: center;
+    gap: 9px;
+    border-radius: 8px;
+    padding: 8px;
+    background: #f8fafc;
+    transition: background-color 0.2s ease;
+  }
+  .stariver-sider__user:hover,
+  .stariver-sider__user--active {
+    background: #eef2ff;
+  }
+  .stariver-sider__user-name {
+    max-width: 130px;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+  .stariver-sider__user-role {
+    max-width: 130px;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 16px;
+  }
+  .stariver-sider__collapse {
+    display: flex;
+    height: 30px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+  }
+  .stariver-sider__collapse:hover {
+    background: #f1f5f9;
+    color: #0f172a;
   }
   .personal-menu {
     min-width: 120px;

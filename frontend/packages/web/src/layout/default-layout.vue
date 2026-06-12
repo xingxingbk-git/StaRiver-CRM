@@ -1,16 +1,18 @@
 <template>
-  <n-layout class="default-layout">
-    <LayoutHeader
-      v-if="
-        !route.name?.toString().includes(DashboardRouteEnum.DASHBOARD) &&
-        !route.name?.toString().includes(TenderRouteEnum.TENDER)
-      "
-      :is-preview="innerProps.isPreview"
-      :logo="innerLogo"
-    />
-    <n-layout class="flex-1" has-sider>
-      <LayoutSider @open-personal-info="handleOpenPersonalInfo" />
-      <PageContent />
+  <n-layout class="default-layout" has-sider>
+    <LayoutSider @open-personal-info="handleOpenPersonalInfo" />
+    <n-layout class="default-layout__main">
+      <LayoutHeader
+        v-if="
+          !route.name?.toString().includes(DashboardRouteEnum.DASHBOARD) &&
+          !route.name?.toString().includes(TenderRouteEnum.TENDER)
+        "
+        :is-preview="innerProps.isPreview"
+        :logo="innerLogo"
+      />
+      <div class="default-layout__content">
+        <PageContent />
+      </div>
     </n-layout>
   </n-layout>
   <PersonalInfoDrawer v-model:visible="showPersonalInfo" :active-tab-value="personalTab" />
@@ -65,8 +67,18 @@
     @apply flex;
 
     height: 100vh;
-    .n-layout-scroll-container {
+    background: #f8fafc;
+  }
+  .default-layout__main {
+    height: 100vh;
+    background: #f8fafc;
+    > .n-layout-scroll-container {
       @apply flex w-full flex-col overflow-hidden;
     }
+  }
+  .default-layout__content {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 </style>

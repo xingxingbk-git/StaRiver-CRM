@@ -118,6 +118,7 @@ import {
   UpdateCustomerViewUrl,
   GetAccountContractListUrl,
   GetAccountContractStatisticUrl,
+  GetCustomerDetailStatisticUrl,
   GetAccountPaymentListUrl,
   GetAccountPaymentStatisticUrl,
   GetAccountPaymentRecordStatisticUrl,
@@ -786,6 +787,10 @@ export default function useProductApi(CDR: CordysAxios) {
     return CDR.get({ url: `${GetAccountContractStatisticUrl}/${id}` });
   }
 
+  function getCustomerDetailStatistic(id: string) {
+    return CDR.get({ url: `${GetCustomerDetailStatisticUrl}/${id}` });
+  }
+
   function getAccountPayment(data: TableQueryParams) {
     return CDR.post<CommonList<PaymentPlanItem>>({ url: GetAccountPaymentListUrl, data });
   }
@@ -921,6 +926,7 @@ export default function useProductApi(CDR: CordysAxios) {
     generateCustomerContactChart,
     getAccountContract,
     getAccountContractStatistic,
+    getCustomerDetailStatistic,
     getAccountPayment,
     getAccountPaymentStatistic,
     getAccountPaymentRecord,

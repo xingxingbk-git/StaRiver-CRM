@@ -9,7 +9,9 @@ import cn.cordys.crm.customer.domain.Customer;
 import cn.cordys.crm.customer.dto.request.CustomerBatchTransferRequest;
 import cn.cordys.crm.customer.dto.request.CustomerChartAnalysisDbRequest;
 import cn.cordys.crm.customer.dto.request.CustomerPageRequest;
+import cn.cordys.crm.customer.dto.response.CustomerDetailStatisticResponse;
 import cn.cordys.crm.customer.dto.response.CustomerListResponse;
+import cn.cordys.crm.customer.dto.response.CustomerRelatedCountResponse;
 import cn.cordys.crm.home.dto.request.HomeStatisticSearchWrapperRequest;
 import cn.cordys.crm.search.response.advanced.AdvancedCustomerPoolResponse;
 import cn.cordys.crm.search.response.advanced.AdvancedCustomerResponse;
@@ -56,6 +58,8 @@ public interface ExtCustomerMapper {
 
     boolean hasRefContact(@Param("ids") List<String> ids);
 
+    List<CustomerRelatedCountResponse> getRelatedCounts(@Param("customerIds") List<String> customerIds, @Param("orgId") String orgId);
+
     /**
      * 查询负责人过滤条件下的客户数量
      *
@@ -94,5 +98,8 @@ public interface ExtCustomerMapper {
 
     List<ChartResult> chart(@Param("request") CustomerChartAnalysisDbRequest request, @Param("userId") String userId, @Param("orgId") String orgId,
                             @Param("dataPermission") DeptDataPermissionDTO dataPermission);
+
+    CustomerDetailStatisticResponse getDetailStatistic(@Param("customerId") String customerId, @Param("orgId") String orgId,
+                                                       @Param("monthStart") Long monthStart, @Param("monthEnd") Long monthEnd);
 
 }

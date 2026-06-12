@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Jun 12 14:15:13 CST 2026
+@default-cordys-public-https\://repository.fit2cloud.com/repository/cordys/.lastUpdated=1781244850650
+https\://repo.maven.apache.org/maven2/.lastUpdated=1781244913912
+https\://repository.fit2cloud.com/repository/cordys/.error=Could not transfer artifact org.glassfish.jaxb\:jaxb-core\:pom\:4.0.6 from/to cordys-public (https\://repository.fit2cloud.com/repository/cordys/)\: repository.fit2cloud.com\: nodename nor servname provided, or not known

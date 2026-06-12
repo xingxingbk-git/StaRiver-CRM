@@ -763,11 +763,62 @@ export const showRulesMap: Partial<Record<FieldTypeEnum, FieldRuleEnum[]>> = {
   [FieldTypeEnum.INPUT_NUMBER_WITH_UNIT]: [],
 };
 
+async function getStaRiverCustomerFormConfig(): Promise<FormDesignConfigDetailParams | CustomFormDetail> {
+  const config = (await getCustomerFormConfig()) as FormDesignConfigDetailParams;
+  const fields = config.fields || [];
+  if (fields.length === 0) return config;
+
+  const salesSectionMarkers = ['customerLevel', 'customerSource'];
+  const salesIdx = fields.findIndex((f) => salesSectionMarkers.includes(f.businessKey || f.internalKey || ''));
+  const splitIdx = salesIdx > 1 ? salesIdx : Math.min(5, fields.length);
+
+  const mkDivider = (id: string, name: string): FormCreateField => ({
+    id,
+    name,
+    type: FieldTypeEnum.DIVIDER,
+    showLabel: true,
+    fieldWidth: 1,
+    readable: true,
+    editable: false,
+    show: true,
+    description: '',
+    icon: '',
+    rules: [],
+    titleColor: '#0f172a',
+  });
+
+  const basicSection = mkDivider('section-basic', '基本信息');
+  const salesSection = mkDivider('section-sales', '销售分类');
+
+  const modified = fields.reduce<FormCreateField[]>((acc, f, i) => {
+    if (i === splitIdx) acc.push(salesSection);
+    const field = { ...f };
+    if (field.type !== FieldTypeEnum.DIVIDER && field.type !== FieldTypeEnum.ATTACHMENT) {
+      field.fieldWidth = 0.5;
+    }
+    acc.push(field);
+    return acc;
+  }, []);
+
+  if (!modified.find((f) => f.id === 'section-sales')) {
+    modified.push(salesSection);
+  }
+
+  return {
+    fields: [basicSection, ...modified],
+    formProp: {
+      ...config.formProp,
+      layout: 2,
+      viewSize: 'medium',
+    },
+  } as FormDesignConfigDetailParams;
+}
+
 export const getFormConfigApiMap: Record<
   FormDesignKeyEnum,
   (id?: string, approvalTaskId?: string) => Promise<FormDesignConfigDetailParams | CustomFormDetail>
 > = {
-  [FormDesignKeyEnum.CUSTOMER]: getCustomerFormConfig,
+  [FormDesignKeyEnum.CUSTOMER]: getStaRiverCustomerFormConfig,
   [FormDesignKeyEnum.BUSINESS]: getOptFormConfig,
   [FormDesignKeyEnum.CONTACT]: getCustomerContactFormConfig,
   [FormDesignKeyEnum.CUSTOMER_CONTACT]: getCustomerContactFormConfig,

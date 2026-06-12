@@ -249,6 +249,21 @@
         </include>
     </select>
 
+    <select id="getRelatedCounts" resultType="cn.cordys.crm.customer.dto.response.CustomerRelatedCountResponse">
+        select c.id as customerId,
+               count(distinct o.id) as opportunityCount,
+               count(distinct ct.id) as contractCount
+        from customer c
+        left join opportunity o on o.customer_id = c.id and o.organization_id = #{orgId}
+        left join contract ct on ct.customer_id = c.id and ct.organization_id = #{orgId}
+        where c.organization_id = #{orgId}
+          and c.id in
+        <foreach collection="customerIds" item="customerId" open="(" close=")" separator=",">
+            #{customerId}
+        </foreach>
+        group by c.id
+    </select>
+
     <sql id="sort">
         <choose>
             <when test="${sort} != null and ${sort}.valid()">
@@ -767,5 +782,33 @@
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
+    </select>
+
+    <select id="getDetailStatistic" resultType="cn.cordys.crm.customer.dto.response.CustomerDetailStatisticResponse">
+        select
+            #{customerId} as customerId,
+            coalesce(opp.totalCount, 0) as totalOpportunities,
+            coalesce(opp.monthlyCount, 0) as monthlyOpportunities,
+            coalesce(ct.totalCount, 0) as totalContracts,
+            coalesce(ct.monthlyCount, 0) as monthlyContracts,
+            ct.firstContractDate as firstContractDate
+        from (select 1) as dummy
+        left join (
+            select
+                count(id) as totalCount,
+                sum(case when create_time &gt;= #{monthStart} and create_time &lt; #{monthEnd} then 1 else 0 end) as monthlyCount
+            from opportunity
+            where customer_id = #{customerId}
+              and organization_id = #{orgId}
+        ) opp on 1 = 1
+        left join (
+            select
+                count(id) as totalCount,
+                sum(case when create_time &gt;= #{monthStart} and create_time &lt; #{monthEnd} then 1 else 0 end) as monthlyCount,
+                min(create_time) as firstContractDate
+            from contract
+            where customer_id = #{customerId}
+              and organization_id = #{orgId}
+        ) ct on 1 = 1
     </select>
 </mapper>

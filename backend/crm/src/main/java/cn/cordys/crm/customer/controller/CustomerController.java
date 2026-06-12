@@ -23,6 +23,7 @@ import cn.cordys.crm.contract.service.ContractService;
 import cn.cordys.crm.customer.domain.Customer;
 import cn.cordys.crm.customer.dto.request.*;
 import cn.cordys.crm.customer.dto.response.CustomerGetResponse;
+import cn.cordys.crm.customer.dto.response.CustomerDetailStatisticResponse;
 import cn.cordys.crm.customer.dto.response.CustomerListResponse;
 import cn.cordys.crm.customer.service.CustomerExportService;
 import cn.cordys.crm.customer.service.CustomerService;
@@ -337,6 +338,13 @@ public class CustomerController {
         DeptDataPermissionDTO deptDataPermission = dataScopeService.getDeptDataPermission(SessionUtils.getUserId(),
                 OrganizationContext.getOrganizationId(), request.getViewId(), PermissionConstants.ORDER_READ);
         return orderService.list(request, SessionUtils.getUserId(), OrganizationContext.getOrganizationId(), deptDataPermission, false);
+    }
+
+    @GetMapping("/statistic/detail/{accountId}")
+    @RequiresPermissions(PermissionConstants.CUSTOMER_MANAGEMENT_READ)
+    @Operation(summary = "客户详情页统计-商机合同数")
+    public CustomerDetailStatisticResponse getDetailStatistic(@PathVariable String accountId) {
+        return customerService.getDetailStatistic(accountId, OrganizationContext.getOrganizationId());
     }
 
     @GetMapping("/invoice/statistic/{accountId}")

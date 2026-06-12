@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Jun 12 14:15:16 CST 2026
+@default-cordys-public-https\://repository.fit2cloud.com/repository/cordys/.lastUpdated=1781244850662
+https\://repo.maven.apache.org/maven2/.lastUpdated=1781244916227
+https\://repository.fit2cloud.com/repository/cordys/.error=Could not transfer artifact com.auth0\:java-jwt\:pom\:3.12.1 from/to cordys-public (https\://repository.fit2cloud.com/repository/cordys/)\: repository.fit2cloud.com

@@ -88,6 +88,7 @@ export const ExportContactSelectedUrl = '/account/contact/export-select'; // 导
 
 export const GetAccountContractListUrl = '/account/contract/page'; // 客户详情-合同列表
 export const GetAccountContractStatisticUrl = '/account/contract/statistic'; // 客户详情-合同列表统计
+export const GetCustomerDetailStatisticUrl = '/account/statistic/detail'; // 客户详情页统计
 export const GetAccountPaymentListUrl = '/account/contract/payment-plan/page'; // 客户详情-回款列表
 export const GetAccountPaymentStatisticUrl = '/account/contract/payment-plan/statistic'; // 客户详情-回款列表统计
 export const GetAccountPaymentRecordListUrl = '/account/contract/payment-record/page'; // 客户详情-回款列表

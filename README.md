@@ -50,7 +50,7 @@ docker run -d \
 
 - 在浏览器中打开: http://<你的服务器IP>:8081/
 - 用户名: `admin`
-- 密码: `CordysCRM`
+- 密码: `admin123`
 
 ### 联系我们
 

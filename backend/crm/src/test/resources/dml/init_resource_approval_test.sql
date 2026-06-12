@@ -5,8 +5,8 @@ DELETE FROM sys_user WHERE id IN ('appr_user_curr', 'appr_user_othr');
 
 INSERT INTO sys_user (`id`, `name`, `email`, `password`, `gender`, `phone`, `language`, `last_organization_id`, `create_time`, `update_time`, `create_user`, `update_user`)
 VALUES
-    ('appr_user_curr', 'Current Approver', 'current.approver@cordys-crm.io', MD5('CordysCRM'), 1, '13900000001', 'zh_CN', '100001', 1736240043609, 1736240043609, 'admin', 'admin'),
-    ('appr_user_othr', 'Other Approver', 'other.approver@cordys-crm.io', MD5('CordysCRM'), 1, '13900000002', 'zh_CN', '100001', 1736240043609, 1736240043609, 'admin', 'admin');
+    ('appr_user_curr', 'Current Approver', 'current.approver@cordys-crm.io', MD5('admin123'), 1, '13900000001', 'zh_CN', '100001', 1736240043609, 1736240043609, 'admin', 'admin'),
+    ('appr_user_othr', 'Other Approver', 'other.approver@cordys-crm.io', MD5('admin123'), 1, '13900000002', 'zh_CN', '100001', 1736240043609, 1736240043609, 'admin', 'admin');
 
 INSERT INTO approval_instance (`id`, `flow_version_id`, `type`, `resource_id`, `submitter_id`, `current_node_id`, `approval_status`, `submit_time`, `approval_time`,`create_time`, `update_time`, `create_user`, `update_user`)
 VALUES

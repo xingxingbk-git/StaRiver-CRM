@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Jun 12 11:55:35 CST 2026
+@default-cordys-public-https\://repository.fit2cloud.com/repository/cordys/.lastUpdated=1781236489766
+https\://repo.maven.apache.org/maven2/.lastUpdated=1781236535962
+https\://repository.fit2cloud.com/repository/cordys/.error=Could not transfer artifact org.springframework.boot\:spring-boot-starter-parent\:pom\:3.5.14 from/to cordys-public (https\://repository.fit2cloud.com/repository/cordys/)\: repository.fit2cloud.com\: nodename nor servname provided, or not known

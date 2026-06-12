@@ -27,6 +27,17 @@ const customer: AppRouteRecordRaw = {
       },
     },
     {
+      path: 'detail/:id',
+      name: CustomerRouteEnum.CUSTOMER_DETAIL,
+      component: () => import('@/views/customer/customerDetail.vue'),
+      meta: {
+        locale: 'menu.customerDetail',
+        isTopMenu: false,
+        permissions: ['CUSTOMER_MANAGEMENT:READ'],
+        hideInMenu: true,
+      },
+    },
+    {
       path: 'contact',
       name: CustomerRouteEnum.CUSTOMER_CONTACT,
       component: () => import('@/views/customer/contact.vue'),

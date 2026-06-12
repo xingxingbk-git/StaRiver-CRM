@@ -32,6 +32,8 @@ import cn.cordys.crm.customer.domain.*;
 import cn.cordys.crm.customer.dto.request.*;
 import cn.cordys.crm.customer.dto.response.CustomerGetResponse;
 import cn.cordys.crm.customer.dto.response.CustomerListResponse;
+import cn.cordys.crm.customer.dto.response.CustomerDetailStatisticResponse;
+import cn.cordys.crm.customer.dto.response.CustomerRelatedCountResponse;
 import cn.cordys.crm.customer.mapper.ExtCustomerContactMapper;
 import cn.cordys.crm.customer.mapper.ExtCustomerMapper;
 import cn.cordys.crm.customer.mapper.ExtCustomerPoolMapper;
@@ -236,6 +238,11 @@ public class CustomerService {
         Map<String, String> userNameMap = baseService.getUserNameMap(userIds);
 
         Map<String, UserDeptDTO> userDeptMap = baseService.getUserDeptMapByUserIds(ownerIds, orgId);
+        List<CustomerRelatedCountResponse> relatedCounts = extCustomerMapper.getRelatedCounts(customerIds, orgId);
+        Map<String, CustomerRelatedCountResponse> relatedCountMap = CollectionUtils.isEmpty(relatedCounts)
+                ? Map.of()
+                : relatedCounts.stream()
+                .collect(Collectors.toMap(CustomerRelatedCountResponse::getCustomerId, item -> item));
 
         // 获取负责人默认公海信息
         Map<String, CustomerPool> ownersDefaultPoolMap = customerPoolService.getOwnersDefaultPoolMap(ownerIds, orgId);
@@ -262,6 +269,9 @@ public class CustomerService {
             // 设置回收公海
             CustomerPool reservePool = ownersDefaultPoolMap.get(customerListResponse.getOwner());
             customerListResponse.setRecyclePoolName(reservePool != null ? reservePool.getName() : null);
+            CustomerRelatedCountResponse relatedCount = relatedCountMap.get(customerListResponse.getId());
+            customerListResponse.setOpportunityCount(relatedCount != null ? relatedCount.getOpportunityCount() : 0);
+            customerListResponse.setContractCount(relatedCount != null ? relatedCount.getContractCount() : 0);
             // 计算剩余归属天数
             customerListResponse.setReservedDays(customerPoolService.calcReservedDay(reservePool,
                     reservePool != null ? recycleRuleMap.get(reservePool.getId()) : null,
@@ -1015,5 +1025,18 @@ public class CustomerService {
         }
 
         return logs;
+    }
+
+    public CustomerDetailStatisticResponse getDetailStatistic(String customerId, String orgId) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        long monthStart = cal.getTimeInMillis();
+        cal.add(java.util.Calendar.MONTH, 1);
+        long monthEnd = cal.getTimeInMillis();
+        return extCustomerMapper.getDetailStatistic(customerId, orgId, monthStart, monthEnd);
     }
 }

@@ -1,0 +1,11 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Jun 12 11:57:47 CST 2026
+https\://oss.sonatype.org/content/repositories/snapshots/.error=
+https\://oss.sonatype.org/content/repositories/snapshots/.lastUpdated=1781236666960
+https\://repo.maven.apache.org/maven2/.lastUpdated=1781236667864
+https\://repo.spring.io/milestone/.error=
+https\://repo.spring.io/milestone/.lastUpdated=1781236667279
+https\://repo.spring.io/snapshot/.error=
+https\://repo.spring.io/snapshot/.lastUpdated=1781236667696
+https\://repository.fit2cloud.com/repository/cordys/.error=
+https\://repository.fit2cloud.com/repository/cordys/.lastUpdated=1781236666638

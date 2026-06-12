@@ -167,7 +167,7 @@ public class UserLoginService {
     private void checkDefaultPwd(UserDTO userDTO) {
         String defaultPwd = "";
         if (Strings.CI.equals(userDTO.getId(), InternalUser.ADMIN.getValue())) {
-            defaultPwd = CodingUtils.md5("CordysCRM");
+            defaultPwd = CodingUtils.md5("admin123");
         } else {
             if (StringUtils.isNotBlank(userDTO.getPhone())) {
                 defaultPwd = CodingUtils.md5(userDTO.getPhone().substring(userDTO.getPhone().length() - 6));

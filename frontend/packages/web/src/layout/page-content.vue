@@ -57,10 +57,10 @@
 
 <style lang="less">
   .page-content {
-    @apply absolute h-full w-full;
+    @apply h-full w-full;
 
-    padding: 16px;
-    background-color: var(--text-n9);
+    padding: 0;
+    background-color: #f8fafc;
     .n-breadcrumb-item__link {
       padding: 0 !important;
     }

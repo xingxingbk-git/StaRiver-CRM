@@ -19,6 +19,7 @@ export interface CustomerListItem {
   id: string;
   name: string;
   owner: string; // 负责人
+  ownerName: string; // 负责人名称
   inSharedPool: boolean; // 是否在公海池
   dealStatus: string; // 最终成交状态
   createUser: string;
@@ -32,6 +33,11 @@ export interface CustomerListItem {
   latestFollowUpTime: number;
   collectionTime: number;
   reservedDays: number; // 剩余归属天数
+  follower: string;
+  followerName: string;
+  followTime: number;
+  opportunityCount: number; // 关联商机数量
+  contractCount: number; // 关联合同数量
   moduleFields: ModuleField[];
 }
 

@@ -73,6 +73,12 @@ public class CustomerListResponse {
     @Schema(description = "公海ID")
     private String poolId;
 
+    @Schema(description = "关联商机数量")
+    private Integer opportunityCount;
+
+    @Schema(description = "关联合同数量")
+    private Integer contractCount;
+
     @Schema(description = "默认回收公海名称")
     private String recyclePoolName;
 

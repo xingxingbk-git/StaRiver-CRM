@@ -1,6 +1,6 @@
 <template>
-  <n-button type="primary" ghost class="n-btn-outline-primary" @click="handleImport">
-    {{ `${t('common.import')}${props.title}` }}
+  <n-button type="primary" ghost :class="['n-btn-outline-primary', props.buttonClass]" @click="handleImport">
+    {{ props.buttonText || `${t('common.import')}${props.title}` }}
   </n-button>
 
   <ImportModal
@@ -54,6 +54,7 @@
     apiType: ImportApiType;
     title?: string;
     buttonText?: string;
+    buttonClass?: string;
     descriptionTip?: string; // 描述提示
     showImportRadio?: boolean; // 导入新建和导入更新
   }>();

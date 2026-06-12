@@ -18,6 +18,8 @@ public class CustomerFieldUtils {
         systemFieldMap.put("updateTime", TimeUtils.getDateTimeStr(data.getUpdateTime()));
         systemFieldMap.put("follower", data.getFollowerName());
         systemFieldMap.put("followTime", TimeUtils.getDateTimeStr(data.getFollowTime()));
+        systemFieldMap.put("opportunityCount", data.getOpportunityCount());
+        systemFieldMap.put("contractCount", data.getContractCount());
         systemFieldMap.put("reservedDays", data.getReservedDays());
         systemFieldMap.put("recyclePoolName", data.getRecyclePoolName());
         systemFieldMap.put("departmentId", data.getDepartmentName());

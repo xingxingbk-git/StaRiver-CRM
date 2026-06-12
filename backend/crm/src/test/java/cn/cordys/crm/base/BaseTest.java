@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 public abstract class BaseTest {
     public static final String DEFAULT_ORGANIZATION_ID = "100001";
-    protected static final String DEFAULT_USER_PASSWORD = "CordysCRM";
+    protected static final String DEFAULT_USER_PASSWORD = "admin123";
     protected static final String DEFAULT_PLATFORM = "mobile";
     protected static final String DEFAULT_PAGE = "page";
     protected static final String DEFAULT_LIST = "list";

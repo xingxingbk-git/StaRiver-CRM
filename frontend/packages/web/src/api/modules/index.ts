@@ -432,6 +432,7 @@ export const {
   getCustomerOpenSeaFollowRecordList,
   getAccountContract,
   getAccountContractStatistic,
+  getCustomerDetailStatistic,
   getAccountPayment,
   getAccountPaymentStatistic,
   getAccountPaymentRecord,
