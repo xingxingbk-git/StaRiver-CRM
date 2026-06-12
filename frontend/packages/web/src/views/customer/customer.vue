@@ -17,6 +17,14 @@
       </div>
     </div>
 
+    <StariverInsightStrip
+      class="stariver-customer-page__insight"
+      :metrics="customerMetrics"
+      :process="customerProcess"
+      :fields="customerFields"
+      :rules="customerRules"
+    />
+
     <div class="stariver-customer-page__table-shell">
       <div class="stariver-customer-page__toolbar">
         <div class="stariver-customer-page__tabs">
@@ -32,6 +40,7 @@
           </button>
         </div>
         <div class="stariver-customer-page__filters">
+          <button class="stariver-customer-page__filter-button">等级：全部</button>
           <n-input
             v-model:value="keyword"
             clearable
@@ -51,9 +60,10 @@
           <table class="stariver-customer-table">
             <thead>
               <tr>
-                <th class="stariver-customer-table__cell-id">客户ID</th>
-                <th class="stariver-customer-table__cell-name">公司</th>
+                <th class="stariver-customer-table__cell-name">客户</th>
                 <th class="stariver-customer-table__cell-industry">行业</th>
+                <th class="stariver-customer-table__cell-level">等级</th>
+                <th class="stariver-customer-table__cell-scale">规模</th>
                 <th class="stariver-customer-table__cell-area">地区</th>
                 <th class="stariver-customer-table__cell-owner">负责人</th>
                 <th class="stariver-customer-table__cell-num">商机</th>
@@ -69,28 +79,25 @@
                 class="stariver-customer-table__row"
                 @click="openDetail(customer)"
               >
-                <td class="stariver-customer-table__cell-id">
-                  <span class="stariver-customer-table__id-text">{{ customer.id.slice(0, 8) }}</span>
-                </td>
                 <td>
                   <div class="stariver-customer-table__customer">
                     <div class="stariver-customer-table__avatar">{{ getCustomerInitials(customer.name) }}</div>
                     <div class="min-w-0">
                       <div class="stariver-customer-table__name">{{ customer.name }}</div>
-                      <div class="stariver-customer-table__meta">{{
-                        getFieldDisplay(customer, 'customerShortName')
-                      }}</div>
+                      <div class="stariver-customer-table__meta">{{ getCustomerMeta(customer) }}</div>
                     </div>
                   </div>
                 </td>
+                <td>{{ getCustomerIndustryLabel(customer) }}</td>
                 <td>
                   <span
-                    class="stariver-customer-table__industry-chip"
-                    :class="getLevelClass(getFieldText(customer, 'customerLevel'))"
+                    class="stariver-customer-table__level-chip"
+                    :class="getLevelClass(getCustomerLevelLabel(customer))"
                   >
-                    {{ getCustomerIndustryLabel(customer) }}
+                    {{ getCustomerLevelLabel(customer) }}
                   </span>
                 </td>
+                <td>{{ getCustomerScaleLabel(customer) }}</td>
                 <td>{{ getFieldDisplay(customer, 'customerArea') }}</td>
                 <td>{{ customer.ownerName || '-' }}</td>
                 <td class="stariver-customer-table__cell-num">{{ customer.opportunityCount ?? 0 }}</td>
@@ -146,6 +153,7 @@
   import type { FormCreateField } from '@/components/business/crm-form-create/types';
   import CrmFormCreateDrawer from '@/components/business/crm-form-create-drawer/index.vue';
   import CrmImportButton from '@/components/business/crm-import-button/index.vue';
+  import StariverInsightStrip from '@/components/business/stariver-insight-strip/index.vue';
 
   import { getCustomerFormConfig, getCustomerList } from '@/api/modules';
 
@@ -168,6 +176,21 @@
   const scopeTabs = [
     { label: '全部', value: CustomerSearchTypeEnum.ALL },
     { label: '我负责的', value: CustomerSearchTypeEnum.SELF },
+  ];
+
+  const customerMetrics = computed(() => [
+    { label: '客户总量', value: `${total.value}`, hint: '按数据权限过滤', tone: 'blue' },
+    { label: 'KA 客户', value: '8', hint: '战略客户优先维护', tone: 'indigo' },
+    { label: '待跟进客户', value: '12', hint: '超过 7 天无跟进', tone: 'amber' },
+    { label: '本月新增', value: '6', hint: '来自线索转化与手工录入', tone: 'emerald' },
+  ]);
+
+  const customerProcess = ['客户录入', '客户画像', '分级归属', '跟进计划', '商机转化'];
+  const customerFields = ['客户画像', '客户等级', '行业', '客户规模', '地区', '负责人'];
+  const customerRules = [
+    '客户等级影响商机优先级和跟进频次',
+    '客户画像由基本信息、联系人、商机和合同沉淀',
+    '回收客户需填写原因并进入公海池',
   ];
 
   const fieldByInternalKey = computed(() => {
@@ -224,7 +247,21 @@
   }
 
   function getCustomerIndustryLabel(customer: CustomerListItem) {
-    return getFieldText(customer, 'customerIndustry') || getFieldText(customer, 'customerLevel') || '-';
+    return getFieldText(customer, 'customerIndustry') || '-';
+  }
+
+  function getCustomerLevelLabel(customer: CustomerListItem) {
+    return getFieldText(customer, 'customerLevel') || '-';
+  }
+
+  function getCustomerScaleLabel(customer: CustomerListItem) {
+    return getFieldText(customer, 'customerScale') || '-';
+  }
+
+  function getCustomerMeta(customer: CustomerListItem) {
+    const shortName = getFieldText(customer, 'customerShortName');
+    const scale = getCustomerScaleLabel(customer);
+    return [shortName, scale].filter((item) => item && item !== '-').join(' · ') || 'StaRiver 客户';
   }
 
   function formatDate(time?: number) {
@@ -314,7 +351,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background: #f8fafc;
+    background: #f3f4f6;
     color: #0f172a;
   }
 
@@ -322,7 +359,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 22px 28px 18px;
+    min-height: 64px;
+    padding: 14px 24px;
     flex-shrink: 0;
   }
 
@@ -335,9 +373,9 @@
   .stariver-customer-page__title-row h1 {
     margin: 0;
     color: #0f172a;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
-    line-height: 32px;
+    line-height: 24px;
   }
 
   .stariver-customer-page__count {
@@ -356,6 +394,10 @@
     gap: 10px;
   }
 
+  .stariver-customer-page__insight {
+    margin: 0 24px 12px;
+  }
+
   .stariver-customer-page__btn-ghost {
     height: 34px;
     border-radius: 6px;
@@ -369,21 +411,21 @@
   }
 
   .stariver-customer-page__btn-primary {
-    height: 34px;
+    height: 32px;
     border-radius: 6px;
     font-size: 13px;
     font-weight: 500;
-    background: #0f172a;
-    border: 1px solid #0f172a;
+    background: #4f46e5;
+    border: 1px solid #4f46e5;
     color: #fff;
-    padding: 0 14px;
+    padding: 0 12px;
     cursor: pointer;
-    --n-color: #111827 !important;
-    --n-color-hover: #1f2937 !important;
-    --n-color-pressed: #020617 !important;
-    --n-border: 1px solid #111827 !important;
-    --n-border-hover: 1px solid #1f2937 !important;
-    --n-border-pressed: 1px solid #020617 !important;
+    --n-color: #4f46e5 !important;
+    --n-color-hover: #4338ca !important;
+    --n-color-pressed: #3730a3 !important;
+    --n-border: 1px solid #4f46e5 !important;
+    --n-border-hover: 1px solid #4338ca !important;
+    --n-border-pressed: 1px solid #3730a3 !important;
   }
 
   .stariver-customer-page__table-shell {
@@ -391,7 +433,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    margin: 0 28px 24px;
+    margin: 0 24px 24px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: #ffffff;
@@ -442,11 +484,23 @@
   .stariver-customer-page__filters {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
   }
 
   .stariver-customer-page__search {
     width: 220px;
+  }
+
+  .stariver-customer-page__filter-button {
+    height: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0 10px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 13px;
+    line-height: 30px;
+    cursor: pointer;
   }
 
   .stariver-customer-page__spin {
@@ -462,7 +516,7 @@
 
   .stariver-customer-table {
     width: 100%;
-    min-width: 980px;
+    min-width: 1060px;
     border-collapse: separate;
     border-spacing: 0;
   }
@@ -499,22 +553,20 @@
     background: #f8fafc;
   }
 
-  .stariver-customer-table__cell-id {
-    width: 100px;
-  }
-
-  .stariver-customer-table__id-text {
-    color: #64748b;
-    font-size: 12px;
-    font-family: ui-monospace, monospace;
-  }
-
   .stariver-customer-table__cell-name {
-    min-width: 200px;
+    min-width: 240px;
   }
 
   .stariver-customer-table__cell-industry {
-    width: 120px;
+    width: 100px;
+  }
+
+  .stariver-customer-table__cell-level {
+    width: 90px;
+  }
+
+  .stariver-customer-table__cell-scale {
+    width: 110px;
   }
 
   .stariver-customer-table__cell-area {
@@ -580,7 +632,7 @@
     white-space: nowrap;
   }
 
-  .stariver-customer-table__industry-chip {
+  .stariver-customer-table__level-chip {
     display: inline-flex;
     height: 22px;
     align-items: center;
@@ -656,6 +708,9 @@
       padding: 12px;
     }
     .stariver-customer-page__table-shell {
+      margin: 0 12px 12px;
+    }
+    .stariver-customer-page__insight {
       margin: 0 12px 12px;
     }
     .stariver-customer-page__filters {

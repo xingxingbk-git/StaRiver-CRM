@@ -1,4 +1,5 @@
 export default {
+  'module.productRequirement': '需求管理',
   'product.createProduct': '新建产品',
   'product.batchUp': '批量上架',
   'product.batchDown': '批量下架',

@@ -49,7 +49,15 @@ export enum OrderRouteEnum {
 export enum ProductRouteEnum {
   PRODUCT = 'product',
   PRODUCT_PRO = 'productPro',
+  PRODUCT_REQUIREMENT = 'productRequirement',
   PRODUCT_PRICE = 'productPrice',
+}
+
+export enum SalesRouteEnum {
+  SALES_TEAM_ROOT = 'salesTeamRoot',
+  SALES_TEAM = 'salesTeam',
+  SALES_ANALYTICS_ROOT = 'salesAnalyticsRoot',
+  SALES_ANALYTICS = 'salesAnalytics',
 }
 
 export enum PersonalRouteEnum {
@@ -99,6 +107,7 @@ export const AppRouteEnum = {
   ...ClueRouteEnum,
   ...CustomerRouteEnum,
   ...ProductRouteEnum,
+  ...SalesRouteEnum,
   ...PersonalRouteEnum,
   ...WorkbenchRouteEnum,
   ...DashboardRouteEnum,

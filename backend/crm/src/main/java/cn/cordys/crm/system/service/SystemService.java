@@ -25,7 +25,7 @@ public class SystemService {
     private static final String CACHE_FORM = "form_cache";
     private static final String CACHE_FIELD = "field_cache";
     private static final String CACHE_TABLE_SCHEMA = "table_schema_cache";
-    private static final String PRODUCT = "CORDYS";
+    private static final String PRODUCT = "STARIVER";
     private static final String EDITION_CE = "ce";
     private static final String EDITION_EE = "ee";
     private static final String PERMISSION_CACHE = "permission_cache";

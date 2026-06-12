@@ -27,6 +27,16 @@ const product: AppRouteRecordRaw = {
       },
     },
     {
+      path: 'requirements',
+      name: ProductRouteEnum.PRODUCT_REQUIREMENT,
+      component: () => import('@/views/product/requirements.vue'),
+      meta: {
+        locale: 'module.productRequirement',
+        permissions: ['PRODUCT_MANAGEMENT:READ'],
+        isTopMenu: true,
+      },
+    },
+    {
       path: 'price',
       name: ProductRouteEnum.PRODUCT_PRICE,
       component: () => import('@/views/product/price.vue'),
@@ -34,6 +44,7 @@ const product: AppRouteRecordRaw = {
         locale: 'module.productManagementPrice',
         permissions: ['PRICE:READ'],
         isTopMenu: true,
+        hideInMenu: true,
       },
     },
   ],

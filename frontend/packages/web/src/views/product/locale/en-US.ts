@@ -1,4 +1,5 @@
 export default {
+  'module.productRequirement': 'Requirements',
   'product.createProduct': 'Create Product',
   'product.batchUp': 'Batch Up',
   'product.batchDown': 'Batch Down',

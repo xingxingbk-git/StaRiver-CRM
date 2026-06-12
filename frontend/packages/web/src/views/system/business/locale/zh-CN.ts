@@ -80,7 +80,7 @@ export default {
   'system.business.authenticationSettings.OUPlaceholder': '多个 OU 用 “I” 分隔',
   'system.business.authenticationSettings.userFilter': '用户过滤器',
   'system.business.authenticationSettings.LDAPPropertyMap': 'LDAP 属性映射',
-  'system.business.authenticationSettings.LDAPPropertyMapTip': '左侧键为 Cordys 用户属性，右侧值为认证平台用户属性',
+  'system.business.authenticationSettings.LDAPPropertyMapTip': '左侧键为 StaRiver 用户属性，右侧值为认证平台用户属性',
   'system.business.authenticationSettings.propertyMap': '属性映射',
   'system.business.authenticationSettings.testLogin': '测试登录',
   'system.business.authenticationSettings.openSourceDataTools': '数据分析工具',
@@ -105,7 +105,7 @@ export default {
   'system.config.page.loginPageConfig': '登录页面设置',
   'system.config.page.pagePreview': '页面预览',
   'system.config.page.reset': '撤销修改',
-  'system.config.page.loginPreviewTip': 'tips:默认为 Cordys 系统界面，支持自定义平台界面设置',
+  'system.config.page.loginPreviewTip': 'tips:默认为 StaRiver 系统界面，支持自定义平台界面设置',
 
   'system.config.page.icon': '网站 Logo',
   'system.config.page.iconTip':
@@ -134,7 +134,7 @@ export default {
   'system.personal.plan': '我的计划',
   'system.personal.apiKey': 'API Keys',
   'system.personal.maxTip': '最多可添加 5 个 API key',
-  'system.personal.apiKeyTip': '可通过 API Key 访问 Cordys CRM API',
+  'system.personal.apiKeyTip': '可通过 API Key 访问 StaRiver CRM API',
   'system.personal.validTime': '有效时间',
   'system.personal.setValidTime': '设置有效时间',
   'system.personal.forever': '永久有效',

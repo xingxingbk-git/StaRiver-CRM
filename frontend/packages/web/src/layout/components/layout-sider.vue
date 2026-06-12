@@ -79,7 +79,6 @@
 
   import { PersonalEnum } from '@lib/shared/enums/systemEnum';
   import { useI18n } from '@lib/shared/hooks/useI18n';
-  import { mapTree } from '@lib/shared/method';
   import { listenerRouteChange } from '@lib/shared/method/route-listener';
 
   import CrmIcon from '@/components/pure/crm-icon-font/index.vue';
@@ -87,16 +86,25 @@
   import CrmAvatar from '@/components/business/crm-avatar/index.vue';
   import personalExportDrawer from '@/views/system/business/components/personalExportDrawer.vue';
 
-  import useMenuTree from '@/hooks/useMenuTree';
   import useUser from '@/hooks/useUser';
   import useVisit from '@/hooks/useVisit';
-  import type { AppRouteRecordRaw } from '@/router/routes/types';
   import useAppStore from '@/store/modules/app';
   import useLicenseStore from '@/store/modules/setting/license';
   import useUserStore from '@/store/modules/user';
-  import { getFirstRouterNameByCurrentRoute, hasAnyPermission } from '@/utils/permission';
+  import { hasAnyPermission } from '@/utils/permission';
 
-  import { AppRouteEnum, ClueRouteEnum, CustomerRouteEnum, OpportunityRouteEnum } from '@/enums/routeEnum';
+  import {
+    AppRouteEnum,
+    ClueRouteEnum,
+    ContractRouteEnum,
+    CustomerRouteEnum,
+    DashboardRouteEnum,
+    OpportunityRouteEnum,
+    ProductRouteEnum,
+    SalesRouteEnum,
+    SystemRouteEnum,
+    WorkbenchRouteEnum,
+  } from '@/enums/routeEnum';
 
   import { MenuGroupOption, MenuOption } from 'naive-ui/es/menu/src/interface';
 
@@ -197,7 +205,11 @@
         delay: 300,
       },
       {
-        trigger: () => h('div', {}, { default: () => option.label }),
+        trigger: () =>
+          h('div', { class: 'stariver-sider__menu-label' }, [
+            h('span', { class: 'stariver-sider__menu-text' }, option.label as string),
+            (option as any).badge ? h('span', { class: 'stariver-sider__menu-badge' }, (option as any).badge) : null,
+          ]),
         default: () => h('div', {}, { default: () => option.label }),
       }
     );
@@ -225,21 +237,24 @@
     }
   }
 
-  const isRequiredExportRoute = (key: OpportunityRouteEnum | ClueRouteEnum | CustomerRouteEnum) =>
-    [AppRouteEnum.CLUE_MANAGEMENT, AppRouteEnum.OPPORTUNITY, AppRouteEnum.CUSTOMER].includes(
-      key as OpportunityRouteEnum | ClueRouteEnum | CustomerRouteEnum
-    );
+  const exportRouteNames = [
+    CustomerRouteEnum.CUSTOMER,
+    CustomerRouteEnum.CUSTOMER_INDEX,
+    ClueRouteEnum.CLUE_MANAGEMENT,
+    ClueRouteEnum.CLUE_MANAGEMENT_CLUE,
+    OpportunityRouteEnum.OPPORTUNITY,
+    OpportunityRouteEnum.OPPORTUNITY_OPT,
+    OpportunityRouteEnum.OPPORTUNITY_QUOTATION,
+  ];
 
-  async function menuChange(key: string, item: MenuOption) {
-    const routeItem = item as unknown as AppRouteRecordRaw;
-    const name = routeItem.meta?.hideChildrenInMenu ? getFirstRouterNameByCurrentRoute(routeItem.name as string) : key;
-    await router.push({ name });
-    if (isRequiredExportRoute(key as OpportunityRouteEnum | ClueRouteEnum | CustomerRouteEnum)) {
+  const isRequiredExportRoute = (key: string) => exportRouteNames.includes(key as any);
+
+  async function menuChange(key: string) {
+    await router.push({ name: key });
+    if (isRequiredExportRoute(key)) {
       initExportPop();
     }
-    if (!routeItem.name?.toString().includes('system')) {
-      expandedKeys.value = [];
-    }
+    expandedKeys.value = [];
   }
 
   const personalMenuShow = ref(false);
@@ -271,56 +286,206 @@
     }
   }
 
-  const { menuTree } = useMenuTree();
+  type StariverMenuItem = {
+    label: string;
+    key: string;
+    icon: string;
+    permissions?: string[];
+    badge?: string | number;
+  };
 
-  function getMenuIcon(e: AppRouteRecordRaw) {
-    if (appStore.getMenuIconStatus) {
-      return e?.meta?.icon ? renderIcon(e.meta.icon) : null;
-    }
+  type StariverMenuGroup = {
+    label: string;
+    children: StariverMenuItem[];
+  };
 
-    return collapsed.value && e?.meta?.collapsedLocale
-      ? () => h('div', { class: `flex flex-nowrap text-[14px]` }, t(e?.meta?.collapsedLocale ?? ''))
-      : null;
-  }
+  const canAccess = (permissions?: string[]) => !permissions?.length || hasAnyPermission(permissions);
 
-  const menuOptions = computed<MenuOption[]>(() => {
-    return mapTree(menuTree.value, (e: any) => {
-      const menuChildren = mapTree(e.children);
-      return e.meta.isTopMenu
-        ? null
-        : {
-            ...e,
-            label: t(e?.meta?.locale ?? ''),
-            key: e.name,
-            children: menuChildren.length ? menuChildren : undefined,
-            icon: getMenuIcon(e),
+  const routeMenuMap: Record<string, string> = {
+    [WorkbenchRouteEnum.WORKBENCH]: WorkbenchRouteEnum.WORKBENCH_INDEX,
+    [DashboardRouteEnum.DASHBOARD]: DashboardRouteEnum.DASHBOARD_INDEX,
+    [ProductRouteEnum.PRODUCT]: ProductRouteEnum.PRODUCT_PRO,
+    [CustomerRouteEnum.CUSTOMER]: CustomerRouteEnum.CUSTOMER_INDEX,
+    [CustomerRouteEnum.CUSTOMER_DETAIL]: CustomerRouteEnum.CUSTOMER_INDEX,
+    [CustomerRouteEnum.CUSTOMER_CONTACT]: CustomerRouteEnum.CUSTOMER_INDEX,
+    [CustomerRouteEnum.CUSTOMER_OPEN_SEA]: CustomerRouteEnum.CUSTOMER_INDEX,
+    [ClueRouteEnum.CLUE_MANAGEMENT]: ClueRouteEnum.CLUE_MANAGEMENT_CLUE,
+    [ClueRouteEnum.CLUE_MANAGEMENT_POOL]: ClueRouteEnum.CLUE_MANAGEMENT_CLUE,
+    [OpportunityRouteEnum.OPPORTUNITY]: OpportunityRouteEnum.OPPORTUNITY_OPT,
+    [ContractRouteEnum.CONTRACT]: ContractRouteEnum.CONTRACT_INDEX,
+    [ContractRouteEnum.CONTRACT_PAYMENT]: ContractRouteEnum.CONTRACT_INDEX,
+    [ContractRouteEnum.CONTRACT_PAYMENT_RECORD]: ContractRouteEnum.CONTRACT_INDEX,
+    [ContractRouteEnum.CONTRACT_BUSINESS_NAME]: ContractRouteEnum.CONTRACT_INDEX,
+    [ContractRouteEnum.CONTRACT_INVOICE]: ContractRouteEnum.CONTRACT_INDEX,
+    [SalesRouteEnum.SALES_TEAM_ROOT]: SalesRouteEnum.SALES_TEAM,
+    [SalesRouteEnum.SALES_ANALYTICS_ROOT]: SalesRouteEnum.SALES_ANALYTICS,
+    [SystemRouteEnum.SYSTEM]: SystemRouteEnum.SYSTEM_ORG,
+    [SystemRouteEnum.SYSTEM_ORG]: SystemRouteEnum.SYSTEM_ORG,
+    [SystemRouteEnum.SYSTEM_ROLE]: SystemRouteEnum.SYSTEM_ROLE,
+    [SystemRouteEnum.SYSTEM_MESSAGE]: SystemRouteEnum.SYSTEM_MESSAGE,
+    [SystemRouteEnum.SYSTEM_PROCESS]: SystemRouteEnum.SYSTEM_PROCESS_INDEX,
+    [SystemRouteEnum.SYSTEM_PROCESS_INDEX]: SystemRouteEnum.SYSTEM_PROCESS_INDEX,
+    [SystemRouteEnum.SYSTEM_BUSINESS]: SystemRouteEnum.SYSTEM_BUSINESS,
+    [SystemRouteEnum.SYSTEM_LOG]: SystemRouteEnum.SYSTEM_LOG,
+  };
+
+  const menuGroups = computed<StariverMenuGroup[]>(() => [
+    {
+      label: '主导航',
+      children: [
+        { label: '工作台', key: WorkbenchRouteEnum.WORKBENCH_INDEX, icon: 'iconicon_home' },
+        {
+          label: '数据洞察',
+          key: DashboardRouteEnum.DASHBOARD_INDEX,
+          icon: 'iconicon_dashboard1',
+          permissions: ['DASHBOARD:READ'],
+        },
+      ],
+    },
+    {
+      label: '产品需求',
+      children: [
+        {
+          label: '产品集',
+          key: ProductRouteEnum.PRODUCT_PRO,
+          icon: 'iconicon_product',
+          permissions: ['PRODUCT_MANAGEMENT:READ'],
+        },
+        {
+          label: '需求管理',
+          key: ProductRouteEnum.PRODUCT_REQUIREMENT,
+          icon: 'iconicon_books',
+          permissions: ['PRODUCT_MANAGEMENT:READ'],
+          badge: 6,
+        },
+      ],
+    },
+    {
+      label: '销售 CRM',
+      children: [
+        {
+          label: '客户管理',
+          key: CustomerRouteEnum.CUSTOMER_INDEX,
+          icon: 'iconicon_customer',
+          permissions: ['CUSTOMER_MANAGEMENT:READ'],
+        },
+        {
+          label: '销售线索',
+          key: ClueRouteEnum.CLUE_MANAGEMENT_CLUE,
+          icon: 'iconicon_clue',
+          permissions: ['CLUE_MANAGEMENT:READ'],
+          badge: 18,
+        },
+        {
+          label: '商机管理',
+          key: OpportunityRouteEnum.OPPORTUNITY_OPT,
+          icon: 'iconicon_business_opportunity',
+          permissions: ['OPPORTUNITY_MANAGEMENT:READ'],
+          badge: 24,
+        },
+        {
+          label: '报价管理',
+          key: OpportunityRouteEnum.OPPORTUNITY_QUOTATION,
+          icon: 'iconicon_order_form',
+          permissions: ['QUOTE_MANAGEMENT:READ'],
+        },
+        {
+          label: '合同管理',
+          key: ContractRouteEnum.CONTRACT_INDEX,
+          icon: 'iconicon_contract',
+          permissions: ['CONTRACT:READ'],
+        },
+        {
+          label: '团队与业绩',
+          key: SalesRouteEnum.SALES_TEAM,
+          icon: 'iconicon_usergroup',
+          permissions: ['CUSTOMER_MANAGEMENT:READ', 'CLUE_MANAGEMENT:READ', 'OPPORTUNITY_MANAGEMENT:READ'],
+        },
+        {
+          label: '数据分析',
+          key: SalesRouteEnum.SALES_ANALYTICS,
+          icon: 'iconicon_data',
+          permissions: ['DASHBOARD:READ'],
+        },
+      ],
+    },
+    {
+      label: '系统',
+      children: [
+        {
+          label: '组织架构',
+          key: SystemRouteEnum.SYSTEM_ORG,
+          icon: 'iconicon_enterprise',
+          permissions: ['SYS_ORGANIZATION:READ'],
+        },
+        {
+          label: '角色权限',
+          key: SystemRouteEnum.SYSTEM_ROLE,
+          icon: 'iconicon_usergroup',
+          permissions: ['SYSTEM_ROLE:READ'],
+        },
+        {
+          label: '消息设置',
+          key: SystemRouteEnum.SYSTEM_MESSAGE,
+          icon: 'iconicon-alarmclock',
+          permissions: ['SYSTEM_NOTICE:READ'],
+        },
+        {
+          label: '流程设置',
+          key: SystemRouteEnum.SYSTEM_PROCESS_INDEX,
+          icon: 'iconicon_timeline',
+          permissions: ['PROCESS_SETTING:READ'],
+        },
+        {
+          label: '企业设置',
+          key: SystemRouteEnum.SYSTEM_BUSINESS,
+          icon: 'iconicon_enterprise',
+          permissions: ['SYSTEM_SETTING:READ'],
+        },
+        {
+          label: '系统日志',
+          key: SystemRouteEnum.SYSTEM_LOG,
+          icon: 'iconicon_data_record',
+          permissions: ['OPERATION_LOG:READ'],
+        },
+      ],
+    },
+  ]);
+
+  const menuOptions = computed<MenuOption[]>(
+    () =>
+      menuGroups.value
+        .map((group) => {
+          const children = group.children
+            .filter((item) => canAccess(item.permissions))
+            .map((item) => ({
+              label: item.label,
+              key: item.key,
+              badge: item.badge,
+              icon: renderIcon(item.icon),
+            }));
+          if (!children.length) return null;
+          return {
+            type: 'group',
+            label: group.label,
+            key: `group-${group.label}`,
+            children,
           };
-    }) as unknown as MenuOption[];
-  });
+        })
+        .filter(Boolean) as MenuOption[]
+  );
 
   function setMenuValue(_route: RouteLocationNormalizedGeneric) {
-    const hideChildrenRoute = [..._route.matched].reverse().find((item) => item.meta?.hideChildrenInMenu && item.name);
-
-    if (_route.meta.isTopMenu) {
-      menuValue.value = _route.matched[_route.matched.length - 2]
-        ?.name as (typeof AppRouteEnum)[keyof typeof AppRouteEnum];
-    } else if (hideChildrenRoute) {
-      menuValue.value = hideChildrenRoute.name as (typeof AppRouteEnum)[keyof typeof AppRouteEnum];
-    } else {
-      menuValue.value = _route.name as (typeof AppRouteEnum)[keyof typeof AppRouteEnum];
-      if (_route.name?.toString().includes('system')) {
-        expandedKeys.value = [AppRouteEnum.SYSTEM];
-      }
-    }
+    const routeName = _route.name?.toString() ?? '';
+    const rootName = _route.matched[0]?.name?.toString() ?? '';
+    menuValue.value = routeMenuMap[routeName] || routeMenuMap[rootName] || routeName;
+    expandedKeys.value = [];
   }
 
   onBeforeMount(() => {
     setMenuValue(router.currentRoute.value);
 
-    const routeName = router.currentRoute.value.matched[0]?.name as
-      | OpportunityRouteEnum
-      | ClueRouteEnum
-      | CustomerRouteEnum;
+    const routeName = router.currentRoute.value.name?.toString() ?? '';
     if (isRequiredExportRoute(routeName)) {
       initExportPop();
     }
@@ -381,6 +546,14 @@
       font-size: 13px;
       font-weight: 500;
     }
+    .n-menu .n-menu-item-group-title {
+      height: 24px;
+      padding: 10px 18px 4px !important;
+      color: #94a3b8 !important;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 16px;
+    }
     .n-menu-item-content::before {
       left: 0 !important;
       right: 0 !important;
@@ -437,6 +610,35 @@
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0;
+  }
+  .stariver-sider__menu-label {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .stariver-sider__menu-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .stariver-sider__menu-badge {
+    display: inline-flex;
+    min-width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0 6px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
   }
   .stariver-sider__bottom {
     display: flex;

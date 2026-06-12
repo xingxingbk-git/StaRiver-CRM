@@ -231,50 +231,39 @@
       "fieldWidth": 1,
       "options": [
         {
-          "label": "线上",
+          "label": "客户",
           "value": "1"
         },
         {
-          "label": "电话影响",
+          "label": "售前",
           "value": "2"
         },
         {
-          "label": "客户介绍",
+          "label": "内部",
           "value": "3"
         },
         {
-          "label": "线下活动",
+          "label": "竞品",
           "value": "4"
         },
         {
-          "label": "社区用户",
+          "label": "官网咨询",
           "value": "5"
         },
         {
-          "label": "GitHub",
+          "label": "线下活动",
           "value": "6"
         },
         {
-          "label": "维保，续约，增购",
-          "value": "7"
-        },
-        {
           "label": "其他",
-          "value": "8"
+          "value": "7"
         }
       ],
-      "showControlRules": [
-        {
-          "value": "1",
-          "fieldIds": [
-            "clueOnlineSource"
-          ]
-        }
-      ]
+      "showControlRules": []
     },
     {
-      "name": "线上来源详情",
-      "internalKey": "clueOnlineSource",
+      "name": "行业",
+      "internalKey": "clueIndustry",
       "type": "SELECT",
       "showLabel": true,
       "readable": true,
@@ -282,18 +271,55 @@
       "fieldWidth": 1,
       "options": [
         {
-          "label": "400电话",
+          "label": "能源",
           "value": "1"
         },
         {
-          "label": "官网咨询",
+          "label": "金融",
           "value": "2"
         },
         {
-          "label": "社区用户",
+          "label": "制造",
           "value": "3"
+        },
+        {
+          "label": "互联网",
+          "value": "4"
+        },
+        {
+          "label": "其他",
+          "value": "5"
         }
-      ]
+      ],
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "预算范围",
+      "internalKey": "clueBudgetRange",
+      "type": "SELECT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "options": [
+        {
+          "label": "10万以下",
+          "value": "1"
+        },
+        {
+          "label": "10-50万",
+          "value": "2"
+        },
+        {
+          "label": "50-100万",
+          "value": "3"
+        },
+        {
+          "label": "100万以上",
+          "value": "4"
+        }
+      ],
+      "ext_ver": "stariver.1"
     },
     {
       "name": "客户需求",
@@ -315,6 +341,16 @@
       "mobile": true
     },
     {
+      "name": "联系人职务",
+      "internalKey": "clueContactTitle",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
       "name": "联系人电话",
       "internalKey": "clueContactPhone",
       "type": "PHONE",
@@ -331,6 +367,16 @@
       ]
     },
     {
+      "name": "联系人邮箱",
+      "internalKey": "clueContactEmail",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
       "name": "意向产品",
       "internalKey": "clueProduct",
       "type": "DATA_SOURCE_MULTIPLE",
@@ -340,27 +386,6 @@
       "editable": true,
       "fieldWidth": 1,
       "mobile": true
-    },
-    {
-      "name": "地址信息",
-      "internalKey": "clueAddressInfo",
-      "type": "DIVIDER",
-      "showLabel": true,
-      "readable": true,
-      "fieldWidth": 1,
-      "dividerClass": "divider--normal",
-      "dividerColor": "#edf0f1",
-      "titleColor": "#323535"
-    },
-    {
-      "name": "地区",
-      "internalKey": "clueArea",
-      "type": "LOCATION",
-      "locationType": "detail",
-      "showLabel": true,
-      "readable": true,
-      "editable": true,
-      "fieldWidth": 1
     },
     {
       "name": "负责人信息",
@@ -377,16 +402,12 @@
       "name": "负责人",
       "internalKey": "clueOwner",
       "type": "MEMBER",
-      "hasCurrentUser": true,
+      "hasCurrentUser": false,
       "showLabel": true,
       "readable": true,
       "editable": true,
       "fieldWidth": 1,
-      "rules": [
-        {
-          "key": "required"
-        }
-      ]
+      "rules": []
     }
   ],
   "opportunity": [
@@ -520,6 +541,60 @@
       "mobile": true
     },
     {
+      "name": "主要竞品",
+      "internalKey": "opportunityMainCompetitor",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "竞争强度",
+      "internalKey": "opportunityCompetitionStrength",
+      "type": "SELECT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "options": [
+        {
+          "label": "低",
+          "value": "1"
+        },
+        {
+          "label": "中",
+          "value": "2"
+        },
+        {
+          "label": "高",
+          "value": "3"
+        }
+      ],
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "我方差异化",
+      "internalKey": "opportunityDifferentiation",
+      "type": "TEXTAREA",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "下一步行动",
+      "internalKey": "opportunityNextAction",
+      "type": "TEXTAREA",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
       "name": "结束时间",
       "internalKey": "opportunityEndTime",
       "type": "DATE_TIME",
@@ -547,50 +622,9 @@
       "showThousandsSeparator": true
     },
     {
-      "name": "联系人",
-      "internalKey": "opportunityContact",
-      "type": "DATA_SOURCE",
-      "dataSourceType": "CONTACT",
-      "showLabel": true,
-      "readable": true,
-      "editable": true,
-      "fieldWidth": 1,
-      "mobile": true
-    },
-    {
-      "name": "客户标签",
-      "internalKey": "opportunityCustomerTag",
-      "type": "INPUT_MULTIPLE",
-      "showLabel": true,
-      "readable": true,
-      "editable": true,
-      "fieldWidth": 1
-    },
-    {
-      "name": "备注信息",
+      "name": "商机描述",
       "internalKey": "opportunityRemark",
       "type": "TEXTAREA",
-      "showLabel": true,
-      "readable": true,
-      "editable": true,
-      "fieldWidth": 1
-    },
-    {
-      "name": "地址信息",
-      "internalKey": "opportunityAddressInfo",
-      "type": "DIVIDER",
-      "showLabel": true,
-      "readable": true,
-      "fieldWidth": 1,
-      "dividerClass": "divider--normal",
-      "dividerColor": "#edf0f1",
-      "titleColor": "#323535"
-    },
-    {
-      "name": "地区",
-      "internalKey": "opportunityArea",
-      "type": "LOCATION",
-      "locationType": "detail",
       "showLabel": true,
       "readable": true,
       "editable": true,
@@ -653,6 +687,36 @@
       ]
     },
     {
+      "name": "产品代号",
+      "internalKey": "productCode",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "产品全称",
+      "internalKey": "productFullName",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "版本号",
+      "internalKey": "productVersion",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
       "name": "产品价格",
       "internalKey": "productPrice",
       "type": "INPUT_NUMBER",
@@ -666,7 +730,7 @@
     {
       "name": "状态",
       "internalKey": "productStatus",
-      "type": "RADIO",
+      "type": "SELECT",
       "direction": "horizontal",
       "defaultValue": "1",
       "showLabel": true,
@@ -675,12 +739,16 @@
       "fieldWidth": 1,
       "options": [
         {
-          "label": "上架",
+          "label": "规划中",
           "value": "1"
         },
         {
-          "label": "下架",
+          "label": "开发中",
           "value": "2"
+        },
+        {
+          "label": "已发布",
+          "value": "3"
         }
       ],
       "rules": [
@@ -690,7 +758,50 @@
       ]
     },
     {
-      "name": "描述",
+      "name": "计划发布日期",
+      "internalKey": "productPlannedReleaseDate",
+      "type": "DATE_TIME",
+      "dateType": "date",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "产品负责人",
+      "internalKey": "productOwner",
+      "type": "MEMBER",
+      "hasCurrentUser": true,
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "研发负责人",
+      "internalKey": "productDevOwner",
+      "type": "MEMBER",
+      "hasCurrentUser": true,
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "模块架构",
+      "internalKey": "productModuleArchitecture",
+      "type": "TEXTAREA",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "产品描述",
       "internalKey": "productDescription",
       "type": "TEXTAREA",
       "showLabel": true,
@@ -910,12 +1021,20 @@
       "fieldWidth": 1,
       "options": [
         {
-          "label": "到访",
-          "value": "1"
+          "label": "电话",
+          "value": "PHONE"
         },
         {
-          "label": "电话",
-          "value": "2"
+          "label": "到访",
+          "value": "VISIT"
+        },
+        {
+          "label": "微信",
+          "value": "WECHAT"
+        },
+        {
+          "label": "其他",
+          "value": "OTHER"
         }
       ],
       "rules": [
@@ -1110,12 +1229,20 @@
       "fieldWidth": 1,
       "options": [
         {
-          "label": "到访",
-          "value": "1"
+          "label": "电话",
+          "value": "PHONE"
         },
         {
-          "label": "电话",
-          "value": "2"
+          "label": "到访",
+          "value": "VISIT"
+        },
+        {
+          "label": "微信",
+          "value": "WECHAT"
+        },
+        {
+          "label": "其他",
+          "value": "OTHER"
         }
       ],
       "rules": [
@@ -1359,26 +1486,15 @@
       "mobile": true
     },
     {
-      "name": "联系人",
-      "internalKey": "quotationContact",
+      "name": "客户",
+      "internalKey": "quotationCustomer",
       "type": "DATA_SOURCE",
-      "dataSourceType": "CONTACT",
+      "dataSourceType": "CUSTOMER",
       "showLabel": true,
       "readable": true,
-      "editable": true,
+      "editable": false,
       "fieldWidth": 1,
-      "mobile": true
-    },
-    {
-      "name": "报价日期",
-      "internalKey": "quotationTime",
-      "type": "DATE_TIME",
-      "dateType": "date",
-      "showLabel": true,
-      "readable": true,
-      "editable": true,
-      "fieldWidth": 1,
-      "mobile": true
+      "ext_ver": "stariver.1"
     },
     {
       "name": "有效期至",
@@ -1397,6 +1513,36 @@
       ]
     },
     {
+      "name": "付款条件",
+      "internalKey": "quotationPaymentTerms",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "交付周期",
+      "internalKey": "quotationDeliveryCycle",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "备注",
+      "internalKey": "quotationRemark",
+      "type": "TEXTAREA",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
       "name": "报价产品",
       "internalKey": "quotationProducts",
       "type": "SUB_PRICE",
@@ -1411,85 +1557,52 @@
       "mobile": true,
       "subFields": [
         {
-          "name": "产品",
-          "internalKey": "quotationProduct",
-          "type": "DATA_SOURCE",
-          "dataSourceType": "PRODUCT",
+          "name": "产品/服务名称",
+          "internalKey": "quotationProductName",
+          "type": "INPUT",
           "showLabel": true,
           "readable": true,
           "editable": true,
           "fieldWidth": 1,
-          "mobile": true,
-          "rules": [
-            {
-              "key": "required"
-            }
-          ],
-          "disabledProps": [
-            "dataSourceType",
-            "rules.required"
-          ]
+          "ext_ver": "stariver.1"
         },
         {
-          "name": "价格表",
-          "internalKey": "quotationPrice",
-          "type": "DATA_SOURCE",
-          "dataSourceType": "PRICE",
-          "showLabel": true,
-          "readable": true,
-          "editable": true,
-          "fieldWidth": 1,
-          "mobile": true,
-          "disabledProps": [
-            "dataSourceType"
-          ]
-        },
-        {
-          "name": "产品定价",
-          "internalKey": "quotationProductAmount",
+          "name": "数量",
+          "internalKey": "quotationQuantity",
           "type": "INPUT_NUMBER",
           "showLabel": true,
           "readable": true,
           "editable": true,
           "fieldWidth": 1,
+          "ext_ver": "stariver.1",
+          "numberFormat": "number"
+        },
+        {
+          "name": "手动单价",
+          "internalKey": "quotationManualPrice",
+          "type": "INPUT_NUMBER",
+          "showLabel": true,
+          "readable": true,
+          "editable": true,
+          "fieldWidth": 1,
+          "ext_ver": "stariver.1",
           "numberFormat": "number",
           "decimalPlaces": true,
           "precision": 2,
           "showThousandsSeparator": true
         },
         {
-          "name": "折扣",
-          "internalKey": "quotationDiscount",
-          "type": "INPUT_NUMBER",
-          "showLabel": true,
-          "readable": true,
-          "editable": true,
-          "fieldWidth": 1,
-          "numberFormat": "number",
-          "decimalPlaces": true,
-          "precision": 2
-        },
-        {
-          "name": "税点",
-          "internalKey": "quotationTax",
-          "type": "INPUT_NUMBER",
-          "showLabel": true,
-          "readable": true,
-          "editable": true,
-          "fieldWidth": 1,
-          "numberFormat": "percent",
-          "decimalPlaces": true,
-          "precision": 2
-        },
-        {
           "name": "金额",
           "internalKey": "quotationAmount",
-          "type": "FORMULA",
+          "type": "INPUT_NUMBER",
           "showLabel": true,
           "readable": true,
-          "editable": false,
+          "editable": true,
           "fieldWidth": 1,
-          "mobile": true,
+          "ext_ver": "stariver.1",
+          "numberFormat": "number",
+          "decimalPlaces": true,
+          "precision": 2,
           "showThousandsSeparator": true
         }
       ]
@@ -1645,6 +1758,34 @@
       "mobile": true
     },
     {
+      "name": "合同类型",
+      "internalKey": "contractType",
+      "type": "SELECT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "options": [
+        {
+          "label": "软件订阅",
+          "value": "1"
+        },
+        {
+          "label": "实施服务",
+          "value": "2"
+        },
+        {
+          "label": "运维服务",
+          "value": "3"
+        },
+        {
+          "label": "框架协议",
+          "value": "4"
+        }
+      ],
+      "ext_ver": "stariver.1"
+    },
+    {
       "name": "合同编号",
       "internalKey": "contractNo",
       "type": "SERIAL_NUMBER",
@@ -1753,6 +1894,46 @@
           "key": "required"
         }
       ]
+    },
+    {
+      "name": "付款条件",
+      "internalKey": "contractPaymentTerms",
+      "type": "INPUT",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "交付计划",
+      "internalKey": "contractDeliveryPlan",
+      "type": "TEXTAREA",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "付款计划",
+      "internalKey": "contractPaymentPlanText",
+      "type": "TEXTAREA",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
+    },
+    {
+      "name": "特别条款",
+      "internalKey": "contractSpecialTerms",
+      "type": "TEXTAREA",
+      "showLabel": true,
+      "readable": true,
+      "editable": true,
+      "fieldWidth": 1,
+      "ext_ver": "stariver.1"
     },
     {
       "name": "合同开始时间",

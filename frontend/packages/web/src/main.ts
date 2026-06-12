@@ -41,7 +41,7 @@ async function setupApp() {
   // 初始化本地存储
   localforage.config({
     driver: localforage.INDEXEDDB, // 选择后端存储，这里使用 IndexedDB
-    name: 'CordysCrm', // 数据库名称
+    name: 'StaRiverCrm', // 数据库名称
     version: 1.0, // 数据库版本
     storeName: 'crmTable', // 存储空间名称
   });

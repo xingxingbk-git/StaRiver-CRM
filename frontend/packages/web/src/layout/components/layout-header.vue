@@ -84,8 +84,11 @@
     ClueRouteEnum,
     ContractRouteEnum,
     CustomerRouteEnum,
+    DashboardRouteEnum,
     OpportunityRouteEnum,
     ProductRouteEnum,
+    SalesRouteEnum,
+    SystemRouteEnum,
     WorkbenchRouteEnum,
   } from '@/enums/routeEnum';
 
@@ -111,9 +114,13 @@
     ClueRouteEnum.CLUE_MANAGEMENT,
     OpportunityRouteEnum.OPPORTUNITY,
     ContractRouteEnum.CONTRACT,
+    SalesRouteEnum.SALES_TEAM_ROOT,
+    SalesRouteEnum.SALES_ANALYTICS_ROOT,
   ];
 
   const pageTitleMap: Record<string, string> = {
+    [WorkbenchRouteEnum.WORKBENCH_INDEX]: '工作台',
+    [DashboardRouteEnum.DASHBOARD_INDEX]: '数据洞察',
     [CustomerRouteEnum.CUSTOMER_INDEX]: '客户管理',
     [CustomerRouteEnum.CUSTOMER_CONTACT]: '联系人',
     [CustomerRouteEnum.CUSTOMER_OPEN_SEA]: '客户公海',
@@ -125,13 +132,28 @@
     [ContractRouteEnum.CONTRACT_PAYMENT]: '回款计划',
     [ContractRouteEnum.CONTRACT_PAYMENT_RECORD]: '回款记录',
     [ProductRouteEnum.PRODUCT_PRO]: '产品',
+    [ProductRouteEnum.PRODUCT_REQUIREMENT]: '需求管理',
     [ProductRouteEnum.PRODUCT_PRICE]: '价格表',
+    [SalesRouteEnum.SALES_TEAM]: '团队与业绩',
+    [SalesRouteEnum.SALES_ANALYTICS]: '数据分析',
+    [SystemRouteEnum.SYSTEM_ORG]: '组织架构',
+    [SystemRouteEnum.SYSTEM_ROLE]: '角色权限',
+    [SystemRouteEnum.SYSTEM_MESSAGE]: '消息设置',
+    [SystemRouteEnum.SYSTEM_PROCESS_INDEX]: '流程设置',
+    [SystemRouteEnum.SYSTEM_BUSINESS]: '企业设置',
+    [SystemRouteEnum.SYSTEM_LOG]: '系统日志',
   };
 
   const currentModuleTitle = computed(() => {
     const rootName = route.matched[0]?.name?.toString() ?? '';
     if (salesRouteRoots.includes(rootName)) {
       return '销售 CRM';
+    }
+    if ([ProductRouteEnum.PRODUCT].includes(rootName as ProductRouteEnum)) {
+      return '产品需求';
+    }
+    if ([WorkbenchRouteEnum.WORKBENCH, DashboardRouteEnum.DASHBOARD].includes(rootName as any)) {
+      return '主导航';
     }
     const locale = route.matched[0]?.meta?.locale as string | undefined;
     return locale ? t(locale) : 'StaRiver CRM';

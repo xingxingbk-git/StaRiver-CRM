@@ -86,7 +86,7 @@ export default {
   'system.business.authenticationSettings.userFilter': 'User Filter',
   'system.business.authenticationSettings.LDAPPropertyMap': 'LDAP Property Mapping',
   'system.business.authenticationSettings.LDAPPropertyMapTip':
-    'Left key is Cordys user property, right value is authentication platform user property.',
+    'Left key is StaRiver user property, right value is authentication platform user property.',
   'system.business.authenticationSettings.propertyMap': 'Property Mapping',
   'system.business.authenticationSettings.testLogin': 'Test Login',
   'system.business.authenticationSettings.openSourceDataTools': 'Data Analysis Tool',
@@ -114,7 +114,7 @@ export default {
   'system.config.page.pagePreview': 'Page Preview',
   'system.config.page.reset': 'Undo Changes',
   'system.config.page.loginPreviewTip':
-    'Tips: Default is the Cordys system interface, supports custom platform UI settings.',
+    'Tips: Default is the StaRiver system interface, supports custom platform UI settings.',
 
   'system.config.page.icon': 'Website Logo',
   'system.config.page.iconTip':
@@ -143,7 +143,7 @@ export default {
   'system.personal.plan': 'My plan',
   'system.personal.apiKey': 'API Keys',
   'system.personal.maxTip': 'Up to 5 API Key',
-  'system.personal.apiKeyTip': 'Use API Key to access Cordys CRM API',
+  'system.personal.apiKeyTip': 'Use API Key to access StaRiver CRM API',
   'system.personal.validTime': 'Validity',
   'system.personal.setValidTime': 'Set validity',
   'system.personal.forever': 'Permanent',

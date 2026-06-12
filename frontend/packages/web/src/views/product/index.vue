@@ -1,49 +1,71 @@
 <template>
-  <CrmCard hide-footer no-content-bottom-padding>
-    <div :key="tableRefreshIdKey" class="h-full">
-      <CrmTable
-        ref="crmTableRef"
-        v-model:checked-row-keys="checkedRowKeys"
-        v-bind="propsRes"
-        class="crm-product-table"
-        :action-config="actionConfig"
-        :draggable="hasAnyPermission(['PRODUCT_MANAGEMENT:UPDATE'])"
-        @page-change="propsEvent.pageChange"
-        @page-size-change="propsEvent.pageSizeChange"
-        @sorter-change="propsEvent.sorterChange"
-        @filter-change="propsEvent.filterChange"
-        @batch-action="handleBatchAction"
-        @drag="dragHandler"
-        @refresh="searchData"
+  <StariverModulePage title="产品集" count-label="产品路线图" eyebrow="产品需求">
+    <template #toolbar>
+      <div class="stariver-tabs">
+        <button class="stariver-tab stariver-tab--active">全部产品</button>
+        <button class="stariver-tab">规划中</button>
+        <button class="stariver-tab">开发中</button>
+        <button class="stariver-tab">已发布</button>
+      </div>
+      <div class="stariver-filters">
+        <button class="stariver-filter">负责人：全部</button>
+        <button class="stariver-filter">版本：全部</button>
+      </div>
+    </template>
+
+    <div class="stariver-product-stack">
+      <StariverInsightStrip
+        :metrics="productMetrics"
+        :process="productProcess"
+        :fields="productFields"
+        :rules="productRules"
       >
-        <template #actionLeft>
-          <div class="flex items-center gap-[12px]">
-            <n-button
-              v-permission="['PRODUCT_MANAGEMENT:ADD']"
-              type="primary"
-              @click="
-                {
-                  activeProductId = '';
-                  formCreateDrawerVisible = true;
-                }
-              "
-            >
-              {{ t('product.createProduct') }}
-            </n-button>
-            <CrmImportButton
-              v-if="hasAnyPermission(['PRODUCT_MANAGEMENT:IMPORT'])"
-              :api-type="FormDesignKeyEnum.PRODUCT"
-              :title="t('module.productManagement')"
-              @import-success="() => searchData()"
-            />
-          </div>
-        </template>
-        <template #actionRight>
-          <CrmSearchInput v-model:value="keyword" class="!w-[240px]" @search="searchData" />
-        </template>
-      </CrmTable>
+      </StariverInsightStrip>
+      <div :key="tableRefreshIdKey" class="stariver-product-table-panel">
+        <CrmTable
+          ref="crmTableRef"
+          v-model:checked-row-keys="checkedRowKeys"
+          v-bind="propsRes"
+          class="crm-product-table"
+          :action-config="actionConfig"
+          :draggable="hasAnyPermission(['PRODUCT_MANAGEMENT:UPDATE'])"
+          @page-change="propsEvent.pageChange"
+          @page-size-change="propsEvent.pageSizeChange"
+          @sorter-change="propsEvent.sorterChange"
+          @filter-change="propsEvent.filterChange"
+          @batch-action="handleBatchAction"
+          @drag="dragHandler"
+          @refresh="searchData"
+        >
+          <template #actionLeft>
+            <div class="flex items-center gap-[12px]">
+              <n-button
+                v-permission="['PRODUCT_MANAGEMENT:ADD']"
+                type="primary"
+                @click="
+                  {
+                    activeProductId = '';
+                    formCreateDrawerVisible = true;
+                  }
+                "
+              >
+                {{ t('product.createProduct') }}
+              </n-button>
+              <CrmImportButton
+                v-if="hasAnyPermission(['PRODUCT_MANAGEMENT:IMPORT'])"
+                :api-type="FormDesignKeyEnum.PRODUCT"
+                :title="t('module.productManagement')"
+                @import-success="() => searchData()"
+              />
+            </div>
+          </template>
+          <template #actionRight>
+            <CrmSearchInput v-model:value="keyword" class="!w-[240px]" @search="searchData" />
+          </template>
+        </CrmTable>
+      </div>
     </div>
-  </CrmCard>
+  </StariverModulePage>
   <CrmFormCreateDrawer
     v-model:visible="formCreateDrawerVisible"
     :form-key="FormDesignKeyEnum.PRODUCT"
@@ -75,7 +97,6 @@
   import type { TableDraggedParams } from '@lib/shared/models/common';
   import type { ProductListItem } from '@lib/shared/models/product';
 
-  import CrmCard from '@/components/pure/crm-card/index.vue';
   import type { ActionsItem } from '@/components/pure/crm-more-action/type';
   import CrmSearchInput from '@/components/pure/crm-search-input/index.vue';
   import CrmTable from '@/components/pure/crm-table/index.vue';
@@ -85,6 +106,8 @@
   import CrmFormCreateDrawer from '@/components/business/crm-form-create-drawer/index.vue';
   import CrmImportButton from '@/components/business/crm-import-button/index.vue';
   import CrmOperationButton from '@/components/business/crm-operation-button/index.vue';
+  import StariverInsightStrip from '@/components/business/stariver-insight-strip/index.vue';
+  import StariverModulePage from '@/components/business/stariver-module-page/index.vue';
   import detailDrawer from './components/detail.vue';
 
   import { batchDeleteProduct, deleteProduct, dragSortProduct } from '@/api/modules';
@@ -98,6 +121,21 @@
   const { t } = useI18n();
 
   const Message = useMessage();
+
+  const productMetrics = [
+    { label: '规划中产品', value: '4', hint: '等待需求拆解和版本排期', tone: 'amber' },
+    { label: '开发中', value: '6', hint: '已绑定研发负责人', tone: 'blue' },
+    { label: '已发布', value: '12', hint: '可被报价与合同引用', tone: 'emerald' },
+    { label: '需求池', value: '28', hint: '来自销售反馈与客户场景', tone: 'indigo' },
+  ];
+
+  const productProcess = ['需求收集', '产品归类', '版本规划', '研发交付', '发布启用'];
+  const productFields = ['产品编码', '产品全称', '版本号', '产品状态', '计划发布日期', '产品负责人'];
+  const productRules = [
+    '产品状态覆盖规划中、开发中、已发布',
+    '产品信息需支持报价产品行引用',
+    '需求管理用于沉淀销售场景和客户反馈',
+  ];
 
   const checkedRowKeys = ref<DataTableRowKey[]>([]);
   const keyword = ref('');
@@ -288,4 +326,59 @@
   });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .stariver-product-stack {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stariver-product-table-panel {
+    min-height: 320px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  .stariver-tabs,
+  .stariver-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stariver-tab,
+  .stariver-filter {
+    height: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0 10px;
+    background: #ffffff;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 30px;
+    cursor: pointer;
+  }
+
+  .stariver-tab {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .stariver-tab--active {
+    background: #eef2ff;
+    color: #4f46e5;
+    font-weight: 700;
+  }
+
+  .stariver-filter {
+    background: #f8fafc;
+    color: #475569;
+  }
+</style>

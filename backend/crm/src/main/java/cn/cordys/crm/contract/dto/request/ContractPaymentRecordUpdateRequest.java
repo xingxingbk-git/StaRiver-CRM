@@ -35,8 +35,9 @@ public class ContractPaymentRecordUpdateRequest {
 	@Schema(description = "合同ID", requiredMode = Schema.RequiredMode.REQUIRED)
 	private String contractId;
 
+	@NotBlank
 	@Size(max = 32)
-	@Schema(description = "回款计划ID")
+	@Schema(description = "回款计划ID", requiredMode = Schema.RequiredMode.REQUIRED)
 	private String paymentPlanId;
 
 	@Schema(description = "回款金额")

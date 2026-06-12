@@ -16,7 +16,7 @@ public class LicenseDTO implements Serializable {
      * 客户名称
      */
     @Schema(description = "客户名称")
-    private String corporation = "CORDYS";
+    private String corporation = "StaRiver";
     /**
      * 授权截止时间
      */

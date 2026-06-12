@@ -155,23 +155,7 @@ public class FollowUpRecordService extends BaseFollowUpService {
      */
     @OperationLog(module = LogModule.FOLLOW_UP_RECORD, type = LogType.UPDATE, resourceId = "{#request.id}")
     public FollowUpRecord update(FollowUpRecordUpdateRequest request, String userId, String orgId) {
-        FollowUpRecord followUpRecord = followUpRecordMapper.selectByPrimaryKey(request.getId());
-        Optional.ofNullable(followUpRecord).ifPresentOrElse(record -> {
-            //更新跟进记录
-            FollowUpRecord newRecord = BeanUtils.copyBean(new FollowUpRecord(), record);
-            FollowUpRecord updateFollowUpRecord = newRecord(newRecord, request, userId);
-            // 获取模块字段
-            List<BaseModuleFieldValue> originCustomerFields = followUpRecordFieldService.getModuleFieldValuesByResourceId(request.getId());
-            //更新模块字段
-            updateModuleField(updateFollowUpRecord, request.getModuleFields(), orgId, userId);
-            followUpRecordMapper.update(updateFollowUpRecord);
-            handleFollowTimeAndFollower(updateFollowUpRecord.getCustomerId(), updateFollowUpRecord.getOpportunityId(), updateFollowUpRecord.getClueId(), updateFollowUpRecord.getFollowTime(), updateFollowUpRecord.getOwner());
-            baseService.handleUpdateLog(followUpRecord, updateFollowUpRecord, originCustomerFields, request.getModuleFields(), followUpRecord.getId(), Translator.get("update_follow_up_record"));
-        }, () -> {
-            throw new GenericException("record_not_found");
-        });
-
-        return followUpRecord;
+        throw new GenericException("跟进记录提交后不可修改");
     }
 
     private void updateModuleField(FollowUpRecord updateFollowUpRecord, List<BaseModuleFieldValue> moduleFields, String orgId, String userId) {

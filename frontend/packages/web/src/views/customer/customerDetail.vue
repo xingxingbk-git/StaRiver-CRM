@@ -95,12 +95,12 @@
                 </div>
               </div>
               <div class="stariver-customer-detail-page__graph-row">
-                <div class="stariver-customer-detail-page__graph-node stariver-graph--order">
-                  <div class="stariver-graph-label">工单</div>
-                  <div class="stariver-graph-count">{{ orderCount }}</div>
+                <div class="stariver-customer-detail-page__graph-node stariver-graph--follow">
+                  <div class="stariver-graph-label">跟进</div>
+                  <div class="stariver-graph-count">时间轴</div>
                 </div>
-                <div class="stariver-customer-detail-page__graph-node stariver-graph--auth">
-                  <div class="stariver-graph-label">授权</div>
+                <div class="stariver-customer-detail-page__graph-node stariver-graph--quote">
+                  <div class="stariver-graph-label">报价</div>
                   <div class="stariver-graph-count">—</div>
                 </div>
               </div>
@@ -143,16 +143,6 @@
       <div v-else-if="activeTab === 'contract'" class="stariver-customer-detail-page__tab-content">
         <ContractTimeline :form-key="FormDesignKeyEnum.CONTRACT" :source-id="customerId" />
       </div>
-
-      <div v-else-if="activeTab === 'order'" class="stariver-customer-detail-page__tab-content">
-        <OrderTable :formKey="FormDesignKeyEnum.CUSTOMER_ORDER" :sourceId="customerId" isCustomerTab />
-      </div>
-
-      <div v-else-if="activeTab === 'auth'" class="stariver-customer-detail-page__tab-content">
-        <div class="stariver-customer-detail-page__empty-tab">
-          <p>授权模块暂未开放</p>
-        </div>
-      </div>
     </div>
 
     <CrmFormCreateDrawer
@@ -192,7 +182,6 @@
   import CrmMoveModal from '@/components/business/crm-move-modal/index.vue';
   import ContractTimeline from '@/views/contract/contract/components/contractTimeline.vue';
   import opportunityTable from '@/views/opportunity/components/opportunityTable.vue';
-  import OrderTable from '@/views/order/order/components/orderTable.vue';
 
   import { deleteCustomer, getCustomer, getCustomerDetailStatistic, getCustomerFormConfig } from '@/api/modules';
 
@@ -224,7 +213,6 @@
 
   const opportunityCount = ref(0);
   const contractCount = ref(0);
-  const orderCount = ref(0);
   const monthlyOpportunities = ref(0);
   const monthlyContracts = ref(0);
   const firstContractDate = ref('');
@@ -233,8 +221,6 @@
     { key: 'overview', label: '概览' },
     { key: 'opportunityInfo', label: `商机 ${opportunityCount.value}` },
     { key: 'contract', label: `合同 ${contractCount.value}` },
-    { key: 'order', label: `工单 ${orderCount.value}` },
-    { key: 'auth', label: '授权 —' },
     { key: 'contact', label: '联系人' },
     { key: 'followRecord', label: '跟进时间轴' },
   ]);
@@ -387,7 +373,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: #f8fafc;
+    background: #f3f4f6;
     color: #0f172a;
     overflow: hidden;
   }
@@ -476,8 +462,8 @@
     border-radius: 6px;
     font-size: 12px;
     font-weight: 500;
-    background: #0f172a;
-    border: 1px solid #0f172a;
+    background: #4f46e5;
+    border: 1px solid #4f46e5;
     color: #fff;
     padding: 0 12px;
     cursor: pointer;
@@ -652,12 +638,12 @@
     border: 1px solid #a5f3fc;
   }
 
-  .stariver-graph--order {
+  .stariver-graph--follow {
     background: #fef3c7;
     border: 1px solid #fde68a;
   }
 
-  .stariver-graph--auth {
+  .stariver-graph--quote {
     background: #f3f4f6;
     border: 1px solid #e5e7eb;
   }

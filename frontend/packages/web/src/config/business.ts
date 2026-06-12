@@ -89,7 +89,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<keyclock>auth/realms/<cordys>/protocol/openid-connect/auth',
+        url: 'http://<keyclock>auth/realms/<stariver>/protocol/openid-connect/auth',
       }),
     },
     {
@@ -102,7 +102,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<keyclock>auth/realms/<cordys>/protocol/openid-connect/token',
+        url: 'http://<keyclock>auth/realms/<stariver>/protocol/openid-connect/token',
       }),
     },
     {
@@ -115,7 +115,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<keyclock>auth/realms/<cordys>/protocol/openid-connect/userinfo',
+        url: 'http://<keyclock>auth/realms/<stariver>/protocol/openid-connect/userinfo',
       }),
     },
     {
@@ -128,7 +128,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<cordys-endpoint>/sso/callback or http://<cordys-endpoint>/sso/callback/authld',
+        url: 'http://<stariver-endpoint>/sso/callback or http://<stariver-endpoint>/sso/callback/authld',
       }),
     },
     {
@@ -141,7 +141,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'Cordys',
+        url: 'StaRiver',
       }),
     },
     {
@@ -154,7 +154,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'Cordys',
+        url: 'StaRiver',
       }),
     },
     {
@@ -183,7 +183,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<keyclock>auth/realms/<cordys>/protocol/openid-connect/auth',
+        url: 'http://<keyclock>auth/realms/<stariver>/protocol/openid-connect/auth',
       }),
     },
     {
@@ -196,7 +196,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<keyclock>auth/realms/<cordys>/protocol/openid-connect/token',
+        url: 'http://<keyclock>auth/realms/<stariver>/protocol/openid-connect/token',
       }),
     },
     {
@@ -209,7 +209,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<keyclock>auth/realms/<cordys>/protocol/openid-connect/userinfo',
+        url: 'http://<keyclock>auth/realms/<stariver>/protocol/openid-connect/userinfo',
       }),
     },
     {
@@ -222,7 +222,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<cordys-endpoint>/sso/callback or http://<cordys-endpoint>/sso/callback/authld',
+        url: 'http://<stariver-endpoint>/sso/callback or http://<stariver-endpoint>/sso/callback/authld',
       }),
     },
     {
@@ -235,7 +235,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'Cordys',
+        url: 'StaRiver',
       }),
     },
     {
@@ -248,7 +248,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'Cordys',
+        url: 'StaRiver',
       }),
     },
     {
@@ -279,7 +279,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'Cordys',
+        url: 'StaRiver',
       }),
     },
     {
@@ -297,7 +297,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         inputProps: { autocomplete: 'new-password' },
       },
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'Cordys',
+        url: 'StaRiver',
       }),
     },
     {
@@ -310,7 +310,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'Cordys',
+        url: 'StaRiver',
       }),
     },
     {
@@ -323,7 +323,7 @@ export const authTypeFieldMap: Record<string, AuthField[]> = {
         },
       ],
       placeholder: t('system.business.authenticationSettings.commonUrlPlaceholder', {
-        url: 'http://<cordys-endpoint>/sso/callback or http://<cordys-endpoint>/sso/callback/authld',
+        url: 'http://<stariver-endpoint>/sso/callback or http://<stariver-endpoint>/sso/callback/authld',
       }),
     },
   ],
@@ -432,9 +432,9 @@ export const defaultUserInfo: OrgUserInfo = {
 // 默认登录图片
 export const defaultLoginImage = `${import.meta.env.BASE_URL}images/login-banner.png`;
 // 默认登录logo
-export const defaultLoginLogo = `${import.meta.env.BASE_URL}images/login-logo.svg`;
+export const defaultLoginLogo = `${import.meta.env.BASE_URL}images/stariver-login-logo.svg`;
 // 默认左上角平台logo
-export const defaultPlatformLogo = `${import.meta.env.BASE_URL}images/logo_CORDYS.svg`;
+export const defaultPlatformLogo = `${import.meta.env.BASE_URL}images/stariver-platform-logo.svg`;
 
 export const platformType = [CompanyTypeEnum.WECOM, CompanyTypeEnum.DINGTALK, CompanyTypeEnum.LARK];
 

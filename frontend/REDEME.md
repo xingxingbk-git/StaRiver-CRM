@@ -1,4 +1,4 @@
-# Cordys CRM 前端工程
+# StaRiver CRM 前端工程
 
 ## 工程简介
 

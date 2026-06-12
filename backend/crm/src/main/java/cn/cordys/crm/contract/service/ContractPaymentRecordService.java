@@ -127,6 +127,7 @@ public class ContractPaymentRecordService {
 
     @OperationLog(module = LogModule.CONTRACT_PAYMENT_RECORD, type = LogType.ADD, operator = "{#currentUser}")
     public ContractPaymentRecord add(ContractPaymentRecordAddRequest request, String currentUser, String currentOrg) {
+        checkPaymentPlan(request.getContractId(), request.getPaymentPlanId(), currentOrg);
         checkContractPaymentAmount(request.getContractId(), request.getRecordAmount(), null);
         ContractPaymentRecord paymentRecord = BeanUtils.copyBean(new ContractPaymentRecord(), request);
         paymentRecord.setId(IDGenerator.nextStr());
@@ -152,6 +153,7 @@ public class ContractPaymentRecordService {
         if (oldRecord == null) {
             throw new GenericException(Translator.get("record.not.exist"));
         }
+        checkPaymentPlan(request.getContractId(), request.getPaymentPlanId(), currentOrg);
         checkContractPaymentAmount(request.getContractId(), request.getRecordAmount(), oldRecord.getId());
         ContractPaymentRecord contractPaymentRecord = BeanUtils.copyBean(new ContractPaymentRecord(), request);
         contractPaymentRecord.setNo(oldRecord.getNo());
@@ -457,6 +459,20 @@ public class ContractPaymentRecordService {
         Contract contract = contractMapper.selectByPrimaryKey(contractId);
         if (contract == null) {
             throw new GenericException(Translator.get("contract.not.exist"));
+        }
+    }
+
+    private void checkPaymentPlan(String contractId, String paymentPlanId, String currentOrg) {
+        if (StringUtils.isBlank(paymentPlanId)) {
+            throw new GenericException("回款记录必须关联付款计划");
+        }
+        ContractPaymentPlan paymentPlan = contractPaymentPlanMapper.selectByPrimaryKey(paymentPlanId);
+        if (paymentPlan == null) {
+            throw new GenericException("付款计划不存在");
+        }
+        if (!Strings.CI.equals(paymentPlan.getContractId(), contractId)
+                || !Strings.CI.equals(paymentPlan.getOrganizationId(), currentOrg)) {
+            throw new GenericException("付款计划必须属于当前合同");
         }
     }
 

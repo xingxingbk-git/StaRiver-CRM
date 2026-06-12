@@ -142,7 +142,7 @@ public class OrganizationConfigService {
                 from.setPersonal(smtpFrom);
             }
             helper.setFrom(from);
-            helper.setSubject("Cordys CRM 测试邮件");
+            helper.setSubject("StaRiver CRM 测试邮件");
 
             log.info("收件人地址: {}", recipient);
             helper.setText("这是一封测试邮件，邮件发送成功", true);
@@ -195,4 +195,3 @@ public class OrganizationConfigService {
 
 
 }
-

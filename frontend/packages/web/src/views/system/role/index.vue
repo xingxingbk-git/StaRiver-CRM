@@ -1,71 +1,94 @@
 <template>
-  <CrmCard :loading="loading" hide-footer no-content-padding :special-height="licenseStore.expiredDuring ? 64 : 0">
-    <CrmSplitPanel class="h-full" :max="0.5" :min="0.25" :default-size="0.25">
-      <template #1>
-        <div class="flex h-full flex-col overflow-hidden">
-          <div class="mb-[8px] flex items-center justify-between gap-[8px] px-[24px] pt-[24px]">
-            <CrmSearchInput v-model:value="keyword" :placeholder="t('common.searchByName')" class="flex-1" />
-            <n-tooltip trigger="hover" :delay="300">
-              <template #trigger>
-                <n-button
-                  v-permission="['SYSTEM_ROLE:ADD']"
-                  type="primary"
-                  ghost
-                  class="n-btn-outline-primary px-[7px]"
-                  @click="addRole"
-                >
-                  <template #icon>
-                    <n-icon><Add /></n-icon>
+  <StariverModulePage title="角色权限" count-label="权限矩阵" eyebrow="系统">
+    <template #toolbar>
+      <div class="stariver-tabs">
+        <button class="stariver-tab stariver-tab--active">角色权限</button>
+        <button class="stariver-tab">成员授权</button>
+        <button class="stariver-tab">数据范围</button>
+      </div>
+      <div class="stariver-filters">
+        <button class="stariver-filter">角色类型：全部</button>
+        <button class="stariver-filter">授权状态：启用</button>
+      </div>
+    </template>
+
+    <div class="stariver-system-stack">
+      <StariverInsightStrip :metrics="roleMetrics" :process="roleProcess" :fields="roleFields" :rules="roleRules" />
+      <CrmCard
+        :loading="loading"
+        hide-footer
+        no-content-padding
+        class="stariver-system-card"
+        :special-height="licenseStore.expiredDuring ? 64 : 0"
+      >
+        <CrmSplitPanel class="h-full" :max="0.5" :min="0.25" :default-size="0.25">
+          <template #1>
+            <div class="flex h-full flex-col overflow-hidden">
+              <div class="mb-[8px] flex items-center justify-between gap-[8px] px-[24px] pt-[24px]">
+                <CrmSearchInput v-model:value="keyword" :placeholder="t('common.searchByName')" class="flex-1" />
+                <n-tooltip trigger="hover" :delay="300">
+                  <template #trigger>
+                    <n-button
+                      v-permission="['SYSTEM_ROLE:ADD']"
+                      type="primary"
+                      ghost
+                      class="n-btn-outline-primary px-[7px]"
+                      @click="addRole"
+                    >
+                      <template #icon>
+                        <n-icon><Add /></n-icon>
+                      </template>
+                    </n-button>
                   </template>
-                </n-button>
-              </template>
-              {{ t('role.addRole') }}
-            </n-tooltip>
-          </div>
-          <n-scrollbar class="px-[24px] pb-[24px]">
-            <CrmTree
-              ref="roleTreeRef"
-              v-model:selected-keys="selectedKeys"
-              v-model:data="roles"
-              :keyword="keyword"
-              :render-prefix="renderPrefix"
-              :node-more-actions="nodeMoreActions"
-              title-tooltip-position="top-start"
-              :filter-more-action-func="filterMoreActionFunc"
-              :field-names="{ keyField: 'id', labelField: 'name', childrenField: 'children' }"
-              :rename-api="updateRoleName"
-              :rename-static="renameStatic"
-              :selectable="roleTreeSelectable"
-              @click="handleRoleClick"
-              @more-action-select="handleMoreActionSelect"
-            />
-          </n-scrollbar>
-        </div>
-      </template>
-      <template #2>
-        <div class="h-full pt-[13px]">
-          <CrmTab v-model:active-tab="activeTab" :tab-list="tabList" type="line">
-            <template #permission>
-              <permissionTab
-                v-if="activeRole"
-                :active-role-id="selectedKeys[0]"
-                :is-new="!!activeRole.isNew"
-                :is-copy="!!activeRole.isCopy"
-                :copy-from="activeRole.copyFrom"
-                :role-name="activeRole.name"
-                @create-success="handleCreated"
-                @cancel-create="handleCancelCreate"
-                @unsave-change="handleUnsaveChange"
-              />
-            </template>
-            <template #member>
-              <memberTab v-if="activeRole" :active-role-id="selectedKeys[0]" />
-            </template>
-          </CrmTab>
-        </div>
-      </template>
-    </CrmSplitPanel>
-  </CrmCard>
+                  {{ t('role.addRole') }}
+                </n-tooltip>
+              </div>
+              <n-scrollbar class="px-[24px] pb-[24px]">
+                <CrmTree
+                  ref="roleTreeRef"
+                  v-model:selected-keys="selectedKeys"
+                  v-model:data="roles"
+                  :keyword="keyword"
+                  :render-prefix="renderPrefix"
+                  :node-more-actions="nodeMoreActions"
+                  title-tooltip-position="top-start"
+                  :filter-more-action-func="filterMoreActionFunc"
+                  :field-names="{ keyField: 'id', labelField: 'name', childrenField: 'children' }"
+                  :rename-api="updateRoleName"
+                  :rename-static="renameStatic"
+                  :selectable="roleTreeSelectable"
+                  @click="handleRoleClick"
+                  @more-action-select="handleMoreActionSelect"
+                />
+              </n-scrollbar>
+            </div>
+          </template>
+          <template #2>
+            <div class="h-full pt-[13px]">
+              <CrmTab v-model:active-tab="activeTab" :tab-list="tabList" type="line">
+                <template #permission>
+                  <permissionTab
+                    v-if="activeRole"
+                    :active-role-id="selectedKeys[0]"
+                    :is-new="!!activeRole.isNew"
+                    :is-copy="!!activeRole.isCopy"
+                    :copy-from="activeRole.copyFrom"
+                    :role-name="activeRole.name"
+                    @create-success="handleCreated"
+                    @cancel-create="handleCancelCreate"
+                    @unsave-change="handleUnsaveChange"
+                  />
+                </template>
+                <template #member>
+                  <memberTab v-if="activeRole" :active-role-id="selectedKeys[0]" />
+                </template>
+              </CrmTab>
+            </div>
+          </template>
+        </CrmSplitPanel>
+      </CrmCard>
+    </div>
+  </StariverModulePage>
 </template>
 
 <script lang="ts" setup>
@@ -84,6 +107,8 @@
   import CrmTree from '@/components/pure/crm-tree/index.vue';
   import { CrmTreeNodeData } from '@/components/pure/crm-tree/type';
   import roleTreeNodePrefix from '@/components/business/crm-select-user-drawer/roleTreeNodePrefix.vue';
+  import StariverInsightStrip from '@/components/business/stariver-insight-strip/index.vue';
+  import StariverModulePage from '@/components/business/stariver-module-page/index.vue';
   import memberTab from './components/memberTab.vue';
   import permissionTab from './components/permissionTab.vue';
 
@@ -98,6 +123,21 @@
   const message = useMessage();
   const { setIsSave } = useLeaveUnSaveTip();
   const licenseStore = useLicenseStore();
+
+  const roleMetrics = [
+    { label: '系统角色', value: '9', hint: '覆盖管理员、销售、产品、财务', tone: 'blue' },
+    { label: '权限模块', value: '18', hint: '销售 CRM 与产品需求模块优先', tone: 'indigo' },
+    { label: '成员授权', value: '42', hint: '按角色绑定用户', tone: 'emerald' },
+    { label: '待审核变更', value: '3', hint: '新增角色需确认数据范围', tone: 'amber' },
+  ];
+
+  const roleProcess = ['创建角色', '选择模块权限', '配置数据范围', '绑定成员', '保存生效'];
+  const roleFields = ['角色名称', '系统内置', '模块权限', '操作权限', '数据范围', '成员列表'];
+  const roleRules = [
+    '权限页暂沿用原后端能力',
+    '销售 CRM 未启用模块不暴露入口',
+    '角色数据范围影响客户、线索、商机和合同列表',
+  ];
 
   const loading = ref(false);
   const keyword = ref('');
@@ -317,6 +357,56 @@
 </script>
 
 <style lang="less" scoped>
+  .stariver-system-stack {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stariver-system-card {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .stariver-tabs,
+  .stariver-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stariver-tab,
+  .stariver-filter {
+    height: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0 10px;
+    background: #ffffff;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 30px;
+    cursor: pointer;
+  }
+
+  .stariver-tab {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .stariver-tab--active {
+    background: #eef2ff;
+    color: #4f46e5;
+    font-weight: 700;
+  }
+
+  .stariver-filter {
+    background: #f8fafc;
+    color: #475569;
+  }
+
   :deep(.n-tree-node-switcher) {
     @apply hidden;
   }

@@ -38,7 +38,7 @@ const defaultThemeConfig = {
   customTheme: '#008d91',
 };
 const defaultLoginConfig = {
-  title: 'Cordys CRM',
+  title: 'StaRiver CRM',
   icon: [],
   loginLogo: [],
   loginImage: [],
@@ -46,7 +46,7 @@ const defaultLoginConfig = {
 };
 const defaultPlatformConfig = {
   logoPlatform: [],
-  helpDoc: 'https://cordys.cn/docs/',
+  helpDoc: '/docs/',
 };
 
 const defaultPlatformResource = {
@@ -69,7 +69,7 @@ const defaultModuleConfig = [
   },
   {
     moduleKey: ModuleConfigEnum.AGENT,
-    enable: true,
+    enable: false,
   },
   {
     moduleKey: ModuleConfigEnum.HOME,
@@ -85,7 +85,7 @@ const defaultModuleConfig = [
   },
   {
     moduleKey: ModuleConfigEnum.ORDER,
-    enable: true,
+    enable: false,
   },
   {
     moduleKey: ModuleConfigEnum.CLUE_MANAGEMENT,
@@ -101,11 +101,11 @@ const defaultModuleConfig = [
   },
   {
     moduleKey: ModuleConfigEnum.TENDER,
-    enable: true,
+    enable: false,
   },
   {
     moduleKey: ModuleConfigEnum.CUSTOM_FORM,
-    enable: true,
+    enable: false,
   },
 ];
 

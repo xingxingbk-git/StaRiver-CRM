@@ -643,6 +643,7 @@ public class OpportunityService {
         }
 
         final List<StageConfigResponse> stageConfigList = extOpportunityStageConfigMapper.getStageConfigList(orgId);
+        validateStariverStageMove(oldOpportunity, request, stageConfigList);
 
         final Optional<StageConfigResponse> successOpt = stageConfigList.stream()
                 .filter(cfg -> Strings.CI.equals(cfg.getType(), OpportunityStageType.END.name())
@@ -689,6 +690,50 @@ public class OpportunityService {
                         .modifiedValue(modifiedVal)
                         .build()
         );
+    }
+
+    private void validateStariverStageMove(Opportunity oldOpportunity, OpportunityStageRequest request, List<StageConfigResponse> stageConfigList) {
+        Map<String, StageConfigResponse> stageById = stageConfigList.stream()
+                .collect(Collectors.toMap(StageConfigResponse::getId, Function.identity()));
+        StageConfigResponse currentStage = stageById.get(oldOpportunity.getStage());
+        StageConfigResponse targetStage = stageById.get(request.getStage());
+        if (targetStage == null) {
+            throw new GenericException("商机阶段不存在");
+        }
+        if (currentStage == null || Strings.CI.equals(oldOpportunity.getStage(), request.getStage())) {
+            return;
+        }
+
+        boolean currentIsEnd = Strings.CI.equals(currentStage.getType(), OpportunityStageType.END.name());
+        boolean targetIsEnd = Strings.CI.equals(targetStage.getType(), OpportunityStageType.END.name());
+        boolean targetIsFail = targetIsEnd && Strings.CI.equals(targetStage.getRate(), "0");
+        if (currentIsEnd) {
+            throw new GenericException("已完结商机不能直接变更阶段，请先走重新激活流程");
+        }
+        if (targetIsFail) {
+            if (StringUtils.isBlank(request.getFailureReason())) {
+                throw new GenericException("商机放弃时必须填写失败原因");
+            }
+            return;
+        }
+
+        List<StageConfigResponse> sortedStages = stageConfigList.stream()
+                .sorted(Comparator.comparing(StageConfigResponse::getPos, Comparator.nullsLast(Long::compareTo)))
+                .toList();
+        int currentIndex = indexOfStage(sortedStages, oldOpportunity.getStage());
+        int targetIndex = indexOfStage(sortedStages, request.getStage());
+        if (currentIndex < 0 || targetIndex < 0 || targetIndex != currentIndex + 1) {
+            throw new GenericException("商机阶段需按顺序逐级推进，不能跳级或回退");
+        }
+    }
+
+    private int indexOfStage(List<StageConfigResponse> stages, String stageId) {
+        for (int i = 0; i < stages.size(); i++) {
+            if (Strings.CI.equals(stages.get(i).getId(), stageId)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public ResourceTabEnableDTO getTabEnableConfig(String userId, String orgId) {

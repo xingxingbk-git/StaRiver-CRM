@@ -132,6 +132,7 @@ public class OpportunityQuotationService {
     @OperationLog(module = LogModule.OPPORTUNITY_QUOTATION, type = LogType.ADD, resourceName = "{#request.name}", operator = "{#userId}")
 	@HitApproval(formKey = FormKey.QUOTATION, executeType = ExecuteTimingEnum.CREATE)
     public OpportunityQuotation add(OpportunityQuotationAddRequest request, String orgId, String userId) {
+        syncQuotationCustomerFromOpportunity(request, orgId);
         List<BaseModuleFieldValue> moduleFields = request.getModuleFields();
         ModuleFormConfigDTO moduleFormConfigDTO = request.getModuleFormConfigDTO();
         checkQuotationInfo(moduleFields, moduleFormConfigDTO);
@@ -713,6 +714,7 @@ public class OpportunityQuotationService {
     @OperationLog(module = LogModule.OPPORTUNITY_QUOTATION, type = LogType.UPDATE, resourceName = "{#request.name}", operator = "{#userId}")
 	@HitApproval(formKey = FormKey.QUOTATION, executeType = ExecuteTimingEnum.EDIT, resourceId = "{#request.id}", updateType = "{#request.updateType}")
     public OpportunityQuotation update(OpportunityQuotationEditRequest request, String userId, String orgId) {
+        syncQuotationCustomerFromOpportunity(request, orgId);
         String id = request.getId();
         List<BaseModuleFieldValue> moduleFields = request.getModuleFields();
         ModuleFormConfigDTO moduleFormConfigDTO = request.getModuleFormConfigDTO();
@@ -803,6 +805,25 @@ public class OpportunityQuotationService {
         }
         opportunityQuotationFieldService.deleteByResourceId(opportunityQuotation.getId());
         opportunityQuotationFieldService.saveModuleField(opportunityQuotation, orgId, userId, fields, true);
+    }
+
+    private Opportunity syncQuotationCustomerFromOpportunity(OpportunityQuotationAddRequest request, String orgId) {
+        if (StringUtils.isBlank(request.getOpportunityId())) {
+            throw new GenericException(Translator.get("opportunity.required"));
+        }
+        Opportunity opportunity = opportunityBaseMapper.selectByPrimaryKey(request.getOpportunityId());
+        if (opportunity == null || !Strings.CI.equals(opportunity.getOrganizationId(), orgId)) {
+            throw new GenericException(Translator.get("opportunity_not_found"));
+        }
+        if (StringUtils.isBlank(opportunity.getCustomerId())) {
+            throw new GenericException("报价客户需由关联商机自动带出，请先维护商机关联客户");
+        }
+
+        List<BaseModuleFieldValue> moduleFields = new ArrayList<>(Optional.ofNullable(request.getModuleFields()).orElseGet(Collections::emptyList));
+        moduleFields.removeIf(field -> Strings.CI.equals(field.getFieldId(), "quotationCustomer"));
+        moduleFields.add(new BaseModuleFieldValue("quotationCustomer", opportunity.getCustomerId()));
+        request.setModuleFields(moduleFields);
+        return opportunity;
     }
 
     /**
