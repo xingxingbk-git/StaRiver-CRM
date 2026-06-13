@@ -1,84 +1,172 @@
 <template>
-  <div
-    v-if="preheat && !props.isPreview"
-    class="login-form"
-    :style="props.isPreview ? 'height: inherit' : 'height: 100vh'"
-  >
-    <n-spin :loading="preheat" :description="t('login.form.loading')"> </n-spin>
+  <div v-if="preheat && !props.isPreview" class="login-form login-form-loading">
+    <n-spin :loading="preheat" :description="t('login.form.loading')" />
   </div>
-  <div v-else class="login-form" :style="props.isPreview ? 'height: inherit' : 'height: 100vh'">
-    <div class="title">
-      <div class="flex justify-center">
-        <img :src="innerLogo" class="h-[52px] w-[240px]" />
+  <div v-else class="login-form" :class="{ 'login-form-preview': props.isPreview }">
+    <template v-if="props.isPreview">
+      <div class="title">
+        <div class="flex justify-center">
+          <img :src="innerLogo" class="h-[52px] w-[240px]" />
+        </div>
+        <div class="title-0 mt-[16px] flex justify-center">
+          <span class="title-welcome">
+            {{ t(innerSlogan || '') || t('login.form.title') }}
+          </span>
+        </div>
       </div>
-      <div class="title-0 mt-[16px] flex justify-center">
-        <span class="title-welcome">
-          {{ t(innerSlogan || '') || t('login.form.title') }}
-        </span>
-      </div>
-    </div>
-
-    <div class="form mt-[40px] min-w-[480px]">
-      <div v-if="userInfo.authenticate === 'LOCAL'" class="mb-7 text-[18px] font-medium text-[var(--primary-8)]">
-        {{ t('login.form.accountLogin') }}
-      </div>
-      <div
-        v-if="isShowLDAP && userInfo.authenticate === 'LDAP'"
-        class="mb-7 text-[18px] font-medium text-[var(--primary-8)]"
-        >{{ t('login.form.LDAPLogin') }}</div
-      >
-      <n-form
-        v-if="!showQrCodeTab"
-        ref="formRef"
-        :model="userInfo"
-        :rules="{
-          username: [{ required: true, message: t('login.form.userName.errMsg'), trigger: ['input', 'blur'] }],
-          password: [{ required: true, message: t('login.form.password.errMsg'), trigger: ['input', 'blur'] }],
-        }"
-      >
-        <!-- TOTO 第一版本暂时只考虑普通登录&LDAP -->
-        <n-form-item class="login-form-item" path="username" :show-label="false">
-          <n-input
-            v-model:value="userInfo.username"
-            class="login-input"
-            :maxlength="64"
-            size="large"
-            :placeholder="
-              userInfo.authenticate !== 'LOCAL'
-                ? t('login.form.userName.placeholderOther')
-                : t('login.form.userName.placeholder')
-            "
-          />
-        </n-form-item>
-        <n-form-item class="login-form-item" path="password" :show-label="false">
-          <n-input
-            v-model:value="userInfo.password"
-            type="password"
-            class="login-password-input"
-            :placeholder="t('login.form.password.placeholder')"
-            clearable
-            :maxlength="64"
-            size="large"
-            show-password-on="click"
-            @keydown.enter="handleSubmit"
-          />
-        </n-form-item>
-        <div class="mt-[12px]" :class="hasMoreLoginWay ? 'mb-[60px]' : 'mb-7'">
-          <n-button type="primary" size="large" block :loading="loading" @click="handleSubmit">
-            {{ t('login.form.login') }}
-          </n-button>
-          <div v-if="showDemo" class="mb-[-16px] mt-[16px] flex items-center gap-[16px]">
-            <div class="flex items-center">
-              <div>{{ t('login.form.username') }}：</div>
-              <div>demo</div>
+      <div class="form-preview mt-[40px] min-w-[480px]">
+        <div v-if="userInfo.authenticate === 'LOCAL'" class="form-title">{{ t('login.form.accountLogin') }}</div>
+        <div v-if="isShowLDAP && userInfo.authenticate === 'LDAP'" class="form-title">{{
+          t('login.form.LDAPLogin')
+        }}</div>
+        <div v-if="!showQrCodeTab">
+          <n-form
+            ref="formRef"
+            :model="userInfo"
+            :rules="{
+              username: [{ required: true, message: t('login.form.userName.errMsg'), trigger: ['input', 'blur'] }],
+              password: [{ required: true, message: t('login.form.password.errMsg'), trigger: ['input', 'blur'] }],
+            }"
+          >
+            <n-form-item class="login-form-item" path="username" :show-label="false">
+              <n-input
+                v-model:value="userInfo.username"
+                class="login-input"
+                :maxlength="64"
+                size="large"
+                :placeholder="
+                  userInfo.authenticate !== 'LOCAL'
+                    ? t('login.form.userName.placeholderOther')
+                    : t('login.form.userName.placeholder')
+                "
+              />
+            </n-form-item>
+            <n-form-item class="login-form-item" path="password" :show-label="false">
+              <n-input
+                v-model:value="userInfo.password"
+                type="password"
+                class="login-password-input"
+                :placeholder="t('login.form.password.placeholder')"
+                clearable
+                :maxlength="64"
+                size="large"
+                show-password-on="click"
+                @keydown.enter="handleSubmit"
+              />
+            </n-form-item>
+            <div class="mt-[12px]" :class="hasMoreLoginWay ? 'mb-[60px]' : 'mb-7'">
+              <n-button type="primary" size="large" block :loading="loading" @click="handleSubmit">
+                {{ t('login.form.login') }}
+              </n-button>
+              <div v-if="showDemo" class="mb-[-16px] mt-[16px] flex items-center gap-[16px]">
+                <div class="flex items-center">
+                  <div>{{ t('login.form.username') }}：</div>
+                  <div>demo</div>
+                </div>
+                <div class="flex items-center">
+                  <div>{{ t('login.form.password') }}：</div>
+                  <div>demo</div>
+                </div>
+              </div>
             </div>
-            <div class="flex items-center">
-              <div>{{ t('login.form.password') }}：</div>
-              <div>demo</div>
+          </n-form>
+        </div>
+        <div v-if="showQrCodeTab">
+          <tab-qr-code />
+        </div>
+        <template v-if="hasMoreLoginWay">
+          <n-divider orientation="center" dashed class="!m-0 !mb-2">
+            <span class="text-[12px] font-normal text-[var(--text-n4)]">{{ t('login.form.modeLoginMethods') }}</span>
+          </n-divider>
+          <div class="mt-4 flex items-center justify-center">
+            <div v-if="isShowQRCode && !showQrCodeTab" class="loginType" @click="switchLoginType('QR_CODE')">
+              <CrmIcon type="iconicon_scan" class="text-[#4666e5]" :size="20" />
+            </div>
+            <div
+              v-if="userInfo.authenticate !== 'LDAP' && isShowLDAP"
+              class="loginType"
+              @click="switchLoginType('LDAP')"
+            >
+              <span class="type-text text-[10px]">LDAP</span>
+            </div>
+            <div v-if="userInfo.authenticate !== 'LOCAL'" class="loginType" @click="switchLoginType('LOCAL')">
+              <CrmIcon type="iconicon_that_person" class="text-[#4666e5]" :size="20" />
+            </div>
+            <div v-if="isShowOIDC && userInfo.authenticate !== 'OIDC'" class="loginType" @click="redirectAuth('OIDC')">
+              <span class="type-text text-[10px]">OIDC</span>
+            </div>
+            <div
+              v-if="isShowOAUTH && userInfo.authenticate !== 'OAUTH2'"
+              class="loginType"
+              @click="redirectAuth('OAUTH2')"
+            >
+              <span class="type-text text-[10px]">OAuth</span>
+            </div>
+            <div v-if="isShowCAS && userInfo.authenticate !== 'CAS'" class="loginType" @click="redirectAuth('CAS')">
+              <span class="type-text text-[10px]">CAS</span>
             </div>
           </div>
-        </div>
-      </n-form>
+        </template>
+        <div v-if="props.isPreview" class="mask"></div>
+      </div>
+    </template>
+    <template v-else>
+      <div v-if="userInfo.authenticate === 'LOCAL'" class="form-title">{{ t('login.form.accountLogin') }}</div>
+      <div v-if="isShowLDAP && userInfo.authenticate === 'LDAP'" class="form-title">{{
+        t('login.form.LDAPLogin')
+      }}</div>
+      <div v-if="!showQrCodeTab">
+        <n-form
+          ref="formRef"
+          :model="userInfo"
+          :rules="{
+            username: [{ required: true, message: t('login.form.userName.errMsg'), trigger: ['input', 'blur'] }],
+            password: [{ required: true, message: t('login.form.password.errMsg'), trigger: ['input', 'blur'] }],
+          }"
+        >
+          <n-form-item class="login-form-item" path="username" :show-label="false">
+            <n-input
+              v-model:value="userInfo.username"
+              class="login-input"
+              :maxlength="64"
+              size="large"
+              :placeholder="
+                userInfo.authenticate !== 'LOCAL'
+                  ? t('login.form.userName.placeholderOther')
+                  : t('login.form.userName.placeholder')
+              "
+            />
+          </n-form-item>
+          <n-form-item class="login-form-item" path="password" :show-label="false">
+            <n-input
+              v-model:value="userInfo.password"
+              type="password"
+              class="login-password-input"
+              :placeholder="t('login.form.password.placeholder')"
+              clearable
+              :maxlength="64"
+              size="large"
+              show-password-on="click"
+              @keydown.enter="handleSubmit"
+            />
+          </n-form-item>
+          <div class="login-submit">
+            <n-button type="primary" size="large" block :loading="loading" @click="handleSubmit">
+              {{ t('login.form.login') }}
+            </n-button>
+            <div v-if="showDemo" class="mb-[-16px] mt-[16px] flex items-center gap-[16px]">
+              <div class="flex items-center">
+                <div>{{ t('login.form.username') }}：</div>
+                <div>demo</div>
+              </div>
+              <div class="flex items-center">
+                <div>{{ t('login.form.password') }}：</div>
+                <div>demo</div>
+              </div>
+            </div>
+          </div>
+        </n-form>
+      </div>
       <div v-if="showQrCodeTab">
         <tab-qr-code />
       </div>
@@ -88,13 +176,13 @@
         </n-divider>
         <div class="mt-4 flex items-center justify-center">
           <div v-if="isShowQRCode && !showQrCodeTab" class="loginType" @click="switchLoginType('QR_CODE')">
-            <CrmIcon type="iconicon_scan" class="text-[var(--primary-8)]" :size="20" />
+            <CrmIcon type="iconicon_scan" class="text-[#4666e5]" :size="20" />
           </div>
           <div v-if="userInfo.authenticate !== 'LDAP' && isShowLDAP" class="loginType" @click="switchLoginType('LDAP')">
             <span class="type-text text-[10px]">LDAP</span>
           </div>
           <div v-if="userInfo.authenticate !== 'LOCAL'" class="loginType" @click="switchLoginType('LOCAL')">
-            <CrmIcon type="iconicon_that_person" class="text-[var(--primary-8)]" :size="20" />
+            <CrmIcon type="iconicon_that_person" class="text-[#4666e5]" :size="20" />
           </div>
           <div v-if="isShowOIDC && userInfo.authenticate !== 'OIDC'" class="loginType" @click="redirectAuth('OIDC')">
             <span class="type-text text-[10px]">OIDC</span>
@@ -111,8 +199,7 @@
           </div>
         </div>
       </template>
-      <div v-if="props.isPreview" class="mask"></div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -127,15 +214,12 @@
   import CrmIcon from '@/components/pure/crm-icon-font/index.vue';
   import TabQrCode from './tabQrCode.vue';
 
-  // import { getAuthDetailByType } from '@/api/modules/setting/config';
-  // import { getPlatformParamUrl } from '@/api/modules/user';
   import { getThirdConfigByType } from '@/api/modules';
   import { defaultLoginLogo } from '@/config/business';
   import useLoading from '@/hooks/useLoading';
   import useUser from '@/hooks/useUser';
   import useAppStore from '@/store/modules/app';
   import useLicenseStore from '@/store/modules/setting/license';
-  // import useModal from '@/hooks/useModal';
   import useUserStore from '@/store/modules/user';
 
   const { goUserHasPermissionPage } = useUser();
@@ -144,7 +228,6 @@
   const userStore = useUserStore();
   const licenseStore = useLicenseStore();
   const Message = useMessage();
-  // const { openModal } = useModal();
 
   const formRef = ref<FormInst | null>(null);
 
@@ -197,7 +280,7 @@
         setLoading(true);
         try {
           try {
-            await userStore.logout(true); // 登录之前先注销，防止未登出就继续登录导致报错
+            await userStore.logout(true);
           } catch (error) {
             // eslint-disable-next-line no-console
             console.log('logout error', error);
@@ -267,66 +350,17 @@
     if (authType === 'LDAP' || authType === 'LOCAL') {
       return;
     }
-    // const res = await getAuthDetailByType(authType);
-    const res: any = {}; // TODO: getAuthDetailByType(authType);
+    const res: any = {};
     if (!res) {
       return;
     }
     if (!res.enable) {
       Message.error(t('login.auth_not_enable'));
-      // return;
     }
-    // const authId = res.id;
-    // openModal({
-    //   type: 'info',
-    //   title: t('common.auth_redirect_tip'),
-    //   content: '',
-    //   okText: t('common.jump'),
-    //   cancelText: t('common.cancel'),
-    //   okButtonProps: {
-    //     status: 'normal',
-    //   },
-    //   mask: true,
-    //   maskStyle: { color: '#323233' },
-    //   onBeforeOk: async () => {
-    //     const config = JSON.parse(res.configuration);
-    //     // eslint-disable-next-line no-eval
-    //     const redirectUrl = eval(`\`${config.redirectUrl}\``);
-    //     setLoginType('LOCAL');
-    //     let url;
-    //     if (authType === 'CAS') {
-    //       url = `${config.loginUrl}?service=${encodeURIComponent(redirectUrl)}`;
-    //     }
-    //     if (authType === 'OIDC') {
-    //       url = `${config.authUrl}?client_id=${config.clientId}&redirect_uri=${redirectUrl}&response_type=code&scope=openid+profile+email&state=${authId}`;
-    //       // 保存一个登录地址，禁用本地登录
-    //       if (config.loginUrl) {
-    //         localStorage.setItem('oidcLoginUrl', config.loginUrl);
-    //       }
-    //     }
-    //     if (authType === 'OAUTH2') {
-    //       url =
-    //         `${config.authUrl}?client_id=${config.clientId}&response_type=code` +
-    //         `&redirect_uri=${redirectUrl}&state=${authId}`;
-    //       if (config.scope) {
-    //         url += `&scope=${config.scope}`;
-    //       }
-    //     }
-    //     if (url) {
-    //       window.location.href = url;
-    //     }
-    //   },
-    //   hideCancel: false,
-    // });
   }
 
   onMounted(async () => {
     if (!props.isPreview) {
-      // userStore.getAuthentication();
-      // TODO license 先放开
-      // if (licenseStore.hasLicense()) {
-      //   initPlatformInfo();
-      // }
       initPlatformInfo();
       appStore.initPublicKey();
       try {
@@ -346,77 +380,82 @@
 </script>
 
 <style lang="less" scoped>
-  /* stylelint-disable color-function-notation */
   .login-form {
-    @apply flex flex-1 flex-col items-center justify-center;
-
+    @apply flex flex-col;
+  }
+  .login-form-loading {
+    @apply items-center justify-center;
+    height: 100%;
+    min-height: 200px;
+  }
+  .login-form-preview {
+    @apply h-screen items-center justify-center;
     transform: translateY(-10%);
-    .title-welcome {
-      @apply flex items-center justify-center;
+  }
+  .form-title {
+    margin-bottom: 24px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #4666e5;
+  }
+  .login-form-item {
+    @apply block;
+  }
+  .login-form-item:not(:last-child) {
+    margin-bottom: 16px;
+  }
+  :deep(.n-form-item-feedback-wrapper) {
+    min-height: auto;
+  }
+  .login-submit {
+    margin-top: 12px;
+    margin-bottom: 28px;
+  }
+  :deep(.login-submit .n-button) {
+    height: 40px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 3px;
+  }
+  :deep(.login-submit .n-button--primary-type) {
+    background-color: #4666e5 !important;
+    border-color: #4666e5 !important;
+  }
+  :deep(.login-submit .n-button--primary-type:hover) {
+    background-color: #3a56c4 !important;
+    border-color: #3a56c4 !important;
+  }
+  :deep(.login-submit .n-button--primary-type:active) {
+    background-color: #2f46a3 !important;
+    border-color: #2f46a3 !important;
+  }
+  .loginType {
+    margin: 0 8px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--text-n8);
+    border-radius: 50%;
+    @apply flex cursor-pointer items-center justify-center;
+  }
+  .type-text {
+    color: #4666e5;
+    @apply font-medium;
+  }
 
-      font-size: 20px;
-      color: var(--primary-8);
-    }
-    .form {
-      @apply relative;
-
-      padding: 40px;
-      border-radius: var(--border-radius-large);
-      background-color: var(--text-n10);
-      box-shadow: 0 8px 10px 0 #3232330d, 0 16px 24px 0 #3232330d, 0 6px 30px 0 #3232330d;
-      .login-form-item {
-        @apply block;
-      }
-      .mask {
-        @apply absolute left-0 top-0 h-full w-full;
-      }
-      .loginType {
-        margin: 0 8px;
-        width: 32px;
-        height: 32px;
-        border: 1px solid var(--text-n8);
-        border-radius: 50%;
-        @apply flex cursor-pointer items-center justify-center;
-        .type-text {
-          color: var(--primary-8);
-          @apply font-medium;
-        }
-      }
-    }
+  /* Preview mode styles */
+  .form-preview {
+    @apply relative;
+    padding: 40px;
+    border-radius: var(--border-radius-large);
+    background-color: var(--text-n10);
+    box-shadow: 0 8px 10px 0 #3232330d, 0 16px 24px 0 #3232330d, 0 6px 30px 0 #3232330d;
   }
-  :deep(.arco-divider-text) {
-    padding: 0 8px !important;
+  .title-welcome {
+    @apply flex items-center justify-center;
+    font-size: 20px;
+    color: var(--primary-8);
   }
-  .login-input {
-    padding-right: 0;
-    padding-left: 0;
-    width: 400px;
-  }
-  .login-input :deep(.arco-input) {
-    padding-right: 10px;
-    padding-left: 10px;
-  }
-  .login-password-input {
-    position: relative;
-    padding-right: 0;
-    padding-left: 0;
-    width: 400px;
-    height: 36px;
-  }
-  .login-password-input :deep(.arco-input) {
-    padding-right: 50px;
-    padding-left: 10px;
-  }
-  .login-password-input :deep(.arco-input-clear-btn) {
-    position: absolute;
-    top: 10px;
-    float: right;
-    margin-left: 350px;
-  }
-  .login-password-input :deep(.arco-input-suffix) {
-    position: absolute;
-    top: 10px;
-    float: right;
-    margin-left: 360px;
+  .mask {
+    @apply absolute left-0 top-0 h-full w-full;
   }
 </style>

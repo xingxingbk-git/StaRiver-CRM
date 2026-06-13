@@ -35,7 +35,7 @@ const defaultThemeConfig = {
   style: 'default' as Style,
   customStyle: '#f9fbfb',
   theme: 'default' as Theme,
-  customTheme: '#008d91',
+  customTheme: '#4666e5',
 };
 const defaultLoginConfig = {
   title: 'StaRiver CRM',
