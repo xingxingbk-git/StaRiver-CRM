@@ -51,6 +51,8 @@ export enum ProductRouteEnum {
   PRODUCT_PRO = 'productPro',
   PRODUCT_REQUIREMENT = 'productRequirement',
   PRODUCT_PRICE = 'productPrice',
+  PRODUCT_CREATE = 'productCreate',
+  PRODUCT_DETAIL = 'productDetail',
 }
 
 export enum SalesRouteEnum {

@@ -1,9 +1,19 @@
 <template>
   <n-layout-header class="stariver-layout-header" bordered>
     <div class="stariver-layout-header__breadcrumb">
-      <span>{{ currentModuleTitle }}</span>
-      <span class="stariver-layout-header__slash">/</span>
-      <span class="stariver-layout-header__current">{{ currentPageTitle }}</span>
+      <button
+        v-if="moduleBreadcrumbTarget"
+        type="button"
+        class="stariver-layout-header__breadcrumb-link"
+        @click="goModuleBreadcrumb"
+      >
+        {{ currentModuleTitle }}
+      </button>
+      <span v-else>{{ currentModuleTitle }}</span>
+      <template v-if="currentPageTitle">
+        <span class="stariver-layout-header__slash">/</span>
+        <span class="stariver-layout-header__current">{{ currentPageTitle }}</span>
+      </template>
     </div>
     <div v-if="!props.isPreview" class="stariver-layout-header__actions">
       <button class="stariver-layout-header__search" :disabled="!showSearch" @click="openDuplicateCheck">
@@ -61,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useRoute } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
   import { NBadge, NButton, NLayoutHeader, NPopselect, useMessage } from 'naive-ui';
   import { LanguageOutline } from '@vicons/ionicons5';
 
@@ -98,6 +108,7 @@
   );
 
   const route = useRoute();
+  const router = useRouter();
   const { loading } = useMessage();
   const { t } = useI18n();
   const { changeLocale, currentLocale } = useLocale(loading);
@@ -131,7 +142,9 @@
     [ContractRouteEnum.CONTRACT_INDEX]: '合同',
     [ContractRouteEnum.CONTRACT_PAYMENT]: '回款计划',
     [ContractRouteEnum.CONTRACT_PAYMENT_RECORD]: '回款记录',
-    [ProductRouteEnum.PRODUCT_PRO]: '产品',
+    [ProductRouteEnum.PRODUCT_PRO]: '产品集',
+    [ProductRouteEnum.PRODUCT_CREATE]: '新建产品',
+    [ProductRouteEnum.PRODUCT_DETAIL]: '产品详情',
     [ProductRouteEnum.PRODUCT_REQUIREMENT]: '需求管理',
     [ProductRouteEnum.PRODUCT_PRICE]: '价格表',
     [SalesRouteEnum.SALES_TEAM]: '团队与业绩',
@@ -162,7 +175,18 @@
   const currentPageTitle = computed(() => {
     const routeName = route.name?.toString() ?? '';
     const locale = route.meta?.locale as string | undefined;
-    return pageTitleMap[routeName] || (locale ? t(locale) : '工作台');
+    if (routeName in pageTitleMap) {
+      return pageTitleMap[routeName];
+    }
+    return locale ? t(locale) : '工作台';
+  });
+
+  const moduleBreadcrumbTarget = computed(() => {
+    const routeName = route.name?.toString() ?? '';
+    if ([ProductRouteEnum.PRODUCT_CREATE, ProductRouteEnum.PRODUCT_DETAIL].includes(routeName as ProductRouteEnum)) {
+      return ProductRouteEnum.PRODUCT_PRO;
+    }
+    return '';
   });
 
   const showSearch = computed(() => lastScopedOptions.value.length > 0);
@@ -200,6 +224,11 @@
     showMessageDrawer.value = true;
   }
 
+  function goModuleBreadcrumb() {
+    if (!moduleBreadcrumbTarget.value) return;
+    router.push({ name: moduleBreadcrumbTarget.value });
+  }
+
   onBeforeMount(() => {
     appStore.getVersion();
     if (route.name !== WorkbenchRouteEnum.WORKBENCH_INDEX) {
@@ -214,7 +243,7 @@
 <style lang="less" scoped>
   .stariver-layout-header {
     display: flex;
-    height: 50px;
+    height: 60px;
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
@@ -240,6 +269,19 @@
   .stariver-layout-header__current {
     color: #0f172a;
     font-weight: 600;
+  }
+
+  .stariver-layout-header__breadcrumb-link {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: #64748b;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover {
+      color: #4666e5;
+    }
   }
 
   .stariver-layout-header__actions {

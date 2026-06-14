@@ -47,6 +47,26 @@ const product: AppRouteRecordRaw = {
         hideInMenu: true,
       },
     },
+    {
+      path: 'create',
+      name: ProductRouteEnum.PRODUCT_CREATE,
+      component: () => import('@/views/product/create.vue'),
+      meta: {
+        locale: 'product.new',
+        permissions: ['PRODUCT_MANAGEMENT:ADD'],
+        hideInMenu: true,
+      },
+    },
+    {
+      path: 'detail/:id',
+      name: ProductRouteEnum.PRODUCT_DETAIL,
+      component: () => import('@/views/product/detail.vue'),
+      meta: {
+        locale: 'product.detail',
+        permissions: ['PRODUCT_MANAGEMENT:READ'],
+        hideInMenu: true,
+      },
+    },
   ],
 };
 

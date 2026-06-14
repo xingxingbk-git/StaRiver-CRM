@@ -7,6 +7,9 @@
           <h1>{{ title }}</h1>
           <span v-if="countLabel" class="stariver-module-page__count">{{ countLabel }}</span>
         </div>
+        <div v-if="$slots.subtitle" class="stariver-module-page__subtitle-row">
+          <slot name="subtitle"></slot>
+        </div>
       </div>
       <div v-if="$slots.actions" class="stariver-module-page__actions">
         <slot name="actions"></slot>
@@ -39,7 +42,7 @@
     min-height: 0;
     flex-direction: column;
     overflow: hidden;
-    background: #f3f4f6;
+    background: #f8fafc;
     color: #0f172a;
   }
 
@@ -49,8 +52,9 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 24px;
-    background: #f3f4f6;
+    padding: 0 24px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
   }
 
   .stariver-module-page__title-wrap {
@@ -101,6 +105,12 @@
     gap: 8px;
   }
 
+  .stariver-module-page__subtitle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
   .stariver-module-page__body {
     display: flex;
     min-height: 0;
@@ -111,12 +121,11 @@
 
   .stariver-module-page__toolbar {
     display: flex;
-    min-height: 56px;
+    min-height: 44px;
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
     padding: 0 24px;
-    border-top: 1px solid #e2e8f0;
     border-bottom: 1px solid #e2e8f0;
     background: #ffffff;
   }

@@ -11,7 +11,7 @@
       v-if="useStore.userInfo.defaultPwd"
       type="warning"
       closable
-      class="mb-[16px]"
+      class="mx-[16px] mb-[16px] mt-[16px]"
       @after-leave="showAlert = false"
     >
       <span>{{ t('system.personal.changePasswordTip') }}</span>

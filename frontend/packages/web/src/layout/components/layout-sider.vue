@@ -10,13 +10,12 @@
   >
     <div class="stariver-sider__inner">
       <div class="stariver-sider__brand" @click="router.push({ name: AppRouteEnum.WORKBENCH_INDEX })">
-        <div class="stariver-sider__brand-mark">SR</div>
-        <div v-if="!collapsed" class="min-w-0">
-          <div class="stariver-sider__brand-title">StaRiver CRM</div>
-          <div class="stariver-sider__brand-version">v2.3</div>
+        <span class="stariver-sider__brand-logo" v-html="brandLogo"></span>
+        <div v-if="!collapsed" class="stariver-sider__brand-copy">
+          <span class="stariver-sider__brand-text" v-html="brandText"></span>
+          <div class="stariver-sider__brand-version">v1.0</div>
         </div>
       </div>
-      <div v-if="!collapsed" class="stariver-sider__section">销售 CRM</div>
       <n-scrollbar content-style="min-height: 500px;height: 100%;width: 100%">
         <n-menu
           v-model:value="menuValue"
@@ -77,6 +76,9 @@
   import { RouteLocationNormalizedGeneric, useRouter } from 'vue-router';
   import { NDropdown, NLayoutSider, NMenu, NScrollbar, NTooltip } from 'naive-ui';
 
+  import brandLogo from '@/assets/icons/project/brand-logo.svg?raw';
+  import brandText from '@/assets/icons/project/brand-text.svg?raw';
+
   import { PersonalEnum } from '@lib/shared/enums/systemEnum';
   import { useI18n } from '@lib/shared/hooks/useI18n';
   import { listenerRouteChange } from '@lib/shared/method/route-listener';
@@ -126,6 +128,11 @@
   const personalTab = ref(PersonalEnum.INFO);
   const visitedKey = 'doNotShowPersonalExportAgain';
   const { addVisited, getIsVisited } = useVisit(visitedKey);
+  const navIconSources = import.meta.glob('../../assets/icons/project/nav/*.svg', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  }) as Record<string, string>;
 
   watch(
     () => appStore.getMenuCollapsed,
@@ -135,12 +142,19 @@
   );
 
   function renderIcon(type: string) {
+    const svgSource = type.startsWith('/icons/') ? navIconSources[`../../assets${type}`] : '';
+
     return () =>
-      h(CrmIcon, {
-        size: 18,
-        type,
-        class: 'text-[var(--text-n1)]',
-      });
+      svgSource
+        ? h('span', {
+            class: 'stariver-sider__menu-icon',
+            innerHTML: svgSource,
+          })
+        : h(CrmIcon, {
+            size: 18,
+            type,
+            class: 'text-[var(--text-n1)]',
+          });
   }
 
   const hasExportPermission = computed(() =>
@@ -250,6 +264,7 @@
   const isRequiredExportRoute = (key: string) => exportRouteNames.includes(key as any);
 
   async function menuChange(key: string) {
+    menuValue.value = key;
     await router.push({ name: key });
     if (isRequiredExportRoute(key)) {
       initExportPop();
@@ -303,22 +318,36 @@
 
   const routeMenuMap: Record<string, string> = {
     [WorkbenchRouteEnum.WORKBENCH]: WorkbenchRouteEnum.WORKBENCH_INDEX,
+    [WorkbenchRouteEnum.WORKBENCH_INDEX]: WorkbenchRouteEnum.WORKBENCH_INDEX,
     [DashboardRouteEnum.DASHBOARD]: DashboardRouteEnum.DASHBOARD_INDEX,
+    [DashboardRouteEnum.DASHBOARD_INDEX]: DashboardRouteEnum.DASHBOARD_INDEX,
     [ProductRouteEnum.PRODUCT]: ProductRouteEnum.PRODUCT_PRO,
+    [ProductRouteEnum.PRODUCT_PRO]: ProductRouteEnum.PRODUCT_PRO,
+    [ProductRouteEnum.PRODUCT_REQUIREMENT]: ProductRouteEnum.PRODUCT_REQUIREMENT,
+    [ProductRouteEnum.PRODUCT_PRICE]: ProductRouteEnum.PRODUCT_PRO,
+    [ProductRouteEnum.PRODUCT_CREATE]: ProductRouteEnum.PRODUCT_PRO,
+    [ProductRouteEnum.PRODUCT_DETAIL]: ProductRouteEnum.PRODUCT_PRO,
     [CustomerRouteEnum.CUSTOMER]: CustomerRouteEnum.CUSTOMER_INDEX,
+    [CustomerRouteEnum.CUSTOMER_INDEX]: CustomerRouteEnum.CUSTOMER_INDEX,
     [CustomerRouteEnum.CUSTOMER_DETAIL]: CustomerRouteEnum.CUSTOMER_INDEX,
     [CustomerRouteEnum.CUSTOMER_CONTACT]: CustomerRouteEnum.CUSTOMER_INDEX,
     [CustomerRouteEnum.CUSTOMER_OPEN_SEA]: CustomerRouteEnum.CUSTOMER_INDEX,
     [ClueRouteEnum.CLUE_MANAGEMENT]: ClueRouteEnum.CLUE_MANAGEMENT_CLUE,
+    [ClueRouteEnum.CLUE_MANAGEMENT_CLUE]: ClueRouteEnum.CLUE_MANAGEMENT_CLUE,
     [ClueRouteEnum.CLUE_MANAGEMENT_POOL]: ClueRouteEnum.CLUE_MANAGEMENT_CLUE,
     [OpportunityRouteEnum.OPPORTUNITY]: OpportunityRouteEnum.OPPORTUNITY_OPT,
+    [OpportunityRouteEnum.OPPORTUNITY_OPT]: OpportunityRouteEnum.OPPORTUNITY_OPT,
+    [OpportunityRouteEnum.OPPORTUNITY_QUOTATION]: OpportunityRouteEnum.OPPORTUNITY_QUOTATION,
     [ContractRouteEnum.CONTRACT]: ContractRouteEnum.CONTRACT_INDEX,
+    [ContractRouteEnum.CONTRACT_INDEX]: ContractRouteEnum.CONTRACT_INDEX,
     [ContractRouteEnum.CONTRACT_PAYMENT]: ContractRouteEnum.CONTRACT_INDEX,
     [ContractRouteEnum.CONTRACT_PAYMENT_RECORD]: ContractRouteEnum.CONTRACT_INDEX,
     [ContractRouteEnum.CONTRACT_BUSINESS_NAME]: ContractRouteEnum.CONTRACT_INDEX,
     [ContractRouteEnum.CONTRACT_INVOICE]: ContractRouteEnum.CONTRACT_INDEX,
     [SalesRouteEnum.SALES_TEAM_ROOT]: SalesRouteEnum.SALES_TEAM,
+    [SalesRouteEnum.SALES_TEAM]: SalesRouteEnum.SALES_TEAM,
     [SalesRouteEnum.SALES_ANALYTICS_ROOT]: SalesRouteEnum.SALES_ANALYTICS,
+    [SalesRouteEnum.SALES_ANALYTICS]: SalesRouteEnum.SALES_ANALYTICS,
     [SystemRouteEnum.SYSTEM]: SystemRouteEnum.SYSTEM_ORG,
     [SystemRouteEnum.SYSTEM_ORG]: SystemRouteEnum.SYSTEM_ORG,
     [SystemRouteEnum.SYSTEM_ROLE]: SystemRouteEnum.SYSTEM_ROLE,
@@ -333,11 +362,11 @@
     {
       label: '主导航',
       children: [
-        { label: '工作台', key: WorkbenchRouteEnum.WORKBENCH_INDEX, icon: 'iconicon_home' },
+        { label: '工作台', key: WorkbenchRouteEnum.WORKBENCH_INDEX, icon: '/icons/project/nav/home.svg' },
         {
           label: '数据洞察',
           key: DashboardRouteEnum.DASHBOARD_INDEX,
-          icon: 'iconicon_dashboard1',
+          icon: '/icons/project/nav/data.svg',
           permissions: ['DASHBOARD:READ'],
         },
       ],
@@ -348,13 +377,13 @@
         {
           label: '产品集',
           key: ProductRouteEnum.PRODUCT_PRO,
-          icon: 'iconicon_product',
+          icon: '/icons/project/nav/product.svg',
           permissions: ['PRODUCT_MANAGEMENT:READ'],
         },
         {
           label: '需求管理',
           key: ProductRouteEnum.PRODUCT_REQUIREMENT,
-          icon: 'iconicon_books',
+          icon: '/icons/project/nav/requirement.svg',
           permissions: ['PRODUCT_MANAGEMENT:READ'],
           badge: 6,
         },
@@ -366,45 +395,45 @@
         {
           label: '客户管理',
           key: CustomerRouteEnum.CUSTOMER_INDEX,
-          icon: 'iconicon_customer',
+          icon: '/icons/project/nav/personal.svg',
           permissions: ['CUSTOMER_MANAGEMENT:READ'],
         },
         {
           label: '销售线索',
           key: ClueRouteEnum.CLUE_MANAGEMENT_CLUE,
-          icon: 'iconicon_clue',
+          icon: '/icons/project/nav/notification.svg',
           permissions: ['CLUE_MANAGEMENT:READ'],
           badge: 18,
         },
         {
           label: '商机管理',
           key: OpportunityRouteEnum.OPPORTUNITY_OPT,
-          icon: 'iconicon_business_opportunity',
+          icon: '/icons/project/nav/opportunity.svg',
           permissions: ['OPPORTUNITY_MANAGEMENT:READ'],
           badge: 24,
         },
         {
           label: '报价管理',
           key: OpportunityRouteEnum.OPPORTUNITY_QUOTATION,
-          icon: 'iconicon_order_form',
+          icon: '/icons/project/nav/quote.svg',
           permissions: ['QUOTE_MANAGEMENT:READ'],
         },
         {
           label: '合同管理',
           key: ContractRouteEnum.CONTRACT_INDEX,
-          icon: 'iconicon_contract',
+          icon: '/icons/project/nav/contract.svg',
           permissions: ['CONTRACT:READ'],
         },
         {
           label: '团队与业绩',
           key: SalesRouteEnum.SALES_TEAM,
-          icon: 'iconicon_usergroup',
+          icon: '/icons/project/nav/team.svg',
           permissions: ['CUSTOMER_MANAGEMENT:READ', 'CLUE_MANAGEMENT:READ', 'OPPORTUNITY_MANAGEMENT:READ'],
         },
         {
           label: '数据分析',
           key: SalesRouteEnum.SALES_ANALYTICS,
-          icon: 'iconicon_data',
+          icon: '/icons/project/nav/data.svg',
           permissions: ['DASHBOARD:READ'],
         },
       ],
@@ -415,37 +444,37 @@
         {
           label: '组织架构',
           key: SystemRouteEnum.SYSTEM_ORG,
-          icon: 'iconicon_enterprise',
+          icon: '/icons/project/nav/user.svg',
           permissions: ['SYS_ORGANIZATION:READ'],
         },
         {
           label: '角色权限',
           key: SystemRouteEnum.SYSTEM_ROLE,
-          icon: 'iconicon_usergroup',
+          icon: '/icons/project/nav/role.svg',
           permissions: ['SYSTEM_ROLE:READ'],
         },
         {
           label: '消息设置',
           key: SystemRouteEnum.SYSTEM_MESSAGE,
-          icon: 'iconicon-alarmclock',
+          icon: '/icons/project/nav/notification.svg',
           permissions: ['SYSTEM_NOTICE:READ'],
         },
         {
           label: '流程设置',
           key: SystemRouteEnum.SYSTEM_PROCESS_INDEX,
-          icon: 'iconicon_timeline',
+          icon: '/icons/project/nav/process.svg',
           permissions: ['PROCESS_SETTING:READ'],
         },
         {
           label: '企业设置',
           key: SystemRouteEnum.SYSTEM_BUSINESS,
-          icon: 'iconicon_enterprise',
+          icon: '/icons/project/nav/enterprise.svg',
           permissions: ['SYSTEM_SETTING:READ'],
         },
         {
           label: '系统日志',
           key: SystemRouteEnum.SYSTEM_LOG,
-          icon: 'iconicon_data_record',
+          icon: '/icons/project/nav/log.svg',
           permissions: ['OPERATION_LOG:READ'],
         },
       ],
@@ -476,9 +505,12 @@
   );
 
   function setMenuValue(_route: RouteLocationNormalizedGeneric) {
-    const routeName = _route.name?.toString() ?? '';
-    const rootName = _route.matched[0]?.name?.toString() ?? '';
-    menuValue.value = routeMenuMap[routeName] || routeMenuMap[rootName] || routeName;
+    const routeNames = [
+      _route.name?.toString(),
+      ..._route.matched.map((item) => item.name?.toString()).reverse(),
+    ].filter(Boolean) as string[];
+    const matchedMenuValue = routeNames.map((name) => routeMenuMap[name]).find(Boolean);
+    menuValue.value = matchedMenuValue || routeNames[0] || '';
     expandedKeys.value = [];
   }
 
@@ -565,6 +597,16 @@
       color: var(--n-item-text-color-active) !important;
     }
   }
+  .crm-layout-sider .n-menu-item-content .stariver-sider__menu-icon {
+    color: var(--n-item-icon-color) !important;
+  }
+  .crm-layout-sider .n-menu-item-content:hover .stariver-sider__menu-icon {
+    color: var(--n-item-text-color-hover) !important;
+  }
+  .crm-layout-sider .n-menu-item-content--selected .stariver-sider__menu-icon,
+  .crm-layout-sider .n-menu-item-content--child-active .stariver-sider__menu-icon {
+    color: var(--n-item-text-color-active) !important;
+  }
   .stariver-sider__inner {
     display: flex;
     height: 100%;
@@ -574,42 +616,58 @@
   .stariver-sider__brand {
     display: flex;
     align-items: center;
-    gap: 10px;
-    height: 64px;
+    gap: 9px;
+    flex: 0 0 60px;
+    height: 60px;
+    min-height: 60px;
+    max-height: 60px;
+    border-bottom: 1px solid #e2e8f0;
     padding: 12px 18px;
+    background: #ffffff;
     cursor: pointer;
   }
-  .stariver-sider__brand-mark {
+  .stariver-sider__brand-logo {
     display: flex;
     width: 34px;
     height: 34px;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    background: #111827;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0;
   }
-  .stariver-sider__brand-title {
-    color: #0f172a;
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 20px;
+  .stariver-sider__brand-logo svg {
+    display: block;
+    width: 34px;
+    height: 34px;
+  }
+  .stariver-sider__brand-copy {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+  }
+  .stariver-sider__brand-text {
+    display: block;
+    width: 96px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .stariver-sider__brand-text svg {
+    display: block;
+    width: 96px;
+    height: auto;
   }
   .stariver-sider__brand-version {
-    color: #94a3b8;
-    font-size: 11px;
-    line-height: 16px;
-  }
-  .stariver-sider__section {
-    padding: 4px 18px 8px;
-    color: #94a3b8;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0;
+    display: inline-flex;
+    height: 18px;
+    flex-shrink: 0;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0 6px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 18px;
   }
   .stariver-sider__menu-label {
     display: flex;
@@ -618,6 +676,25 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+  }
+  .stariver-sider__menu-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    color: currentColor;
+    --stroke-0: currentColor;
+    --fill-0: currentColor;
+  }
+  .stariver-sider__menu-icon svg {
+    display: block !important;
+    width: 16px;
+    height: 16px;
+  }
+  .stariver-sider__menu-icon svg [stroke]:not([stroke='none']) {
+    stroke: currentColor !important;
+  }
+  .stariver-sider__menu-icon svg [fill]:not([fill='none']) {
+    fill: currentColor !important;
   }
   .stariver-sider__menu-text {
     min-width: 0;
