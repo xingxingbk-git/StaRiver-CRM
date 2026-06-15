@@ -74,6 +74,9 @@
           <div class="sr-module-grid">
             <div v-for="item in moduleRows" :key="item.name" class="sr-module-card">
               <div class="sr-module-card__name">{{ item.name }}</div>
+              <div v-if="item.children?.length" class="sr-module-card__children">
+                <span v-for="child in item.children" :key="child" class="sr-module-chip">{{ child }}</span>
+              </div>
               <div class="sr-module-card__desc">{{ item.desc }}</div>
             </div>
           </div>
@@ -201,12 +204,25 @@
     },
   ];
 
-  const moduleRows = [
-    { name: '数据接入', desc: '统一采集工业设备、业务系统与文件数据。' },
-    { name: '特征管理', desc: '沉淀可复用的指标、标签与模型特征。' },
-    { name: '模型训练', desc: '支持训练任务编排、评估和版本归档。' },
-    { name: '推理服务', desc: '面向业务场景提供在线推理与服务监控。' },
-  ];
+  const moduleRows = computed(() => {
+    if (Array.isArray(product.value.modules) && product.value.modules.length) {
+      return product.value.modules.map((module: any) => {
+        const children = Array.isArray(module.children) ? module.children.filter(Boolean) : [];
+        return {
+          name: module.name || '未命名模块',
+          children,
+          desc: children.length ? `二级模块：${children.join(' / ')}` : '暂未配置二级模块。',
+        };
+      });
+    }
+
+    return [
+      { name: '数据接入', children: [], desc: '统一采集工业设备、业务系统与文件数据。' },
+      { name: '特征管理', children: [], desc: '沉淀可复用的指标、标签与模型特征。' },
+      { name: '模型训练', children: [], desc: '支持训练任务编排、评估和版本归档。' },
+      { name: '推理服务', children: [], desc: '面向业务场景提供在线推理与服务监控。' },
+    ];
+  });
 
   const requirementRows = [
     { name: '设备异常预测模型可配置', customer: '国家电网华东分部', status: '规划中' },
@@ -608,6 +624,26 @@
     font-size: 13px;
     font-weight: 600;
     line-height: 18px;
+  }
+
+  .sr-module-card__children {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .sr-module-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0 10px;
+    height: 24px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
   }
 
   .sr-module-card__desc {

@@ -133,7 +133,7 @@
             ]"
           >
             <n-layout>
-              <LayoutHeader is-preview :logo="pageConfig.logoPlatform[0]?.url ?? defaultPlatformLogo" />
+              <LayoutHeader is-preview :logo="pageConfig.logoPlatform[0]?.url || undefined" />
               <n-layout class="flex-1" has-sider>
                 <div class="w-[180px] bg-[var(--text-n10)]"></div>
                 <div class="w-full bg-[var(--text-n9)]"></div>
@@ -201,7 +201,7 @@
   import LoginForm from '@/views/base/login/components/login-form.vue';
 
   import { savePageConfig } from '@/api/modules';
-  import { defaultLoginImage, defaultLoginLogo, defaultPlatformLogo } from '@/config/business';
+  import { defaultLoginImage, defaultLoginLogo } from '@/config/business';
   import useFullScreen from '@/hooks/useFullScreen';
   import useAppStore from '@/store/modules/app';
   import { PageConfig } from '@/store/modules/app/types';

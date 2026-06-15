@@ -132,6 +132,8 @@
   const pageTitleMap: Record<string, string> = {
     [WorkbenchRouteEnum.WORKBENCH_INDEX]: '工作台',
     [DashboardRouteEnum.DASHBOARD_INDEX]: '数据洞察',
+    [DashboardRouteEnum.DASHBOARD_LINK]: '外链集成',
+    [DashboardRouteEnum.DASHBOARD_MODULE]: '模块嵌入',
     [CustomerRouteEnum.CUSTOMER_INDEX]: '客户管理',
     [CustomerRouteEnum.CUSTOMER_CONTACT]: '联系人',
     [CustomerRouteEnum.CUSTOMER_OPEN_SEA]: '客户公海',

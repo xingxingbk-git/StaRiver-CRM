@@ -23,6 +23,17 @@ function fail(msg = 'error') {
   return JSON.stringify({ data: null, success: false, message: msg });
 }
 
+function writeJson(res: Connect.ServerResponse, data: string) {
+  res.setHeader('Content-Type', 'application/json');
+  res.end(data);
+}
+
+function hasMockToken(req: Connect.IncomingMessage) {
+  const sessionId = req.headers['x-auth-token'];
+  const csrfToken = req.headers['csrf-token'];
+  return Boolean(sessionId && sessionId !== 'null' && csrfToken && csrfToken !== 'null');
+}
+
 // 读取 POST 请求体
 function readBody(req: Connect.IncomingMessage): Promise<any> {
   return new Promise((resolve) => {
@@ -74,61 +85,221 @@ const MOCK_USER = {
 // API 请求会经过 Vite proxy（/front/* → /*），所以 mock 需要匹配带 /front 前缀的路径
 const PREFIX = '/front';
 
+const MOCK_DEPARTMENTS = [
+  {
+    id: 'dept-root',
+    parentId: 'NONE',
+    name: 'StaRiver CRM',
+    isLeaf: false,
+    children: [
+      {
+        id: 'dept-product',
+        parentId: 'dept-root',
+        name: '产品中心',
+        isLeaf: false,
+        children: [
+          {
+            id: 'dept-product-plan',
+            parentId: 'dept-product',
+            name: '产品规划组',
+            isLeaf: true,
+            children: [],
+          },
+          {
+            id: 'dept-product-design',
+            parentId: 'dept-product',
+            name: '体验设计组',
+            isLeaf: true,
+            children: [],
+          },
+        ],
+      },
+      {
+        id: 'dept-rd',
+        parentId: 'dept-root',
+        name: '研发中心',
+        isLeaf: false,
+        children: [
+          {
+            id: 'dept-rd-platform',
+            parentId: 'dept-rd',
+            name: '平台研发组',
+            isLeaf: true,
+            children: [],
+          },
+          {
+            id: 'dept-rd-ai',
+            parentId: 'dept-rd',
+            name: 'AI 工程组',
+            isLeaf: true,
+            children: [],
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const MOCK_USER_OPTIONS = [
+  { label: '陈立文', value: 'u-chen-liwen', departmentId: 'dept-product-plan' },
+  { label: '林岚', value: 'u-lin-lan', departmentId: 'dept-product-design' },
+  { label: '周志远', value: 'u-zhou-zhiyuan', departmentId: 'dept-rd-platform' },
+  { label: '赵晨', value: 'u-zhao-chen', departmentId: 'dept-rd-ai' },
+  { label: '沈嘉禾', value: 'u-shen-jiahe', departmentId: 'dept-product-plan' },
+  { label: '宋予安', value: 'u-song-yuan', departmentId: 'dept-rd-platform' },
+];
+
+function normalizeModules(modules: unknown) {
+  if (!Array.isArray(modules)) {
+    return [];
+  }
+
+  return modules
+    .map((module) => {
+      if (!module || typeof module !== 'object') {
+        return null;
+      }
+
+      const typedModule = module as { name?: string; children?: string[] };
+      return {
+        name: typedModule.name || '',
+        children: Array.isArray(typedModule.children) ? typedModule.children.filter(Boolean) : [],
+      };
+    })
+    .filter(Boolean);
+}
+
+function countModules(modules: Array<{ name?: string; children?: string[] }>) {
+  return modules.reduce((count, module) => {
+    const parentCount = module.name ? 1 : 0;
+    const childCount = Array.isArray(module.children) ? module.children.filter(Boolean).length : 0;
+    return count + parentCount + childCount;
+  }, 0);
+}
+
+function getStatusColor(status: string) {
+  if (status === '已发布') {
+    return {
+      statusBg: 'rgba(22,163,74,0.1)',
+      statusColor: '#16A34A',
+    };
+  }
+
+  if (status === '规划中') {
+    return {
+      statusBg: 'rgba(79,70,229,0.1)',
+      statusColor: '#4F46E5',
+    };
+  }
+
+  return {
+    statusBg: 'rgba(234,88,12,0.1)',
+    statusColor: '#EA580C',
+  };
+}
+
+function buildMockProduct(body: any, source?: any) {
+  const normalizedModules = normalizeModules(body?.modules ?? source?.modules);
+  const status = body?.status || source?.status || '规划中';
+  const colors = getStatusColor(status);
+  const name = body?.name || source?.name || '未命名产品';
+
+  return {
+    ...source,
+    ...body,
+    name,
+    code: body?.code || source?.code || '',
+    description: body?.slogan ?? body?.description ?? source?.description ?? '',
+    slogan: body?.slogan ?? source?.slogan ?? source?.description ?? '',
+    version: body?.version || source?.version || '',
+    status,
+    releaseDate: body?.releaseDate ?? source?.releaseDate ?? '',
+    productOwner: body?.productOwner || source?.productOwner || '',
+    productOwnerId: body?.productOwnerId || source?.productOwnerId || '',
+    devOwner: body?.devOwner || source?.devOwner || '',
+    devOwnerId: body?.devOwnerId || source?.devOwnerId || '',
+    modules: normalizedModules,
+    moduleCount: countModules(normalizedModules),
+    iconText: (name || 'P').charAt(0).toUpperCase(),
+    iconBg: source?.iconBg || '#EEF2FF',
+    iconColor: source?.iconColor || '#4F46E5',
+    nextVersion: body?.nextVersion ?? source?.nextVersion ?? '',
+    ...colors,
+  };
+}
+
 // MOCK 产品数据 — REMOVE_BEFORE_PRODUCTION
 // eslint-disable-next-line prefer-const
 let MOCK_PRODUCTS: any[] = [
-  {
-    id: 'p1',
-    name: 'StaRiver AI 中台',
-    code: 'STARIVER',
-    description: '面向工业场景的 AI 基础设施平台，提供数据接入、特征管理、模型训练与推理编排',
-    version: 'v3.8.2',
-    status: '开发中',
-    productOwner: '陈立文',
-    devOwner: '周志远',
-    moduleCount: 12,
-    requirementCount: 18,
-    nextVersion: 'v4.0',
-    iconText: 'S',
-    iconBg: '#EEF2FF',
-    iconColor: '#4F46E5',
-    statusBg: 'rgba(22,163,74,0.1)',
-    statusColor: '#16A34A',
-    price: 0,
-    createUser: 'admin',
-    updateUser: 'admin',
-    createTime: 1716864000000,
-    updateTime: 1718073600000,
-    createUserName: '管理员',
-    updateUserName: '管理员',
-    moduleFields: [],
-  },
-  {
-    id: 'p2',
-    name: 'OptiQA 智能质检',
-    code: 'OPTIQA',
-    description: '基于视觉识别的工业质检平台，支持缺陷检测、良率分析与产线实时监控',
-    version: 'v2.1.0',
-    status: '开发中',
-    productOwner: '林岚',
-    devOwner: '赵晨',
-    moduleCount: 8,
-    requirementCount: 10,
-    nextVersion: 'v2.2',
-    iconText: 'O',
-    iconBg: '#FFF7ED',
-    iconColor: '#EA580C',
-    statusBg: 'rgba(234,88,12,0.1)',
-    statusColor: '#EA580C',
-    price: 0,
-    createUser: 'admin',
-    updateUser: 'admin',
-    createTime: 1718688000000,
-    updateTime: 1719897600000,
-    createUserName: '管理员',
-    updateUserName: '管理员',
-    moduleFields: [],
-  },
+  buildMockProduct(
+    {
+      id: 'p1',
+      name: 'StaRiver AI 中台',
+      code: 'STARIVER',
+      description: '面向工业场景的 AI 基础设施平台，提供数据接入、特征管理、模型训练与推理编排',
+      slogan: '面向工业场景的 AI 基础设施平台，提供数据接入、特征管理、模型训练与推理编排',
+      version: 'v3.8.2',
+      status: '开发中',
+      releaseDate: '2026-08-15',
+      productOwner: '陈立文',
+      productOwnerId: 'u-chen-liwen',
+      devOwner: '周志远',
+      devOwnerId: 'u-zhou-zhiyuan',
+      modules: [
+        { name: '数据接入', children: ['设备采集', '文件导入', '接口同步'] },
+        { name: '模型训练', children: ['训练任务', '评估中心'] },
+        { name: '推理服务', children: ['在线推理', '服务监控'] },
+      ],
+      requirementCount: 18,
+      nextVersion: 'v4.0',
+      iconText: 'S',
+      iconBg: '#EEF2FF',
+      iconColor: '#4F46E5',
+      price: 0,
+      createUser: 'admin',
+      updateUser: 'admin',
+      createTime: 1716864000000,
+      updateTime: 1718073600000,
+      createUserName: '管理员',
+      updateUserName: '管理员',
+      moduleFields: [],
+    },
+    {}
+  ),
+  buildMockProduct(
+    {
+      id: 'p2',
+      name: 'OptiQA 智能质检',
+      code: 'OPTIQA',
+      description: '基于视觉识别的工业质检平台，支持缺陷检测、良率分析与产线实时监控',
+      slogan: '基于视觉识别的工业质检平台，支持缺陷检测、良率分析与产线实时监控',
+      version: 'v2.1.0',
+      status: '规划中',
+      releaseDate: '2026-10-30',
+      productOwner: '林岚',
+      productOwnerId: 'u-lin-lan',
+      devOwner: '赵晨',
+      devOwnerId: 'u-zhao-chen',
+      modules: [
+        { name: '质检模板', children: ['模板配置', '样本标注'] },
+        { name: '缺陷识别', children: ['在线识别', '告警规则'] },
+      ],
+      requirementCount: 10,
+      nextVersion: 'v2.2',
+      iconText: 'O',
+      iconBg: '#FFF7ED',
+      iconColor: '#EA580C',
+      price: 0,
+      createUser: 'admin',
+      updateUser: 'admin',
+      createTime: 1718688000000,
+      updateTime: 1719897600000,
+      createUserName: '管理员',
+      updateUserName: '管理员',
+      moduleFields: [],
+    },
+    {}
+  ),
 ];
 
 // MOCK 版本路线图数据 — REMOVE_BEFORE_PRODUCTION
@@ -191,14 +362,20 @@ const MOCK_ROADMAP = [
 ];
 
 // 需要读取 body 的 POST 路由 — REMOVE_BEFORE_PRODUCTION
-const postBodyRoutes: Record<
-  string,
-  (res: Connect.ServerResponse, body: any) => void
-> = {
+const postBodyRoutes: Record<string, (res: Connect.ServerResponse, body: any) => void> = {
   // 登录
   [`${PREFIX}/login`]: (res, body) => {
     const user = { ...MOCK_USER, id: body?.username || 'admin', name: body?.name || '管理员' };
     res.end(ok(user));
+  },
+  [`${PREFIX}/mock/org/user/options`]: (res, body) => {
+    const keyword = String(body?.keyword || '')
+      .trim()
+      .toLowerCase();
+    const list = keyword
+      ? MOCK_USER_OPTIONS.filter((item) => item.label.toLowerCase().includes(keyword))
+      : MOCK_USER_OPTIONS;
+    res.end(ok(list));
   },
   // 产品列表
   [`${PREFIX}/product/page`]: (res) => {
@@ -214,34 +391,30 @@ const postBodyRoutes: Record<
   // 新增产品 — 持久化到 MOCK_PRODUCTS
   [`${PREFIX}/product/add`]: (res, body) => {
     const id = `p${Date.now()}`;
-    const firstChar = (body?.name || 'P').charAt(0).toUpperCase();
-    const newProduct = {
+    const newProduct = buildMockProduct(
+      {
+        id,
+        ...body,
+        requirementCount: 0,
+        nextVersion: '',
+        price: 0,
+        createUser: 'admin',
+        updateUser: 'admin',
+        createTime: Date.now(),
+        updateTime: Date.now(),
+        createUserName: '管理员',
+        updateUserName: '管理员',
+        moduleFields: [],
+      },
+      {
+        iconBg: '#EEF2FF',
+        iconColor: '#4F46E5',
+      }
+    );
+    MOCK_PRODUCTS.push({
       id,
-      name: body?.name || '未命名产品',
-      code: body?.code || '',
-      description: body?.slogan || '',
-      version: body?.version || '',
-      status: body?.status || '规划中',
-      productOwner: body?.productOwner || '',
-      devOwner: body?.devOwner || '',
-      moduleCount: 0,
-      requirementCount: 0,
-      nextVersion: '',
-      iconText: firstChar,
-      iconBg: '#EEF2FF',
-      iconColor: '#4F46E5',
-      statusBg: 'rgba(22,163,74,0.1)',
-      statusColor: '#16A34A',
-      price: 0,
-      createUser: 'admin',
-      updateUser: 'admin',
-      createTime: Date.now(),
-      updateTime: Date.now(),
-      createUserName: '管理员',
-      updateUserName: '管理员',
-      moduleFields: [],
-    };
-    MOCK_PRODUCTS.push(newProduct);
+      ...newProduct,
+    });
     res.end(ok({ id, success: true }));
   },
   // 更新产品
@@ -253,10 +426,18 @@ const postBodyRoutes: Record<
       res.end(fail('产品不存在'));
       return;
     }
+    MOCK_PRODUCTS[index] = buildMockProduct(
+      {
+        ...MOCK_PRODUCTS[index],
+        ...body,
+        updateTime: Date.now(),
+        updateUser: 'admin',
+        updateUserName: '管理员',
+      },
+      MOCK_PRODUCTS[index]
+    );
     MOCK_PRODUCTS[index] = {
       ...MOCK_PRODUCTS[index],
-      ...body,
-      description: body?.slogan ?? body?.description ?? MOCK_PRODUCTS[index].description,
       updateTime: Date.now(),
       updateUser: 'admin',
       updateUserName: '管理员',
@@ -282,10 +463,10 @@ const postBodyRoutes: Record<
 };
 
 // GET 路由 — REMOVE_BEFORE_PRODUCTION
-const getRoutes: Record<string, (res: Connect.ServerResponse) => void> = {
+const getRoutes: Record<string, (res: Connect.ServerResponse, req: Connect.IncomingMessage) => void> = {
   // 检查登录状态
-  [`${PREFIX}/is-login`]: (res) => {
-    res.end(ok(MOCK_USER));
+  [`${PREFIX}/is-login`]: (res, req) => {
+    writeJson(res, ok(hasMockToken(req) ? MOCK_USER : null));
   },
   // 获取 RSA 公钥
   [`${PREFIX}/get-key`]: (res) => {
@@ -340,6 +521,9 @@ const getRoutes: Record<string, (res: Connect.ServerResponse) => void> = {
   [`${PREFIX}/home/statistic/department/tree`]: (res) => {
     res.end(ok([]));
   },
+  [`${PREFIX}/mock/org/department/tree`]: (res) => {
+    res.end(ok(MOCK_DEPARTMENTS));
+  },
   // 工作台待办统计
   [`${PREFIX}/approval-todo/pending/count`]: (res) => {
     res.end(
@@ -383,10 +567,7 @@ const getRoutes: Record<string, (res: Connect.ServerResponse) => void> = {
 };
 
 // 支持路径参数的 GET 路由 — REMOVE_BEFORE_PRODUCTION
-const getPrefixRoutes: Record<
-  string,
-  (res: Connect.ServerResponse, id: string) => void
-> = {
+const getPrefixRoutes: Record<string, (res: Connect.ServerResponse, id: string) => void> = {
   // 产品详情
   [`${PREFIX}/product/get/`]: (res, id) => {
     const product = MOCK_PRODUCTS.find((p) => p.id === id);
@@ -429,12 +610,11 @@ export function mockPlugin(): Plugin {
         const url = req.url || '';
         const path = url.split('?')[0];
 
-        res.setHeader('Content-Type', 'application/json');
-
         // POST 请求：精确匹配 + 读取 body
         if (method === 'POST') {
           const postHandler = postBodyRoutes[path];
           if (postHandler) {
+            res.setHeader('Content-Type', 'application/json');
             readBody(req).then((body) => {
               postHandler(res, body);
             });
@@ -446,7 +626,8 @@ export function mockPlugin(): Plugin {
         if (method === 'GET') {
           const getHandler = getRoutes[path];
           if (getHandler) {
-            getHandler(res);
+            res.setHeader('Content-Type', 'application/json');
+            getHandler(res, req);
             return;
           }
 
@@ -455,6 +636,7 @@ export function mockPlugin(): Plugin {
           if (prefixKey) {
             const id = path.slice(prefixKey.length);
             if (id) {
+              res.setHeader('Content-Type', 'application/json');
               getPrefixRoutes[prefixKey](res, id);
               return;
             }
@@ -463,7 +645,7 @@ export function mockPlugin(): Plugin {
 
         // 前端无后端联调兜底：未显式 mock 的 /front 请求返回空数据，避免 Vite proxy 穿透到后端报 500。
         if (path.startsWith(PREFIX)) {
-          res.end(ok(getFallbackData(path)));
+          writeJson(res, ok(getFallbackData(path)));
           return;
         }
 

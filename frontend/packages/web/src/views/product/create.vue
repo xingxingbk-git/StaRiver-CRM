@@ -1,5 +1,11 @@
 <template>
-  <StariverModulePage :title="pageTitle" eyebrow="产品需求">
+  <StariverModulePage :title="pageTitle">
+    <template #subtitle>
+      <div class="sr-create-page__subtitle">
+        {{ pageDescription }}
+      </div>
+    </template>
+
     <template #actions>
       <div class="sr-create-actions">
         <button class="sr-btn sr-btn--ghost" @click="handleCancel">取消</button>
@@ -8,16 +14,15 @@
     </template>
 
     <div class="sr-create-page">
-      <!-- 基本信息 -->
       <div class="sr-panel">
         <div class="sr-panel__title">基本信息</div>
         <div class="sr-form-grid">
           <div class="sr-field">
-            <label class="sr-field__label"> 产品代号 <span class="sr-field__req">*</span> </label>
+            <label class="sr-field__label">产品代号 <span class="sr-field__req">*</span></label>
             <input v-model="form.code" class="sr-input" placeholder="如 STARIVER / OPTIQA（唯一标识）" />
           </div>
           <div class="sr-field">
-            <label class="sr-field__label"> 产品全称 <span class="sr-field__req">*</span> </label>
+            <label class="sr-field__label">产品全称 <span class="sr-field__req">*</span></label>
             <input v-model="form.name" class="sr-input" placeholder="如：StaRiver AI 中台" />
           </div>
           <div class="sr-field">
@@ -26,88 +31,114 @@
           </div>
           <div class="sr-field">
             <label class="sr-field__label">产品状态</label>
-            <div class="sr-select" @click="toggleStatusDropdown">
-              <span>{{ form.status || '请选择' }}</span>
-              <svg class="sr-select__arrow" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M2.5 4L5 6.5L7.5 4"
-                  stroke="currentColor"
-                  stroke-width="1.2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <div v-if="statusDropdownVisible" class="sr-select__dropdown">
-                <div v-for="opt in statusOptions" :key="opt" class="sr-select__option" @click.stop="selectStatus(opt)">
-                  {{ opt }}
-                </div>
-              </div>
-            </div>
+            <n-select
+              v-model:value="form.status"
+              class="sr-native-control"
+              placeholder="请选择产品状态"
+              :options="statusOptions"
+            />
           </div>
           <div class="sr-field">
             <label class="sr-field__label">计划发布日期</label>
-            <div class="sr-select">
-              <span :class="{ 'sr-select__placeholder': !form.releaseDate }">{{
-                form.releaseDate || '请选择日期'
-              }}</span>
-              <svg class="sr-select__icon" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1" y="2" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.2" />
-                <path d="M1 5.5H13" stroke="currentColor" stroke-width="1.2" />
-                <path d="M4.5 1V3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
-                <path d="M9.5 1V3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
-              </svg>
-            </div>
+            <n-date-picker
+              v-model:formatted-value="form.releaseDate"
+              class="sr-native-control"
+              type="date"
+              clearable
+              value-format="yyyy-MM-dd"
+              placeholder="请选择日期"
+            />
           </div>
           <div class="sr-field sr-field--full">
-            <label class="sr-field__label"> 产品简介（Slogan） <span class="sr-field__req">*</span> </label>
+            <label class="sr-field__label">产品简介（Slogan） <span class="sr-field__req">*</span></label>
             <textarea v-model="form.slogan" class="sr-textarea" placeholder="卡片展示简介内容" rows="4"></textarea>
           </div>
         </div>
       </div>
 
-      <!-- 模块与负责人 -->
       <div class="sr-panel">
         <div class="sr-panel__title">模块与负责人</div>
         <div class="sr-form-grid">
           <div class="sr-field">
-            <label class="sr-field__label"> 产品负责人 <span class="sr-field__req">*</span> </label>
-            <div class="sr-select">
-              <span :class="{ 'sr-select__placeholder': !form.productOwner }">{{ form.productOwner || '请选择' }}</span>
-              <svg class="sr-select__arrow" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M2.5 4L5 6.5L7.5 4"
-                  stroke="currentColor"
-                  stroke-width="1.2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
+            <label class="sr-field__label">产品负责人 <span class="sr-field__req">*</span></label>
+            <n-select
+              v-model:value="form.productOwnerId"
+              class="sr-native-control"
+              filterable
+              clearable
+              placeholder="请选择产品负责人"
+              :options="userOptions"
+              @search="handleUserSearch"
+              @update:value="(_value, option) => handleOwnerChange('productOwner', option)"
+            />
           </div>
           <div class="sr-field">
-            <label class="sr-field__label"> 研发负责人 <span class="sr-field__req">*</span> </label>
-            <div class="sr-select">
-              <span :class="{ 'sr-select__placeholder': !form.devOwner }">{{ form.devOwner || '请选择' }}</span>
-              <svg class="sr-select__arrow" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M2.5 4L5 6.5L7.5 4"
-                  stroke="currentColor"
-                  stroke-width="1.2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
+            <label class="sr-field__label">研发负责人 <span class="sr-field__req">*</span></label>
+            <n-select
+              v-model:value="form.devOwnerId"
+              class="sr-native-control"
+              filterable
+              clearable
+              placeholder="请选择研发负责人"
+              :options="userOptions"
+              @search="handleUserSearch"
+              @update:value="(_value, option) => handleOwnerChange('devOwner', option)"
+            />
           </div>
           <div class="sr-field sr-field--full">
-            <label class="sr-field__label">模块架构</label>
+            <div class="sr-field__label-row">
+              <label class="sr-field__label">模块架构</label>
+              <span class="sr-field__hint">支持录入一级模块与二级子模块，保存后会回填到详情页</span>
+            </div>
             <div class="sr-module-list">
-              <div v-for="(mod, index) in form.modules" :key="index" class="sr-module-item">
-                <input
-                  v-model="form.modules[index]"
-                  class="sr-input sr-input--module"
-                  :placeholder="`模块 ${index + 1}`"
-                />
+              <div v-for="(module, moduleIndex) in form.modules" :key="module.id" class="sr-module-card">
+                <div class="sr-module-card__header">
+                  <span class="sr-module-card__index">{{ moduleIndex + 1 }}</span>
+                  <input
+                    v-model="module.name"
+                    class="sr-input sr-input--module"
+                    :placeholder="`请输入一级模块名称，例如：模块 ${moduleIndex + 1}`"
+                  />
+                  <n-select
+                    class="sr-module-owner"
+                    placeholder="模块负责人"
+                    :options="userOptions"
+                    filterable
+                    clearable
+                  />
+                  <button
+                    v-if="form.modules.length > 1"
+                    class="sr-link-btn sr-link-btn--danger"
+                    @click="removeModule(moduleIndex)"
+                  >
+                    删除
+                  </button>
+                </div>
+                <div class="sr-submodule-list">
+                  <div v-for="(child, childIndex) in module.children" :key="child.id" class="sr-submodule-item">
+                    <span class="sr-submodule-branch">└</span>
+                    <input
+                      v-model="child.name"
+                      class="sr-input sr-input--module"
+                      :placeholder="`请输入二级模块名称 ${childIndex + 1}`"
+                    />
+                    <n-select
+                      class="sr-module-owner"
+                      placeholder="负责人"
+                      :options="userOptions"
+                      filterable
+                      clearable
+                    />
+                    <button
+                      v-if="module.children.length > 1"
+                      class="sr-link-btn sr-link-btn--danger"
+                      @click="removeSubmodule(moduleIndex, childIndex)"
+                    >
+                      删除
+                    </button>
+                  </div>
+                </div>
+                <button class="sr-link-btn" @click="addSubmodule(moduleIndex)">+ 添加二级模块</button>
               </div>
               <button class="sr-add-module" @click="addModule">+ 添加模块</button>
             </div>
@@ -120,56 +151,186 @@
 
 <script lang="ts" setup>
   import { useRoute, useRouter } from 'vue-router';
+  import { NDatePicker, NSelect } from 'naive-ui';
 
   import StariverModulePage from '@/components/business/stariver-module-page/index.vue';
 
-  import { addProduct, getProductDetail, updateProduct } from '@/api/modules/productMock';
+  import { addProduct, getMockUserOptions, getProductDetail, updateProduct } from '@/api/modules/productMock';
+
+  import type { SelectBaseOption } from 'naive-ui/es/select/src/interface';
+
+  interface ProductModuleChild {
+    id: string;
+    name: string;
+  }
+
+  interface ProductModuleGroup {
+    id: string;
+    name: string;
+    children: ProductModuleChild[];
+  }
+
+  interface ProductFormState {
+    code: string;
+    name: string;
+    version: string;
+    status: string;
+    releaseDate: string | null;
+    slogan: string;
+    productOwner: string;
+    productOwnerId: string | null;
+    devOwner: string;
+    devOwnerId: string | null;
+    modules: ProductModuleGroup[];
+  }
 
   const route = useRoute();
   const router = useRouter();
 
-  const statusOptions = ['规划中', '开发中', '已发布'];
-  const statusDropdownVisible = ref(false);
+  const statusOptions = [
+    { label: '规划中', value: '规划中' },
+    { label: '开发中', value: '开发中' },
+    { label: '已发布', value: '已发布' },
+  ];
+
   const editProductId = computed(() => route.query.id?.toString() || '');
   const isEditMode = computed(() => route.query.mode === 'edit' && !!editProductId.value);
   const pageTitle = computed(() => (isEditMode.value ? '编辑产品' : '新建产品'));
-  const primaryActionText = computed(() => (isEditMode.value ? '保存修改' : '保存'));
+  const pageDescription = computed(() =>
+    isEditMode.value ? '调整产品资料、负责人和模块架构信息' : '创建一个新的产品条目，并维护负责人和模块结构'
+  );
+  const primaryActionText = computed(() => (isEditMode.value ? '保存修改' : '提交 ->'));
+  const userOptions = ref<Array<{ label: string; value: string }>>([]);
 
-  const form = reactive({
+  function createModuleChild(name = ''): ProductModuleChild {
+    return {
+      id: `module-child-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+      name,
+    };
+  }
+
+  function createModuleGroup(name = '', children: Array<string | ProductModuleChild> = []): ProductModuleGroup {
+    const normalizedChildren = children.length
+      ? children.map((child) => createModuleChild(typeof child === 'string' ? child : child.name || ''))
+      : [createModuleChild()];
+    return {
+      id: `module-group-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+      name,
+      children: normalizedChildren,
+    };
+  }
+
+  const form = reactive<ProductFormState>({
     code: '',
     name: '',
     version: '',
     status: '',
-    releaseDate: '',
+    releaseDate: null,
     slogan: '',
     productOwner: '',
+    productOwnerId: null,
     devOwner: '',
-    modules: [''],
+    devOwnerId: null,
+    modules: [createModuleGroup()],
   });
+
+  function normalizeModules(modules: unknown): ProductModuleGroup[] {
+    if (!Array.isArray(modules) || !modules.length) {
+      return [createModuleGroup()];
+    }
+
+    const normalized = modules
+      .map((module) => {
+        if (typeof module === 'string') {
+          return createModuleGroup(module);
+        }
+        if (module && typeof module === 'object') {
+          const typedModule = module as { name?: string; children?: Array<string | ProductModuleChild> };
+          return createModuleGroup(typedModule.name || '', typedModule.children || []);
+        }
+        return null;
+      })
+      .filter(Boolean) as ProductModuleGroup[];
+
+    return normalized.length ? normalized : [createModuleGroup()];
+  }
 
   function fillForm(data: Record<string, any>) {
     form.code = data.code || '';
     form.name = data.name || '';
     form.version = data.version || '';
     form.status = data.status || '';
-    form.releaseDate = data.releaseDate || '';
+    form.releaseDate = data.releaseDate || null;
     form.slogan = data.slogan || data.description || '';
     form.productOwner = data.productOwner || '';
+    form.productOwnerId = data.productOwnerId || null;
     form.devOwner = data.devOwner || '';
-    form.modules = Array.isArray(data.modules) && data.modules.length ? [...data.modules] : [''];
-  }
-
-  function toggleStatusDropdown() {
-    statusDropdownVisible.value = !statusDropdownVisible.value;
-  }
-
-  function selectStatus(opt: string) {
-    form.status = opt;
-    statusDropdownVisible.value = false;
+    form.devOwnerId = data.devOwnerId || null;
+    form.modules = normalizeModules(data.modules);
   }
 
   function addModule() {
-    form.modules.push('');
+    form.modules.push(createModuleGroup());
+  }
+
+  function removeModule(index: number) {
+    form.modules.splice(index, 1);
+  }
+
+  function addSubmodule(moduleIndex: number) {
+    form.modules[moduleIndex].children.push(createModuleChild());
+  }
+
+  function removeSubmodule(moduleIndex: number, childIndex: number) {
+    form.modules[moduleIndex].children.splice(childIndex, 1);
+  }
+
+  function getOptionLabel(option: SelectBaseOption | null | SelectBaseOption[] | undefined) {
+    if (!option || Array.isArray(option)) {
+      return '';
+    }
+    const { label } = option;
+    return typeof label === 'string' ? label : String(label || '');
+  }
+
+  function handleOwnerChange(type: 'productOwner' | 'devOwner', option: SelectBaseOption | null | SelectBaseOption[]) {
+    const label = getOptionLabel(option);
+    if (type === 'productOwner') {
+      form.productOwner = label;
+      return;
+    }
+    form.devOwner = label;
+  }
+
+  async function loadUserOptions(keyword = '') {
+    userOptions.value = await getMockUserOptions({ keyword });
+  }
+
+  function handleUserSearch(keyword: string) {
+    loadUserOptions(keyword);
+  }
+
+  function buildPayload() {
+    const normalizedModules = form.modules
+      .map((module) => ({
+        name: module.name.trim(),
+        children: module.children.map((child) => child.name.trim()).filter(Boolean),
+      }))
+      .filter((module) => module.name || module.children.length);
+
+    return {
+      code: form.code.trim(),
+      name: form.name.trim(),
+      version: form.version.trim(),
+      status: form.status,
+      releaseDate: form.releaseDate || '',
+      slogan: form.slogan.trim(),
+      productOwner: form.productOwner,
+      productOwnerId: form.productOwnerId || '',
+      devOwner: form.devOwner,
+      devOwnerId: form.devOwnerId || '',
+      modules: normalizedModules,
+    };
   }
 
   function handleCancel() {
@@ -178,12 +339,14 @@
 
   async function handleSave() {
     try {
+      const payload = buildPayload();
       if (isEditMode.value) {
-        await updateProduct({ id: editProductId.value, ...form });
+        await updateProduct({ id: editProductId.value, ...payload });
         router.push({ name: 'productDetail', params: { id: editProductId.value } });
         return;
       }
-      const result = await addProduct({ ...form });
+
+      const result = await addProduct(payload);
       const newId = result?.id;
       if (newId) {
         router.push({ name: 'productDetail', params: { id: newId } });
@@ -196,31 +359,57 @@
     }
   }
 
-  // 点击外部关闭下拉
-  function closeDropdown() {
-    statusDropdownVisible.value = false;
+  async function loadEditProduct() {
+    if (!isEditMode.value || !editProductId.value) {
+      return;
+    }
+
+    try {
+      await loadUserOptions();
+      const data = await getProductDetail(editProductId.value);
+      if (data) {
+        fillForm(data);
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('获取产品详情失败', e);
+    }
   }
 
-  onMounted(() => {
-    if (isEditMode.value) {
-      getProductDetail(editProductId.value)
-        .then((data) => {
-          if (data) fillForm(data);
-        })
-        .catch((e) => {
-          // eslint-disable-next-line no-console
-          console.error('获取产品详情失败', e);
-        });
+  watch(
+    [isEditMode, editProductId],
+    ([editing, id]) => {
+      if (editing && id) {
+        loadEditProduct();
+      }
+    },
+    {
+      immediate: true,
     }
-    document.addEventListener('click', closeDropdown);
+  );
+
+  onActivated(() => {
+    loadEditProduct();
   });
 
-  onUnmounted(() => {
-    document.removeEventListener('click', closeDropdown);
+  onMounted(() => {
+    loadUserOptions();
   });
 </script>
 
 <style lang="less" scoped>
+  .sr-create-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sr-create-page__subtitle {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
   .sr-create-actions {
     display: flex;
     gap: 8px;
@@ -258,188 +447,234 @@
     }
   }
 
-  .sr-create-page {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
   .sr-panel {
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: #ffffff;
     padding: 16px;
   }
 
   .sr-panel__title {
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     color: #0f172a;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
   }
 
   .sr-form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 22px 16px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 16px;
   }
 
   .sr-field {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
+  }
 
-    &--full {
-      grid-column: 1 / -1;
-    }
+  .sr-field--full {
+    grid-column: 1 / -1;
+  }
+
+  .sr-field__label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
   .sr-field__label {
-    display: flex;
-    align-items: center;
-    gap: 4px;
     color: #334155;
-    font-size: 11px;
-    font-weight: 500;
-    line-height: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 17px;
+  }
+
+  .sr-field__hint {
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 18px;
   }
 
   .sr-field__req {
-    color: #dc2626;
-    font-size: 11px;
+    color: #ef4444;
+  }
+
+  .sr-input,
+  .sr-textarea {
+    width: 100%;
+    border: 1px solid #dbe2ea;
+    border-radius: 6px;
+    padding: 0 10px;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+
+    &:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
   }
 
   .sr-input {
     height: 32px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 0 10px;
-    background: #ffffff;
-    color: #0f172a;
-    font-size: 12px;
-    line-height: 17px;
-    outline: none;
-    transition: border-color 0.2s;
-
-    &::placeholder {
-      color: #94a3b8;
-    }
-
-    &:focus {
-      border-color: #4f46e5;
-    }
-
-    &--module {
-      width: 100%;
-    }
+    line-height: 30px;
   }
 
   .sr-textarea {
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 10px;
-    background: #ffffff;
-    color: #0f172a;
-    font-size: 12px;
-    line-height: 19px;
-    outline: none;
+    min-height: 88px;
     resize: vertical;
-    transition: border-color 0.2s;
-
-    &::placeholder {
-      color: #94a3b8;
-    }
-
-    &:focus {
-      border-color: #4f46e5;
-    }
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 19px;
   }
 
-  .sr-select {
-    position: relative;
-    display: flex;
-    height: 32px;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 0 10px;
-    background: #ffffff;
-    color: #0f172a;
-    font-size: 12px;
-    cursor: pointer;
-
-    &__placeholder {
-      color: #94a3b8;
-    }
-
-    &__arrow {
-      width: 10px;
-      height: 10px;
-      color: #94a3b8;
-    }
-
-    &__icon {
-      width: 14px;
-      height: 14px;
-      color: #94a3b8;
-    }
-
-    &__dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      z-index: 10;
-      width: 100%;
-      margin-top: 4px;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      background: #ffffff;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
-    }
-
-    &__option {
-      padding: 8px 10px;
-      color: #334155;
-      font-size: 12px;
-
-      &:hover {
-        background: #f1f5f9;
-      }
-    }
+  .sr-native-control {
+    width: 100%;
   }
 
   .sr-module-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-  }
-
-  .sr-module-item {
-    display: flex;
-    align-items: center;
+    gap: 0;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
+    background: #ffffff;
+    overflow: hidden;
     padding: 1px;
   }
 
-  .sr-add-module {
+  .sr-module-card {
     display: flex;
-    height: 36px;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+    background: #ffffff;
+
+    & + & {
+      border-top: 1px solid #eef2f7;
+    }
+  }
+
+  .sr-module-card__header {
+    display: flex;
     align-items: center;
-    border: none;
-    border-radius: 0;
-    padding: 0 12px;
+    min-height: 48px;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 8px 12px;
+  }
+
+  .sr-module-card__index {
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 14px;
+  }
+
+  .sr-submodule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 12px 0 54px;
+  }
+
+  .sr-submodule-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sr-submodule-branch {
+    width: 12px;
+    flex-shrink: 0;
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .sr-input--module {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sr-module-owner {
+    width: 160px;
+    flex-shrink: 0;
+  }
+
+  .sr-link-btn,
+  .sr-add-module {
+    width: fit-content;
+    border: 0;
+    padding: 0;
     background: transparent;
     color: #4f46e5;
     font-size: 12px;
-    font-weight: 500;
-    line-height: 15px;
+    font-weight: 600;
     cursor: pointer;
+  }
 
-    &:hover {
-      background: #f8fafc;
+  .sr-link-btn--danger {
+    color: #ef4444;
+  }
+
+  .sr-module-card > .sr-link-btn {
+    margin: 8px 12px 10px 78px;
+  }
+
+  .sr-add-module {
+    margin: 8px 12px 12px;
+  }
+
+  :deep(.sr-native-control .n-base-selection) {
+    min-height: 32px;
+    border-radius: 6px;
+    box-shadow: none !important;
+  }
+
+  :deep(.sr-native-control .n-base-selection-label) {
+    min-height: 30px;
+  }
+
+  :deep(.sr-module-owner .n-base-selection) {
+    min-height: 32px;
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: none !important;
+  }
+
+  :deep(.sr-module-owner .n-base-selection-label) {
+    min-height: 30px;
+  }
+
+  :deep(.sr-native-control .n-input__border),
+  :deep(.sr-native-control .n-base-selection__border),
+  :deep(.sr-module-owner .n-base-selection__border) {
+    border-color: #dbe2ea !important;
+  }
+
+  :deep(.sr-native-control.n-base-selection--active .n-base-selection__border),
+  :deep(.sr-native-control .n-input--focus .n-input__border),
+  :deep(.sr-module-owner.n-base-selection--active .n-base-selection__border) {
+    border-color: #4f46e5 !important;
+  }
+
+  @media (max-width: 1280px) {
+    .sr-form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>

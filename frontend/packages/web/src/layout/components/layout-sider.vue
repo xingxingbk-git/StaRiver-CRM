@@ -1,17 +1,9 @@
 <template>
-  <n-layout-sider
-    v-model:collapsed="collapsed"
-    collapse-mode="width"
-    :collapsed-width="72"
-    :width="230"
-    :native-scrollbar="false"
-    class="crm-layout-sider stariver-sider"
-    @update-collapsed="appStore.setMenuCollapsed"
-  >
+  <n-layout-sider collapse-mode="width" :width="230" :native-scrollbar="false" class="crm-layout-sider stariver-sider">
     <div class="stariver-sider__inner">
       <div class="stariver-sider__brand" @click="router.push({ name: AppRouteEnum.WORKBENCH_INDEX })">
-        <span class="stariver-sider__brand-logo" v-html="brandLogo"></span>
-        <div v-if="!collapsed" class="stariver-sider__brand-copy">
+        <img :src="defaultLoginLogo" class="stariver-sider__brand-logo" alt="StaRiver CRM" />
+        <div class="stariver-sider__brand-copy">
           <span class="stariver-sider__brand-text" v-html="brandText"></span>
           <div class="stariver-sider__brand-version">v1.0</div>
         </div>
@@ -22,9 +14,7 @@
           v-model:expanded-keys="expandedKeys"
           :root-indent="18"
           :indent="appStore.getMenuIconStatus ? 28 : 8"
-          :collapsed-width="72"
           :icon-size="18"
-          :collapsed-icon-size="22"
           :options="menuOptions"
           :render-label="renderLabel"
           accordion
@@ -53,19 +43,16 @@
             >
               <span class="personal-export-pop"></span>
             </CrmPopConfirm>
-            <CrmAvatar :size="collapsed ? 25 : 40" class="flex-shrink-0 transition-all" />
-            <div v-if="!collapsed" class="min-w-0 flex-1">
+            <CrmAvatar :size="40" class="flex-shrink-0 transition-all" />
+            <div class="min-w-0 flex-1">
               <div class="one-line-text stariver-sider__user-name">{{ userStore.userInfo.name }}</div>
               <div class="one-line-text stariver-sider__user-role">
                 {{ userStore.userInfo.departmentName || t('common.currentUser') }}
               </div>
             </div>
-            <CrmIcon v-if="!collapsed" type="iconicon_chevron_right" :size="14" class="text-[#94a3b8]" />
+            <CrmIcon type="iconicon_chevron_right" :size="14" class="text-[#94a3b8]" />
           </div>
         </n-dropdown>
-        <button class="stariver-sider__collapse" @click="() => appStore.setMenuCollapsed(!collapsed)">
-          <CrmIcon :type="collapsed ? 'iconicon_menu_fold1' : 'iconicon_menu_unfold1'" :size="16" />
-        </button>
       </div>
     </div>
   </n-layout-sider>
@@ -76,7 +63,6 @@
   import { RouteLocationNormalizedGeneric, useRouter } from 'vue-router';
   import { NDropdown, NLayoutSider, NMenu, NScrollbar, NTooltip } from 'naive-ui';
 
-  import brandLogo from '@/assets/icons/project/brand-logo.svg?raw';
   import brandText from '@/assets/icons/project/brand-text.svg?raw';
 
   import { PersonalEnum } from '@lib/shared/enums/systemEnum';
@@ -88,6 +74,7 @@
   import CrmAvatar from '@/components/business/crm-avatar/index.vue';
   import personalExportDrawer from '@/views/system/business/components/personalExportDrawer.vue';
 
+  import { defaultLoginLogo } from '@/config/business';
   import useUser from '@/hooks/useUser';
   import useVisit from '@/hooks/useVisit';
   import useAppStore from '@/store/modules/app';
@@ -121,7 +108,6 @@
   const userStore = useUserStore();
   const licenseStore = useLicenseStore();
   const router = useRouter();
-  const collapsed = ref(appStore.getMenuCollapsed);
   const menuValue = ref<string>(AppRouteEnum.SYSTEM_ORG);
   const expandedKeys = ref<string[]>([]);
   const personalMenuValue = ref<string>('');
@@ -133,13 +119,6 @@
     import: 'default',
     eager: true,
   }) as Record<string, string>;
-
-  watch(
-    () => appStore.getMenuCollapsed,
-    (value) => {
-      collapsed.value = value;
-    }
-  );
 
   function renderIcon(type: string) {
     const svgSource = type.startsWith('/icons/') ? navIconSources[`../../assets${type}`] : '';
@@ -627,17 +606,11 @@
     cursor: pointer;
   }
   .stariver-sider__brand-logo {
-    display: flex;
     width: 34px;
     height: 34px;
     flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-  }
-  .stariver-sider__brand-logo svg {
     display: block;
-    width: 34px;
-    height: 34px;
+    object-fit: contain;
   }
   .stariver-sider__brand-copy {
     display: flex;
@@ -711,11 +684,16 @@
     justify-content: center;
     border-radius: 999px;
     padding: 0 6px;
-    background: #eef2ff;
-    color: #4f46e5;
+    background: #f1f5f9;
+    color: #64748b;
     font-size: 11px;
     font-weight: 700;
     line-height: 18px;
+  }
+  .crm-layout-sider .n-menu-item-content--selected .stariver-sider__menu-badge,
+  .crm-layout-sider .n-menu-item-content--child-active .stariver-sider__menu-badge {
+    background: #ffffff !important;
+    color: #4f46e5 !important;
   }
   .stariver-sider__bottom {
     display: flex;
@@ -752,22 +730,6 @@
     color: #64748b;
     font-size: 11px;
     line-height: 16px;
-  }
-  .stariver-sider__collapse {
-    display: flex;
-    height: 30px;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    color: #64748b;
-    cursor: pointer;
-  }
-  .stariver-sider__collapse:hover {
-    background: #f1f5f9;
-    color: #0f172a;
   }
   .personal-menu {
     min-width: 120px;

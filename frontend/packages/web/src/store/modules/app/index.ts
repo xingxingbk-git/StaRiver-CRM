@@ -370,6 +370,9 @@ const useAppStore = defineStore('app', {
       // const licenseStore = useLicenseStore();
       // if (!licenseStore.hasLicense()) return;
       const res = await getThirdConfigByType(CompanyTypeEnum.SQLBot);
+      if (!res?.config) {
+        return;
+      }
       if (res.config?.sqlBotChatEnable) {
         await loadScript(res.config?.appSecret as string, { identifier: CompanyTypeEnum.SQLBot });
       }

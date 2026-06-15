@@ -3,10 +3,7 @@
     <LayoutSider @open-personal-info="handleOpenPersonalInfo" />
     <n-layout class="default-layout__main">
       <LayoutHeader
-        v-if="
-          !route.name?.toString().includes(DashboardRouteEnum.DASHBOARD) &&
-          !route.name?.toString().includes(TenderRouteEnum.TENDER)
-        "
+        v-if="!route.name?.toString().includes(TenderRouteEnum.TENDER)"
         :is-preview="innerProps.isPreview"
         :logo="innerLogo"
       />
@@ -29,9 +26,7 @@
   import PageContent from './page-content.vue';
   import PersonalInfoDrawer from '@/views/system/business/components/personalInfoDrawer.vue';
 
-  import { defaultPlatformLogo } from '@/config/business';
-
-  import { DashboardRouteEnum, TenderRouteEnum } from '@/enums/routeEnum';
+  import { TenderRouteEnum } from '@/enums/routeEnum';
 
   const route = useRoute();
 
@@ -57,9 +52,7 @@
       innerProps.value = { ...props };
     }
   );
-  const innerLogo = computed(() =>
-    props.isPreview && innerProps.value.logo ? innerProps.value.logo : defaultPlatformLogo
-  );
+  const innerLogo = computed(() => (props.isPreview && innerProps.value.logo ? innerProps.value.logo : undefined));
 </script>
 
 <style lang="less">

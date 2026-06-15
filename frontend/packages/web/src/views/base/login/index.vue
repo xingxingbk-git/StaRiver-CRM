@@ -6,7 +6,7 @@
         <div class="login-header">
           <div class="logo-title">
             <img :src="innerLogo" class="logo-icon" />
-            <img :src="loginTextSrc" class="login-text-img" />
+            <span class="login-text-img login-text-svg" v-html="loginTextSvg"></span>
           </div>
           <div class="subtitle">{{ t(innerSlogan || '') || t('login.form.title') }}</div>
         </div>
@@ -29,6 +29,8 @@
 <script lang="ts" setup>
   import { computed } from 'vue';
   import { NSpin } from 'naive-ui';
+
+  import loginTextSvg from '@/assets/icons/project/brand-text.svg?raw';
 
   import { useI18n } from '@lib/shared/hooks/useI18n';
 
@@ -54,10 +56,6 @@
 
   const innerSlogan = computed(() => {
     return props.isPreview && props.slogan ? props.slogan : appStore.pageConfig.slogan;
-  });
-
-  const loginTextSrc = computed(() => {
-    return `${import.meta.env.BASE_URL}images/stariver-login-text.svg`;
   });
 </script>
 
@@ -90,6 +88,15 @@
   .login-text-img {
     height: 32px;
     width: auto;
+  }
+  .login-text-svg {
+    display: inline-flex;
+    align-items: center;
+  }
+  .login-text-svg :deep(svg) {
+    height: 32px;
+    width: auto;
+    display: block;
   }
   .subtitle {
     font-size: 18px;

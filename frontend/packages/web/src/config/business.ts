@@ -433,8 +433,6 @@ export const defaultUserInfo: OrgUserInfo = {
 export const defaultLoginImage = `${import.meta.env.BASE_URL}images/login-banner.png`;
 // 默认登录logo
 export const defaultLoginLogo = `${import.meta.env.BASE_URL}images/stariver-login-logo.svg`;
-// 默认左上角平台logo
-export const defaultPlatformLogo = `${import.meta.env.BASE_URL}images/stariver-platform-logo.svg`;
 
 export const platformType = [CompanyTypeEnum.WECOM, CompanyTypeEnum.DINGTALK, CompanyTypeEnum.LARK];
 

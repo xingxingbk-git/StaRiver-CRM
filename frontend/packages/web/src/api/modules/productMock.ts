@@ -7,7 +7,16 @@
  * ====================================================================
  */
 
-// 通用请求封装，走 /front 前缀代理
+interface MockRequestParams {
+  [key: string]: any;
+}
+
+interface MockUserOption {
+  label: string;
+  value: string;
+  departmentId?: string;
+}
+
 async function mockGet<T = any>(url: string): Promise<T> {
   const res = await fetch(`/front${url}`);
   const json = await res.json();
@@ -24,27 +33,30 @@ async function mockPost<T = any>(url: string, data?: any): Promise<T> {
   return json.data;
 }
 
-// MOCK — REMOVE_BEFORE_PRODUCTION
 export async function getProductList() {
   return mockPost('/product/page', { current: 1, pageSize: 20 });
 }
 
-// MOCK — REMOVE_BEFORE_PRODUCTION
 export async function getProductDetail(id: string) {
   return mockGet(`/product/get/${id}`);
 }
 
-// MOCK — REMOVE_BEFORE_PRODUCTION
 export async function addProduct(data: Record<string, any>) {
   return mockPost('/product/add', data);
 }
 
-// MOCK — REMOVE_BEFORE_PRODUCTION
 export async function updateProduct(data: Record<string, any>) {
   return mockPost('/product/update', data);
 }
 
-// MOCK — REMOVE_BEFORE_PRODUCTION
 export async function getRoadmap() {
   return mockGet('/product/roadmap');
+}
+
+export async function getMockDepartmentTree() {
+  return mockGet('/mock/org/department/tree');
+}
+
+export async function getMockUserOptions(params: MockRequestParams = {}): Promise<MockUserOption[]> {
+  return mockPost('/mock/org/user/options', params);
 }

@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="64" viewBox="0 0 300 64" fill="none">
-  <rect width="48" height="48" x="8" y="8" rx="12" fill="#4F46E5"/>
-  <path d="M18 39L32 18L48 39H40L32 28L25 39H18Z" fill="white"/>
-  <path d="M27 43H48" stroke="#A5B4FC" stroke-width="5" stroke-linecap="round"/>
-  <text x="68" y="35" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">StaRiver CRM</text>
-  <text x="69" y="51" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="600">v2.3</text>
-</svg>
