@@ -56,6 +56,15 @@ import {
   GenerateCustomerChartUrl,
   generateCustomerContactChartUrl,
   generateCustomerPoolChartUrl,
+  GetAccountContractListUrl,
+  GetAccountContractStatisticUrl,
+  GetAccountInvoiceListUrl,
+  GetAccountInvoiceStatisticUrl,
+  GetAccountOrderListUrl,
+  GetAccountPaymentListUrl,
+  GetAccountPaymentRecordListUrl,
+  GetAccountPaymentRecordStatisticUrl,
+  GetAccountPaymentStatisticUrl,
   GetAccountPoolViewDetailUrl,
   GetAccountPoolViewListUrl,
   GetAdvancedCustomerContactListUrl,
@@ -68,6 +77,7 @@ import {
   GetCustomerContactListUrl,
   GetCustomerContactTabUrl,
   GetCustomerContactUrl,
+  GetCustomerDetailStatisticUrl,
   GetCustomerFollowPlanFormConfigUrl,
   GetCustomerFollowPlanListUrl,
   GetCustomerFollowPlanUrl,
@@ -116,16 +126,6 @@ import {
   UpdateCustomerRelationItemUrl,
   UpdateCustomerUrl,
   UpdateCustomerViewUrl,
-  GetAccountContractListUrl,
-  GetAccountContractStatisticUrl,
-  GetCustomerDetailStatisticUrl,
-  GetAccountPaymentListUrl,
-  GetAccountPaymentStatisticUrl,
-  GetAccountPaymentRecordStatisticUrl,
-  GetAccountPaymentRecordListUrl,
-  GetAccountInvoiceListUrl,
-  GetAccountInvoiceStatisticUrl,
-  GetAccountOrderListUrl,
 } from '@lib/shared/api/requrls/customer';
 import type {
   ChartResponseDataItem,
@@ -136,6 +136,7 @@ import type {
   TableExportSelectedParams,
   TableQueryParams,
 } from '@lib/shared/models/common';
+import type { ContractItem, PaymentPlanItem, PaymentRecordItem } from '@lib/shared/models/contract';
 import type {
   AddCustomerCollaborationParams,
   AddCustomerRelationItemParams,
@@ -188,7 +189,7 @@ import type { OrderItem } from '@lib/shared/models/order';
 import type { CluePoolItem, FormDesignConfigDetailParams, OpportunityItem } from '@lib/shared/models/system/module';
 import { ValidateInfo } from '@lib/shared/models/system/org';
 import type { ViewItem, ViewParams } from '@lib/shared/models/view';
-import type { ContractItem, PaymentPlanItem, PaymentRecordItem } from '@lib/shared/models/contract';
+
 export default function useProductApi(CDR: CordysAxios) {
   // 添加客户
   function addCustomer(data: SaveCustomerParams) {

@@ -1,50 +1,48 @@
 import type { CordysAxios } from '@lib/shared/api/http/Axios';
 import {
+  AddOrderStatusUrl,
   AddOrderUrl,
   AddOrderViewUrl,
   BatchUpdateOrderUrl,
+  DeleteOrderStatusUrl,
   DeleteOrderUrl,
-  UpdateOrderStageUrl,
   DeleteOrderViewUrl,
+  DownloadOrderUrl,
   DragOrderViewUrl,
   EnableOrderViewUrl,
   FixedOrderViewUrl,
   GetOrderDetailUrl,
-  OrderPageUrl,
-  SortOrderUrl,
-  OrderDetailSnapshotUrl,
-  OrderFormConfigUrl,
-  OrderFormConfigSnapshotUrl,
-  OrderInContractPageUrl,
+  GetOrderStatusConfigUrl,
   GetOrderTabUrl,
   GetOrderViewDetailUrl,
   GetOrderViewListUrl,
+  OrderDetailSnapshotUrl,
+  OrderFormConfigSnapshotUrl,
+  OrderFormConfigUrl,
+  OrderInContractPageUrl,
+  OrderPageUrl,
+  OrderStatisticUrl,
+  SortOrderStatusUrl,
+  SortOrderUrl,
+  UpdateOrderStageUrl,
+  UpdateOrderStatusRollbackUrl,
+  UpdateOrderStatusUrl,
   UpdateOrderUrl,
   UpdateOrderViewUrl,
-  UpdateOrderStatusUrl,
-  UpdateOrderStatusRollbackUrl,
-  SortOrderStatusUrl,
-  AddOrderStatusUrl,
-  GetOrderStatusConfigUrl,
-  DeleteOrderStatusUrl,
-  DownloadOrderUrl,
-  OrderStatisticUrl,
 } from '@lib/shared/api/requrls/order';
-import type { FormDesignConfigDetailParams } from '@lib/shared/models/system/module';
-import type { CommonList, TableDraggedParams } from '@lib/shared/models/common';
+import type { CommonList, TableDraggedParams, TableQueryParams } from '@lib/shared/models/common';
 import type { BatchUpdatePoolAccountParams, CustomerTabHidden } from '@lib/shared/models/customer';
-import type { OrderItem, UpdateOrderParams } from '@lib/shared/models/order';
-import type { TableQueryParams } from '@lib/shared/models/common';
-
-import type { ViewItem, ViewParams } from '@lib/shared/models/view';
 import {
-  StageBoardPageQueryParams,
-  StageBoardDraggedParams,
-  StageBaseParams,
   OpportunityStageConfig,
+  StageBaseParams,
+  StageBoardDraggedParams,
+  StageBoardPageQueryParams,
   UpdateOpportunityStageRollbackParams,
   UpdateStageBaseParams,
 } from '@lib/shared/models/opportunity';
+import type { OrderItem, UpdateOrderParams } from '@lib/shared/models/order';
+import type { FormDesignConfigDetailParams } from '@lib/shared/models/system/module';
+import type { ViewItem, ViewParams } from '@lib/shared/models/view';
 
 export default function useOrderApi(CDR: CordysAxios) {
   // 列表

@@ -1,6 +1,7 @@
-import type { ModuleField, TableQueryParams } from './common';
-import type { FormDesignConfigDetailParams } from '@lib/shared/models/system/module';
 import { ProcessStatusEnum } from '@lib/shared/enums/process';
+import type { FormDesignConfigDetailParams } from '@lib/shared/models/system/module';
+
+import type { ModuleField, TableQueryParams } from './common';
 
 export interface OpportunityItem {
   id: string; // 商机ID
@@ -89,7 +90,7 @@ export interface UpdateOpportunityStageRollbackParams {
   endRollBack: boolean;
 }
 
-export interface StageBaseParams{
+export interface StageBaseParams {
   name: string;
   type: 'AFOOT' | 'END';
   dropPosition: number;
@@ -100,7 +101,7 @@ export interface AddOpportunityStageParams extends StageBaseParams {
   rate: string;
 }
 
-export interface StageConfigBaseItem{
+export interface StageConfigBaseItem {
   id: string;
   createUser: string;
   updateUser: string;
@@ -175,7 +176,7 @@ export interface BatchUpdateQuotationStatusParams {
   approvalStatus: ProcessStatusEnum;
 }
 
-export interface  BatchVoidQuotationStatusParams {
+export interface BatchVoidQuotationStatusParams {
   ids: (string | number)[];
 }
 

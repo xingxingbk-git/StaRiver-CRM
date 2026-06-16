@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 export enum OpportunitySearchTypeEnum {
   ALL = 'ALL',
   SELF = 'SELF',

@@ -16,20 +16,27 @@ import {
   DeleteReasonUrl,
   DownloadAttachmentUrl,
   DownloadPictureUrl,
+  GetAdvancedSwitchUrl,
   GetClueCapacityPageUrl,
   GetCluePoolPageUrl,
   GetCustomerCapacityPageUrl,
   GetCustomerPoolPageUrl,
+  GetFieldBusinessTitleListUrl,
   GetFieldClueListUrl,
+  GetFieldContactListUrl,
   GetFieldContractListUrl,
   GetFieldContractPaymentPlanListUrl,
   GetFieldContractPaymentRecordListUrl,
-  GetFieldContactListUrl,
   GetFieldCustomerListUrl,
   GetFieldDeptTreeUrl,
   GetFieldDeptUerTreeUrl,
+  GetFieldDisplayListUrl,
   GetFieldOpportunityListUrl,
+  GetFieldOrderListUrl,
+  GetFieldPriceListUrl,
   GetFieldProductListUrl,
+  GetFieldQuotationListUrl,
+  GetFieldRefDetailListUrl,
   GetFormDesignConfigUrl,
   GetModuleMaskSearchConfigUrl,
   getModuleNavConfigListUrl,
@@ -51,6 +58,7 @@ import {
   ResetSearchConfigUrl,
   SaveFormDesignConfigUrl,
   SearchConfigUrl,
+  SetDisplayAdvancedUrl,
   SetModuleTopNavSortUrl,
   SortReasonUrl,
   SwitchCluePoolStatusUrl,
@@ -58,7 +66,6 @@ import {
   switchOpportunityStatusUrl,
   toggleModuleNavStatusUrl,
   UpdateClueCapacityUrl,
-  GetFieldDisplayListUrl,
   UpdateCluePoolUrl,
   UpdateCustomerCapacityUrl,
   UpdateCustomerPoolUrl,
@@ -67,19 +74,15 @@ import {
   UpdateReasonUrl,
   UploadTempAttachmentUrl,
   UploadTempFileUrl,
-  GetFieldPriceListUrl,
-  GetFieldQuotationListUrl,
-  GetFieldBusinessTitleListUrl,
-  SetDisplayAdvancedUrl,
-  GetAdvancedSwitchUrl,
-  GetFieldRefDetailListUrl,
-  GetFieldOrderListUrl,
 } from '@lib/shared/api/requrls/system/module';
-import { QuotationItem } from '@lib/shared/models/opportunity';
+import { FormDesignKeyEnum } from '@lib/shared/enums/formDesignEnum';
 import { ModuleConfigEnum, ReasonTypeEnum } from '@lib/shared/enums/moduleEnum';
 import type { ClueListItem } from '@lib/shared/models/clue';
 import type { CommonList, TableQueryParams } from '@lib/shared/models/common';
+import type { BusinessTitleItem, ContractItem, PaymentPlanItem, PaymentRecordItem } from '@lib/shared/models/contract';
 import type { CustomerContractListItem, CustomerListItem } from '@lib/shared/models/customer';
+import { QuotationItem } from '@lib/shared/models/opportunity';
+import type { OrderItem } from '@lib/shared/models/order';
 import type { ProductListItem } from '@lib/shared/models/product';
 import type {
   CapacityItem,
@@ -107,9 +110,6 @@ import type {
 } from '@lib/shared/models/system/module';
 import type { DeptUserTreeNode } from '@lib/shared/models/system/role';
 import type { Result } from '@lib/shared/types/axios';
-import { FormDesignKeyEnum } from '@lib/shared/enums/formDesignEnum';
-import type { BusinessTitleItem, ContractItem, PaymentPlanItem, PaymentRecordItem } from '@lib/shared/models/contract';
-import type { OrderItem } from '@lib/shared/models/order';
 
 export default function useProductApi(CDR: CordysAxios) {
   // 模块首页-导航模块列表

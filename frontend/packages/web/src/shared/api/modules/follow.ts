@@ -1,6 +1,8 @@
 import type { CordysAxios } from '@lib/shared/api/http/Axios';
 import {
+  AddFollowPlanUrl,
   AddFollowPlanViewUrl,
+  AddFollowRecordUrl,
   AddFollowRecordViewUrl,
   DeleteFollowPlanUrl,
   DeleteFollowPlanViewUrl,
@@ -26,8 +28,6 @@ import {
   UpdateFollowPlanUrl,
   UpdateFollowPlanViewUrl,
   UpdateFollowRecordUrl,
-  AddFollowRecordUrl,
-  AddFollowPlanUrl,
   UpdateFollowRecordViewUrl,
 } from '@lib/shared/api/requrls/follow';
 import type { CommonList, TableDraggedParams } from '@lib/shared/models/common';

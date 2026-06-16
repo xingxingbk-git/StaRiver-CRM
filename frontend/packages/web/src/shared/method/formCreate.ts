@@ -1,8 +1,8 @@
-import type { CommonList, ModuleField } from '../models/common';
 import { FieldTypeEnum } from '../enums/formDesignEnum';
-import type { FormCreateField, FormDetail } from '@cordys/web/src/components/business/crm-form-create/types';
-import { formatTimeValue, getCityPath, getIndustryPath } from './index';
 import { useI18n } from '../hooks/useI18n';
+import type { CommonList, ModuleField } from '../models/common';
+import { formatTimeValue, getCityPath, getIndustryPath } from './index';
+import type { FormCreateField, FormDetail } from '@cordys/web/src/components/business/crm-form-create/types';
 
 export const linkAllAcceptTypes = [FieldTypeEnum.INPUT, FieldTypeEnum.TEXTAREA];
 export const dataSourceTypes = [FieldTypeEnum.DATA_SOURCE, FieldTypeEnum.DATA_SOURCE_MULTIPLE];
@@ -327,15 +327,15 @@ export function transformData({
       });
     }
     if (field.businessKey && !field.resourceFieldId) {
-      const fieldId = field.businessKey;
-      const options = originalData?.optionMap?.[fieldId]?.map((e: any) => ({
+      const businessFieldId = field.businessKey;
+      const options = originalData?.optionMap?.[businessFieldId]?.map((e: any) => ({
         ...e,
         name: e.name || t('common.optionNotExist'),
       }));
-      fieldOptionMap[fieldId] = options || [];
-      if (addressFieldIds.includes(fieldId)) {
+      fieldOptionMap[businessFieldId] = options || [];
+      if (addressFieldIds.includes(businessFieldId)) {
         // 地址类型字段，解析代码替换成省市区
-        const addressArr: string[] = item[fieldId]?.split('-')?.filter(Boolean) || [];
+        const addressArr: string[] = item[businessFieldId]?.split('-')?.filter(Boolean) || [];
         let value = '';
         if (!addressArr.length) {
           value = '-';
@@ -344,10 +344,12 @@ export function transformData({
           const rest = addressArr.filter((e, i) => i > 0).join('-');
           value = rest ? `${getCityPath(country)}-${rest}` : getCityPath(country);
         }
-        businessFieldAttr[fieldId] = value;
-      } else if (industryFieldIds.includes(fieldId)) {
+        businessFieldAttr[businessFieldId] = value;
+      } else if (industryFieldIds.includes(businessFieldId)) {
         // 行业类型字段，解析代码替换成行业名称
-        businessFieldAttr[fieldId] = item[fieldId] ? getIndustryPath(item[fieldId] as string) : '-';
+        businessFieldAttr[businessFieldId] = item[businessFieldId]
+          ? getIndustryPath(item[businessFieldId] as string)
+          : '-';
       } else if (timeFieldIds.includes(fieldId)) {
         // 时间类型字段，格式化时间显示
         businessFieldAttr[fieldId] = formatTimeValue(item[fieldId], field.dateType);

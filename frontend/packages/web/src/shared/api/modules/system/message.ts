@@ -108,7 +108,7 @@ export default function useProductApi(CDR: CordysAxios) {
   }
 
   // 获取消息任务配置详情
-  function getMessageTaskConfigDetail(data: { module: string ,event:string}) {
+  function getMessageTaskConfigDetail(data: { module: string; event: string }) {
     return CDR.post<MessageSettingsConfig>({ url: getMessageTaskConfigDetailUrl, data });
   }
 

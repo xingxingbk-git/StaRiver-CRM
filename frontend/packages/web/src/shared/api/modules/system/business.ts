@@ -48,13 +48,13 @@ import type {
   AuthTableQueryParams,
   AuthUpdateParams,
   ConfigEmailParams,
-  ThirdPartyResourceConfig,
   DEOrgItem,
   PageConfigReturns,
   SavePageConfigParams,
-  ThirdPartyResource,
-  UpdateApiKeyParams,
   ThirdPartyDEConfig,
+  ThirdPartyResource,
+  ThirdPartyResourceConfig,
+  UpdateApiKeyParams,
 } from '@lib/shared/models/system/business';
 import {
   ExportCenterItem,

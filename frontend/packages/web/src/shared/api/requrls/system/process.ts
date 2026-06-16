@@ -11,7 +11,7 @@ export const ReviewResourceUrl = '/approval-resource/push'; // 提审
 export const RevokeResourceUrl = '/approval-resource/revoke'; // 撤销
 
 // 审批流webHook连接测试
-export const TestApprovalWebHookUrl = '/approval-flow/webhook/test '; 
+export const TestApprovalWebHookUrl = '/approval-flow/webhook/test ';
 
 // 审批待办
 export const GetProcessedApprovalTodosUrl = '/approval-todo/processed/page'; // 已处理审批待办列表

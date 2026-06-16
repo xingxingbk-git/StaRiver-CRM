@@ -5,6 +5,7 @@ import {
   BatchDeleteProductUrl,
   BatchUpdateProductPriceUrl,
   BatchUpdateProductUrl,
+  CopyProductPriceUrl,
   DeleteProductPriceUrl,
   DeleteProductUrl,
   DownloadProductPriceTemplateUrl,
@@ -26,7 +27,6 @@ import {
   PreCheckProductImportUrl,
   UpdateProductPriceUrl,
   UpdateProductUrl,
-  CopyProductPriceUrl,
 } from '@lib/shared/api/requrls/product';
 import type {
   CommonList,
