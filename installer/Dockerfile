@@ -11,7 +11,6 @@ FROM eclipse-temurin:21-jdk AS build
 WORKDIR /build
 COPY . /build
 COPY --from=frontend /frontend/packages/web/dist /build/frontend/packages/web/dist
-COPY --from=frontend /frontend/packages/mobile/dist /build/frontend/packages/mobile/dist
 
 RUN ./mvnw clean package -DskipTests -pl '!frontend' && \
     mkdir backend/app/target/dependency && \

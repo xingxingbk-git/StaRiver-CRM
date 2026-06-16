@@ -7,7 +7,9 @@
     </template>
     <template #subtitle>
       <span class="sr-product-badge">{{ productList.length }} 款产品</span>
-      <span class="sr-product-subtitle">覆盖 {{ productCount.industry }} 个行业 · 服务 {{ productCount.customer }} 家客户</span>
+      <span class="sr-product-subtitle"
+        >覆盖 {{ productCount.industry }} 个行业 · 服务 {{ productCount.customer }} 家客户</span
+      >
     </template>
 
     <div class="stariver-product-stack">
@@ -113,7 +115,7 @@
 
   import StariverModulePage from '@/components/business/stariver-module-page/index.vue';
 
-  import { getProductList, getRoadmap } from '@/api/modules/productMock';
+  import { getProductList, getRoadmap } from '@/api/modules/productManagement';
 
   const router = useRouter();
 
@@ -171,24 +173,22 @@
 
 <style lang="less" scoped>
   .sr-btn-create {
-    height: 32px;
-    border-color: #0f172a;
-    border-radius: 6px;
     padding: 0 14px;
-    background: #0f172a;
-    color: #ffffff;
+    height: 32px;
     font-size: 12px;
     font-weight: 500;
+    border-color: #0f172a;
+    border-radius: 6px;
+    color: #ffffff;
+    background: #0f172a;
     line-height: 30px;
-
     &:hover,
     &:focus {
       border-color: #1e293b;
-      background: #1e293b;
       color: #ffffff;
+      background: #1e293b;
     }
   }
-
   .stariver-product-stack {
     display: flex;
     height: 100%;
@@ -203,46 +203,40 @@
     gap: 10px;
     flex-wrap: wrap;
   }
-
   .stariver-product-card {
     display: flex;
+    padding: 15px;
     width: 400px;
-    flex-direction: column;
-    gap: 10px;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     background: #ffffff;
-    padding: 15px;
-    cursor: pointer;
     transition: box-shadow 0.2s;
-
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
     &:hover {
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 2px 8px rgb(15 23 42 / 8%);
     }
   }
-
   .stariver-product-card__head {
     display: flex;
     align-items: center;
     gap: 10px;
   }
-
   .stariver-product-card__icon {
     display: flex;
+    justify-content: center;
+    align-items: center;
     width: 34px;
     height: 34px;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
     border-radius: 7px;
-
+    flex-shrink: 0;
     span {
       font-size: 13px;
       font-weight: 700;
       line-height: 17px;
     }
   }
-
   .stariver-product-card__info {
     display: flex;
     min-width: 0;
@@ -250,85 +244,76 @@
     flex-direction: column;
     gap: 2px;
   }
-
   .stariver-product-card__code {
-    color: #4f46e5;
     font-size: 11px;
     font-weight: 700;
+    color: #4f46e5;
     line-height: 14px;
   }
-
   .stariver-product-card__name {
-    color: #0f172a;
     font-size: 14px;
     font-weight: 700;
+    color: #0f172a;
     line-height: 17px;
   }
-
   .stariver-product-card__pill {
     display: inline-flex;
-    height: 18px;
-    flex-shrink: 0;
     align-items: center;
-    border-radius: 12px;
     padding: 0 6px;
+    height: 18px;
     font-size: 11px;
     font-weight: 500;
+    border-radius: 12px;
+    flex-shrink: 0;
     line-height: 13px;
   }
-
   .stariver-product-card__desc {
+    /* stylelint-disable-next-line value-no-vendor-prefix */
     display: -webkit-box;
     overflow: hidden;
-    -webkit-box-orient: vertical;
-    color: #64748b;
+    height: 30px;
     font-size: 12px;
+    color: #64748b;
+    -webkit-box-orient: vertical;
     line-height: 15px;
     -webkit-line-clamp: 2;
   }
-
   .stariver-product-card__meta {
     display: flex;
-    gap: 24px;
-    border-top: 1px solid #eef2f7;
     padding-top: 8px;
-
+    border-top: 1px solid #eef2f7;
+    gap: 24px;
     span {
-      color: #94a3b8;
       font-size: 11px;
+      color: #94a3b8;
       line-height: 14px;
     }
   }
-
   .stariver-product-card__stats {
     display: flex;
-    gap: 8px;
-    border-top: 1px solid #e2e8f0;
     padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    gap: 8px;
   }
-
   .stariver-product-card__stat {
     display: flex;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #f8fafc;
     flex: 1;
     flex-direction: column;
     gap: 2px;
-    border-radius: 4px;
-    background: #f8fafc;
-    padding: 4px 8px;
   }
-
   .stariver-product-card__stat-label {
-    color: #94a3b8;
     font-size: 10px;
+    color: #94a3b8;
     line-height: 12px;
   }
-
   .stariver-product-card__stat-value {
-    color: #0f172a;
     font-size: 15px;
     font-weight: 700;
+    color: #0f172a;
     line-height: 20px;
-
     &--accent {
       color: #4f46e5;
     }
@@ -336,140 +321,125 @@
 
   // 版本路线图面板
   .stariver-roadmap-panel {
+    padding: 16px;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     background: #ffffff;
-    padding: 16px;
   }
-
   .stariver-roadmap-panel__header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 14px;
   }
-
   .stariver-roadmap-panel__title {
-    color: #0f172a;
     font-size: 13px;
     font-weight: 500;
+    color: #0f172a;
     line-height: 18px;
   }
-
   .stariver-roadmap-panel__pills {
     display: flex;
     gap: 8px;
   }
-
   .stariver-roadmap-pill {
+    padding: 0 10px;
     height: 26px;
+    font-size: 12px;
     border: 1px solid #e2e8f0;
     border-radius: 99px;
-    padding: 0 10px;
-    background: #ffffff;
     color: #64748b;
-    font-size: 12px;
+    background: #ffffff;
     line-height: 24px;
     cursor: pointer;
-
     &--active {
       border-color: #0f172a;
-      background: #0f172a;
       color: #ffffff;
+      background: #0f172a;
     }
   }
-
   .stariver-roadmap-table__head {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 100px;
-    gap: 12px;
-    border-bottom: 1px solid #e2e8f0;
-    background: #f8fafc;
+    align-items: center;
     padding: 0 12px;
     min-height: 36px;
-    align-items: center;
-
-    span {
-      color: #64748b;
-      font-size: 12px;
-      font-weight: 500;
-    }
-  }
-
-  .stariver-roadmap-table__row {
-    display: grid;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 100px;
     gap: 12px;
-    border-bottom: 1px solid #f1f5f9;
+    span {
+      font-size: 12px;
+      font-weight: 500;
+      color: #64748b;
+    }
+  }
+  .stariver-roadmap-table__row {
+    display: grid;
+    align-items: center;
     padding: 0 12px;
     min-height: 44px;
-    align-items: center;
-
+    border-bottom: 1px solid #f1f5f9;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 100px;
+    gap: 12px;
     span {
-      color: #0f172a;
       font-size: 13px;
+      color: #0f172a;
     }
   }
 
   // 产品标签
   .stariver-product-chip {
     display: inline-flex;
-    height: 22px;
     align-items: center;
-    border-radius: 4px;
     padding: 0 8px;
-    font-style: normal;
+    height: 22px;
     font-size: 12px;
     font-weight: 500;
-
+    border-radius: 4px;
+    font-style: normal;
     &--stariver {
-      background: #eef2ff;
       color: #4f46e5;
+      background: #eef2ff;
     }
-
     &--optiqa {
-      background: #fff7ed;
       color: #ea580c;
+      background: #fff7ed;
     }
   }
 
   // 状态标签
   .stariver-status-pill {
     display: inline-flex;
-    height: 20px;
     align-items: center;
-    border-radius: 12px;
     padding: 0 8px;
-    font-style: normal;
+    height: 20px;
     font-size: 12px;
     font-weight: 500;
-
+    border-radius: 12px;
+    font-style: normal;
     &--released {
-      background: rgba(22, 163, 74, 0.1);
       color: #16a34a;
+      background: rgb(22 163 74 / 10%);
     }
-
     &--developing {
-      background: rgba(79, 70, 229, 0.1);
       color: #4f46e5;
+      background: rgb(79 70 229 / 10%);
     }
-
     &--planning {
-      background: #f1f5f9;
       color: #64748b;
+      background: #f1f5f9;
     }
   }
 
   // 查看路线图链接按钮
   .stariver-link-btn {
-    border: none;
     padding: 0;
-    background: transparent;
-    color: #4f46e5;
     font-size: 12px;
     font-weight: 500;
+    border: none;
+    color: #4f46e5;
+    background: transparent;
     cursor: pointer;
-
     &:hover {
       text-decoration: underline;
     }

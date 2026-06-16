@@ -90,11 +90,9 @@
                         <configuration>
                             <skip>${skipAntRunForJenkins}</skip>
                             <target>
-                                <!-- 复制移动端资源到静态目录 -->
-                                <copy todir="src/main/resources/static/mobile" failonerror="false">
-                                    <fileset dir="../../frontend/packages/mobile/dist"/>
-                                </copy>
                                 <!-- 复制WEB端资源到静态目录 -->
+                                <delete dir="src/main/resources/static" quiet="true"/>
+                                <mkdir dir="src/main/resources/static"/>
                                 <copy todir="src/main/resources/static" failonerror="false">
                                     <fileset dir="../../frontend/packages/web/dist"/>
                                 </copy>

@@ -1,18 +1,21 @@
 <template>
   <n-layout-header class="stariver-layout-header" bordered>
     <div class="stariver-layout-header__breadcrumb">
-      <button
-        v-if="moduleBreadcrumbTarget"
-        type="button"
-        class="stariver-layout-header__breadcrumb-link"
-        @click="goModuleBreadcrumb"
-      >
-        {{ currentModuleTitle }}
-      </button>
-      <span v-else>{{ currentModuleTitle }}</span>
-      <template v-if="currentPageTitle">
-        <span class="stariver-layout-header__slash">/</span>
-        <span class="stariver-layout-header__current">{{ currentPageTitle }}</span>
+      <template v-for="(item, index) in breadcrumbItems" :key="`${item.label}-${index}`">
+        <span v-if="index > 0" class="stariver-layout-header__slash">/</span>
+        <button
+          v-if="item.clickable"
+          type="button"
+          class="stariver-layout-header__breadcrumb-link"
+          @click="goModuleBreadcrumb"
+        >
+          {{ item.label }}
+        </button>
+        <span
+          v-else
+          :class="item.current ? 'stariver-layout-header__current' : 'stariver-layout-header__breadcrumb-text'"
+          >{{ item.label }}</span
+        >
       </template>
     </div>
     <div v-if="!props.isPreview" class="stariver-layout-header__actions">
@@ -177,6 +180,12 @@
   const currentPageTitle = computed(() => {
     const routeName = route.name?.toString() ?? '';
     const locale = route.meta?.locale as string | undefined;
+    if (routeName === ProductRouteEnum.PRODUCT_REQUIREMENT && route.query.mode === 'create') {
+      return '新建产品需求';
+    }
+    if (routeName === ProductRouteEnum.PRODUCT_REQUIREMENT && route.query.mode === 'detail') {
+      return 'PRM-2026-0106-01';
+    }
     if (routeName in pageTitleMap) {
       return pageTitleMap[routeName];
     }
@@ -189,6 +198,39 @@
       return ProductRouteEnum.PRODUCT_PRO;
     }
     return '';
+  });
+
+  const breadcrumbItems = computed(() => {
+    const routeName = route.name?.toString() ?? '';
+    const items = [
+      {
+        label: currentModuleTitle.value,
+        clickable: Boolean(moduleBreadcrumbTarget.value),
+        current: false,
+      },
+    ];
+
+    if (routeName === ProductRouteEnum.PRODUCT_REQUIREMENT && route.query.mode === 'create') {
+      items.push(
+        { label: '需求管理', clickable: false, current: false },
+        { label: '新建产品需求', clickable: false, current: true }
+      );
+      return items;
+    }
+
+    if (routeName === ProductRouteEnum.PRODUCT_REQUIREMENT && route.query.mode === 'detail') {
+      items.push(
+        { label: '需求管理', clickable: false, current: false },
+        { label: 'PRM-2026-0106-01', clickable: false, current: true }
+      );
+      return items;
+    }
+
+    if (currentPageTitle.value) {
+      items.push({ label: currentPageTitle.value, clickable: false, current: true });
+    }
+
+    return items;
   });
 
   const showSearch = computed(() => lastScopedOptions.value.length > 0);
@@ -245,73 +287,67 @@
 <style lang="less" scoped>
   .stariver-layout-header {
     display: flex;
-    height: 60px;
-    flex-shrink: 0;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     padding: 0 16px 0 18px;
-    background: #ffffff;
+    height: 60px;
     border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+    flex-shrink: 0;
   }
-
   .stariver-layout-header__breadcrumb {
     display: flex;
-    min-width: 0;
     align-items: center;
-    gap: 8px;
-    color: #64748b;
+    min-width: 0;
     font-size: 13px;
+    color: #64748b;
+    gap: 8px;
     line-height: 20px;
   }
-
   .stariver-layout-header__slash {
     color: #cbd5e1;
   }
-
   .stariver-layout-header__current {
-    color: #0f172a;
     font-weight: 600;
+    color: #0f172a;
   }
-
-  .stariver-layout-header__breadcrumb-link {
-    border: 0;
-    padding: 0;
-    background: transparent;
+  .stariver-layout-header__breadcrumb-text {
     color: #64748b;
+  }
+  .stariver-layout-header__breadcrumb-link {
+    padding: 0;
+    border: 0;
+    color: #64748b;
+    background: transparent;
     font: inherit;
     cursor: pointer;
-
     &:hover {
       color: #4666e5;
     }
   }
-
   .stariver-layout-header__actions {
     display: flex;
     align-items: center;
     gap: 8px;
   }
-
   .stariver-layout-header__search {
     display: flex;
+    align-items: center;
+    padding: 0 8px 0 10px;
     width: 278px;
     height: 32px;
-    align-items: center;
-    gap: 8px;
+    font-size: 12px;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
-    padding: 0 8px 0 10px;
-    background: #f8fafc;
     color: #64748b;
-    font-size: 12px;
+    background: #f8fafc;
+    gap: 8px;
     cursor: pointer;
   }
-
   .stariver-layout-header__search:disabled {
     cursor: default;
     opacity: 0.65;
   }
-
   .stariver-layout-header__search span {
     flex: 1;
     overflow: hidden;
@@ -319,21 +355,20 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
   .stariver-layout-header__search kbd {
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
     padding: 1px 5px;
-    background: #ffffff;
-    color: #94a3b8;
     font-size: 11px;
     font-family: inherit;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    color: #94a3b8;
+    background: #ffffff;
     line-height: 16px;
   }
-
   .stariver-layout-header__icon {
     --n-width: 32px !important;
     --n-height: 32px !important;
+
     color: #475569;
   }
 </style>

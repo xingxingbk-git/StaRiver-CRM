@@ -6,15 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StaRiver CRM</title>
   </head>
-  <script type="module">
-    function isMobileDevice() {
-      return /Mobile|Android/i.test(navigator.userAgent);
-    }
-
-    if (isMobileDevice()) {
-      window.location.href = import.meta.env.DEV ? 'http://localhost:3000' : `${window.location.origin}/mobile`;
-    }
-  </script>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>

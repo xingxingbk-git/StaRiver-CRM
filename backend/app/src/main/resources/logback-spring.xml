@@ -3,6 +3,7 @@
 
     <property resource="commons.properties"/>
     <property file="/opt/cordys/conf/cordys-crm.properties" ignoreResourceNotFound="true"/>
+    <property file="./installer/conf/cordys-crm-docker.properties" ignoreResourceNotFound="true"/>
 
     <!-- Console 输出 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">

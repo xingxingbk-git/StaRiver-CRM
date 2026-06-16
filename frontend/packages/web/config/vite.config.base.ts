@@ -36,6 +36,10 @@ export default defineConfig({
   resolve: {
     alias: [
       {
+        find: '@lib/shared',
+        replacement: resolve(__dirname, '../src/shared'),
+      },
+      {
         find: '@locale',
         replacement: resolve(__dirname, '../src/locale'),
       },

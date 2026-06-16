@@ -166,7 +166,8 @@
       flex-direction: column;
       gap: 8px;
       .crm-approval-approver-content__reason {
-        display: box;
+        /* stylelint-disable-next-line value-no-vendor-prefix */
+        display: -webkit-box;
         overflow: hidden;
         padding: 8px;
         font-size: 14px;

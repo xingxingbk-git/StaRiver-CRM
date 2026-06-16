@@ -2,7 +2,7 @@
   <n-scrollbar class="flex flex-col p-[16px]">
     <div class="crm-form-design-field-title">{{ t('crmFormDesign.basicField') }}</div>
     <VueDraggable
-      v-model="basicFields"
+      :model-value="basicFields"
       :animation="150"
       ghost-class="crm-form-design--composition-item-ghost"
       :group="{ name: 'crmFormDesign', pull: 'clone', put: false }"
@@ -24,7 +24,7 @@
     </VueDraggable>
     <div class="crm-form-design-field-title">{{ t('crmFormDesign.advancedField') }}</div>
     <VueDraggable
-      v-model="realAdvancedFields"
+      :model-value="realAdvancedFields"
       :animation="150"
       ghost-class="crm-form-design--composition-item-ghost"
       :group="{ name: 'crmFormDesign', pull: 'clone', put: false }"

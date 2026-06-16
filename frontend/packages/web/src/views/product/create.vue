@@ -100,11 +100,13 @@
                     :placeholder="`请输入一级模块名称，例如：模块 ${moduleIndex + 1}`"
                   />
                   <n-select
+                    v-model:value="module.ownerId"
                     class="sr-module-owner"
                     placeholder="模块负责人"
                     :options="userOptions"
                     filterable
                     clearable
+                    @update:value="(_value, option) => handleModuleOwnerChange(module, option)"
                   />
                   <button
                     v-if="form.modules.length > 1"
@@ -123,11 +125,13 @@
                       :placeholder="`请输入二级模块名称 ${childIndex + 1}`"
                     />
                     <n-select
+                      v-model:value="child.ownerId"
                       class="sr-module-owner"
                       placeholder="负责人"
                       :options="userOptions"
                       filterable
                       clearable
+                      @update:value="(_value, option) => handleModuleOwnerChange(child, option)"
                     />
                     <button
                       v-if="module.children.length > 1"
@@ -155,18 +159,24 @@
 
   import StariverModulePage from '@/components/business/stariver-module-page/index.vue';
 
-  import { addProduct, getMockUserOptions, getProductDetail, updateProduct } from '@/api/modules/productMock';
+  import { addProduct, getProductDetail, getUserOptions, updateProduct } from '@/api/modules/productManagement';
 
   import type { SelectBaseOption } from 'naive-ui/es/select/src/interface';
 
   interface ProductModuleChild {
     id: string;
     name: string;
+    ownerId: string | null;
+    ownerName: string;
+    pendingCount: number;
   }
 
   interface ProductModuleGroup {
     id: string;
     name: string;
+    ownerId: string | null;
+    ownerName: string;
+    pendingCount: number;
     children: ProductModuleChild[];
   }
 
@@ -199,23 +209,41 @@
   const pageDescription = computed(() =>
     isEditMode.value ? '调整产品资料、负责人和模块架构信息' : '创建一个新的产品条目，并维护负责人和模块结构'
   );
-  const primaryActionText = computed(() => (isEditMode.value ? '保存修改' : '提交 ->'));
+  const primaryActionText = computed(() => (isEditMode.value ? '保存修改' : '提交 →'));
   const userOptions = ref<Array<{ label: string; value: string }>>([]);
 
-  function createModuleChild(name = ''): ProductModuleChild {
+  function createModuleChild(
+    name = '',
+    ownerId: string | null = null,
+    ownerName = '',
+    pendingCount = 0
+  ): ProductModuleChild {
     return {
       id: `module-child-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
       name,
+      ownerId,
+      ownerName,
+      pendingCount,
     };
   }
 
   function createModuleGroup(name = '', children: Array<string | ProductModuleChild> = []): ProductModuleGroup {
     const normalizedChildren = children.length
-      ? children.map((child) => createModuleChild(typeof child === 'string' ? child : child.name || ''))
+      ? children.map((child) =>
+          createModuleChild(
+            typeof child === 'string' ? child : child.name || '',
+            typeof child === 'string' ? null : child.ownerId || null,
+            typeof child === 'string' ? '' : child.ownerName || '',
+            typeof child === 'string' ? 0 : Number(child.pendingCount || 0)
+          )
+        )
       : [createModuleChild()];
     return {
       id: `module-group-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
       name,
+      ownerId: null,
+      ownerName: '',
+      pendingCount: 0,
       children: normalizedChildren,
     };
   }
@@ -223,7 +251,7 @@
   const form = reactive<ProductFormState>({
     code: '',
     name: '',
-    version: '',
+    version: 'v1.0',
     status: '',
     releaseDate: null,
     slogan: '',
@@ -245,8 +273,19 @@
           return createModuleGroup(module);
         }
         if (module && typeof module === 'object') {
-          const typedModule = module as { name?: string; children?: Array<string | ProductModuleChild> };
-          return createModuleGroup(typedModule.name || '', typedModule.children || []);
+          const typedModule = module as {
+            name?: string;
+            ownerId?: string;
+            ownerName?: string;
+            pendingCount?: number;
+            children?: Array<string | ProductModuleChild>;
+          };
+          return {
+            ...createModuleGroup(typedModule.name || '', typedModule.children || []),
+            ownerId: typedModule.ownerId || null,
+            ownerName: typedModule.ownerName || '',
+            pendingCount: Number(typedModule.pendingCount || 0),
+          };
         }
         return null;
       })
@@ -258,7 +297,7 @@
   function fillForm(data: Record<string, any>) {
     form.code = data.code || '';
     form.name = data.name || '';
-    form.version = data.version || '';
+    form.version = data.version || 'v1.0';
     form.status = data.status || '';
     form.releaseDate = data.releaseDate || null;
     form.slogan = data.slogan || data.description || '';
@@ -302,8 +341,15 @@
     form.devOwner = label;
   }
 
+  function handleModuleOwnerChange(
+    target: ProductModuleGroup | ProductModuleChild,
+    option: SelectBaseOption | null | SelectBaseOption[]
+  ) {
+    target.ownerName = getOptionLabel(option);
+  }
+
   async function loadUserOptions(keyword = '') {
-    userOptions.value = await getMockUserOptions({ keyword });
+    userOptions.value = await getUserOptions(keyword);
   }
 
   function handleUserSearch(keyword: string) {
@@ -314,14 +360,24 @@
     const normalizedModules = form.modules
       .map((module) => ({
         name: module.name.trim(),
-        children: module.children.map((child) => child.name.trim()).filter(Boolean),
+        ownerId: module.ownerId || '',
+        ownerName: module.ownerName,
+        pendingCount: module.pendingCount || 0,
+        children: module.children
+          .map((child) => ({
+            name: child.name.trim(),
+            ownerId: child.ownerId || '',
+            ownerName: child.ownerName,
+            pendingCount: child.pendingCount || 0,
+          }))
+          .filter((child) => child.name),
       }))
       .filter((module) => module.name || module.children.length);
 
     return {
       code: form.code.trim(),
       name: form.name.trim(),
-      version: form.version.trim(),
+      version: form.version.trim() || 'v1.0',
       status: form.status,
       releaseDate: form.releaseDate || '',
       slogan: form.slogan.trim(),
@@ -398,274 +454,116 @@
 </script>
 
 <style lang="less" scoped>
-  .sr-create-page {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .sr-create-page__subtitle {
-    color: #64748b;
-    font-size: 12px;
-    line-height: 18px;
-  }
-
-  .sr-create-actions {
-    display: flex;
-    gap: 8px;
-  }
-
-  .sr-btn {
-    height: 32px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 0 14px;
-    background: #ffffff;
-    color: #334155;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 30px;
-    cursor: pointer;
-
-    &--primary {
-      border-color: #0f172a;
-      background: #0f172a;
-      color: #ffffff;
-
-      &:hover {
-        border-color: #1e293b;
-        background: #1e293b;
-      }
-    }
-
-    &--ghost {
-      background: #ffffff;
-
-      &:hover {
-        background: #f8fafc;
-      }
-    }
-  }
-
-  .sr-panel {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background: #ffffff;
-    padding: 16px;
-  }
-
-  .sr-panel__title {
-    margin-bottom: 16px;
-    color: #0f172a;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 20px;
-  }
-
-  .sr-form-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px 16px;
-  }
-
-  .sr-field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .sr-field--full {
-    grid-column: 1 / -1;
-  }
-
-  .sr-field__label-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .sr-field__label {
-    color: #334155;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 17px;
-  }
-
-  .sr-field__hint {
-    color: #94a3b8;
-    font-size: 12px;
-    line-height: 18px;
-  }
-
-  .sr-field__req {
-    color: #ef4444;
-  }
-
-  .sr-input,
-  .sr-textarea {
-    width: 100%;
-    border: 1px solid #dbe2ea;
-    border-radius: 6px;
-    padding: 0 10px;
-    background: #ffffff;
-    color: #0f172a;
-    font-size: 12px;
-    outline: none;
-    transition: border-color 0.16s ease, box-shadow 0.16s ease;
-
-    &:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
-    }
-  }
-
-  .sr-input {
-    height: 32px;
-    line-height: 30px;
-  }
-
-  .sr-textarea {
-    min-height: 88px;
-    resize: vertical;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    line-height: 19px;
-  }
-
-  .sr-native-control {
-    width: 100%;
-  }
-
   .sr-module-list {
     display: flex;
-    flex-direction: column;
-    gap: 0;
+    overflow: hidden;
+    padding: 1px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: #ffffff;
-    overflow: hidden;
-    padding: 1px;
+    flex-direction: column;
+    gap: 0;
   }
-
   .sr-module-card {
     display: flex;
     flex-direction: column;
     gap: 0;
     overflow: hidden;
     background: #ffffff;
-
     & + & {
       border-top: 1px solid #eef2f7;
     }
   }
-
   .sr-module-card__header {
     display: flex;
     align-items: center;
-    min-height: 48px;
-    gap: 12px;
-    background: #f8fafc;
     padding: 8px 12px;
+    min-height: 48px;
+    background: #f8fafc;
+    gap: 12px;
   }
-
   .sr-module-card__index {
     display: inline-flex;
+    justify-content: center;
+    align-items: center;
     width: 22px;
     height: 22px;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: #eef2ff;
-    color: #4f46e5;
     font-size: 11px;
     font-weight: 600;
+    border-radius: 999px;
+    color: #4f46e5;
+    background: #eef2ff;
+    flex-shrink: 0;
     line-height: 14px;
   }
-
   .sr-submodule-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
     padding: 8px 12px 0 54px;
   }
-
   .sr-submodule-item {
     display: flex;
     align-items: center;
     gap: 12px;
   }
-
   .sr-submodule-branch {
     width: 12px;
-    flex-shrink: 0;
-    color: #94a3b8;
     font-size: 10px;
+    color: #94a3b8;
+    flex-shrink: 0;
     line-height: 12px;
   }
-
   .sr-input--module {
     flex: 1;
     min-width: 0;
   }
-
   .sr-module-owner {
     width: 160px;
     flex-shrink: 0;
   }
-
   .sr-link-btn,
   .sr-add-module {
-    width: fit-content;
-    border: 0;
     padding: 0;
-    background: transparent;
-    color: #4f46e5;
+    width: fit-content;
     font-size: 12px;
     font-weight: 600;
+    border: 0;
+    color: #4f46e5;
+    background: transparent;
     cursor: pointer;
   }
-
   .sr-link-btn--danger {
     color: #ef4444;
   }
-
   .sr-module-card > .sr-link-btn {
     margin: 8px 12px 10px 78px;
   }
-
   .sr-add-module {
     margin: 8px 12px 12px;
   }
-
   :deep(.sr-native-control .n-base-selection) {
     min-height: 32px;
     border-radius: 6px;
     box-shadow: none !important;
   }
-
   :deep(.sr-native-control .n-base-selection-label) {
     min-height: 30px;
   }
-
   :deep(.sr-module-owner .n-base-selection) {
     min-height: 32px;
     border-radius: 6px;
     background: #ffffff;
     box-shadow: none !important;
   }
-
   :deep(.sr-module-owner .n-base-selection-label) {
     min-height: 30px;
   }
-
   :deep(.sr-native-control .n-input__border),
   :deep(.sr-native-control .n-base-selection__border),
   :deep(.sr-module-owner .n-base-selection__border) {
     border-color: #dbe2ea !important;
   }
-
   :deep(.sr-native-control.n-base-selection--active .n-base-selection__border),
   :deep(.sr-native-control .n-input--focus .n-input__border),
   :deep(.sr-module-owner.n-base-selection--active .n-base-selection__border) {
