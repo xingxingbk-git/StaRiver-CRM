@@ -1,0 +1,693 @@
+23:58:41,604 |-INFO in ch.qos.logback.classic.model.processor.ConfigurationModelHandlerFull - Scan attribute not set or set to unrecognized value.
+23:58:41,607 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [console]
+23:58:41,608 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+23:58:41,610 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+23:58:41,624 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - NOTE: Writing to the console can be slow. Try to avoid logging to the 
+23:58:41,625 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - console in production environments, especially in high volume systems.
+23:58:41,625 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - See also https://logback.qos.ch/codes.html#slowConsole
+23:58:41,625 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [traceAppender]
+23:58:41,625 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+23:58:41,630 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/trace.log" substituted for "${logging.file.path}/trace.log"
+23:58:41,632 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/history/trace.%d{yyyyMMdd}-%i.log" substituted for "${logging.file.path}/history/trace.%d{yyyyMMdd}-%i.log"
+23:58:41,632 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "30" substituted for "${logger.max.history:-30}"
+23:58:41,639 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@690339675 - Archive files will be limited to [50 MB] each.
+23:58:41,640 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@690339675 - No compression will be used
+23:58:41,642 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@690339675 - Will use the pattern logs/cordys-crm/history/trace.%d{yyyyMMdd}-%i.log for the active file
+23:58:41,667 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@37ceb1df - The date pattern is 'yyyyMMdd' from file name pattern 'logs/cordys-crm/history/trace.%d{yyyyMMdd}-%i.log'.
+23:58:41,667 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@37ceb1df - Roll-over at midnight.
+23:58:41,672 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@37ceb1df - Setting initial period to 2026-06-16T13:36:06.512Z
+23:58:41,686 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+23:58:41,688 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[traceAppender] - Active log file name: logs/cordys-crm/trace.log
+23:58:41,689 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[traceAppender] - Setting currentFileLength to 0 for logs/cordys-crm/trace.log
+23:58:41,689 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[traceAppender] - File property is set to [logs/cordys-crm/trace.log]
+23:58:41,691 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [debugAppender]
+23:58:41,691 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+23:58:41,692 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/debug.log" substituted for "${logging.file.path}/debug.log"
+23:58:41,692 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/history/debug.%d{yyyyMMdd}-%i.log" substituted for "${logging.file.path}/history/debug.%d{yyyyMMdd}-%i.log"
+23:58:41,692 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "30" substituted for "${logger.max.history:-30}"
+23:58:41,692 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@525968792 - Archive files will be limited to [50 MB] each.
+23:58:41,692 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@525968792 - No compression will be used
+23:58:41,692 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@525968792 - Will use the pattern logs/cordys-crm/history/debug.%d{yyyyMMdd}-%i.log for the active file
+23:58:41,693 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@1e178745 - The date pattern is 'yyyyMMdd' from file name pattern 'logs/cordys-crm/history/debug.%d{yyyyMMdd}-%i.log'.
+23:58:41,693 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@1e178745 - Roll-over at midnight.
+23:58:41,694 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@1e178745 - Setting initial period to 2026-06-17T15:58:07.160Z
+23:58:41,695 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+23:58:41,695 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[debugAppender] - Active log file name: logs/cordys-crm/debug.log
+23:58:41,695 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[debugAppender] - Setting currentFileLength to 36051 for logs/cordys-crm/debug.log
+23:58:41,696 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[debugAppender] - File property is set to [logs/cordys-crm/debug.log]
+23:58:41,696 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [infoAppender]
+23:58:41,696 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+23:58:41,697 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/info.log" substituted for "${logging.file.path}/info.log"
+23:58:41,697 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/history/info.%d{yyyyMMdd}-%i.log" substituted for "${logging.file.path}/history/info.%d{yyyyMMdd}-%i.log"
+23:58:41,697 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "30" substituted for "${logger.max.history:-30}"
+23:58:41,698 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@649329985 - Archive files will be limited to [50 MB] each.
+23:58:41,698 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@649329985 - No compression will be used
+23:58:41,698 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@649329985 - Will use the pattern logs/cordys-crm/history/info.%d{yyyyMMdd}-%i.log for the active file
+23:58:41,699 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@7494f96a - The date pattern is 'yyyyMMdd' from file name pattern 'logs/cordys-crm/history/info.%d{yyyyMMdd}-%i.log'.
+23:58:41,699 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@7494f96a - Roll-over at midnight.
+23:58:41,700 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@7494f96a - Setting initial period to 2026-06-17T15:58:10.052Z
+23:58:41,700 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+23:58:41,701 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[infoAppender] - Active log file name: logs/cordys-crm/info.log
+23:58:41,701 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[infoAppender] - Setting currentFileLength to 10042 for logs/cordys-crm/info.log
+23:58:41,701 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[infoAppender] - File property is set to [logs/cordys-crm/info.log]
+23:58:41,701 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [warnAppender]
+23:58:41,701 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+23:58:41,701 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/warn.log" substituted for "${logging.file.path}/warn.log"
+23:58:41,701 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/history/warn.%d{yyyyMMdd}-%i.log" substituted for "${logging.file.path}/history/warn.%d{yyyyMMdd}-%i.log"
+23:58:41,701 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "30" substituted for "${logger.max.history:-30}"
+23:58:41,702 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@1444635922 - Archive files will be limited to [50 MB] each.
+23:58:41,702 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@1444635922 - No compression will be used
+23:58:41,702 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@1444635922 - Will use the pattern logs/cordys-crm/history/warn.%d{yyyyMMdd}-%i.log for the active file
+23:58:41,702 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@2e377400 - The date pattern is 'yyyyMMdd' from file name pattern 'logs/cordys-crm/history/warn.%d{yyyyMMdd}-%i.log'.
+23:58:41,703 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@2e377400 - Roll-over at midnight.
+23:58:41,703 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@2e377400 - Setting initial period to 2026-06-16T13:36:06.512Z
+23:58:41,704 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+23:58:41,704 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[warnAppender] - Active log file name: logs/cordys-crm/warn.log
+23:58:41,704 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[warnAppender] - Setting currentFileLength to 0 for logs/cordys-crm/warn.log
+23:58:41,704 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[warnAppender] - File property is set to [logs/cordys-crm/warn.log]
+23:58:41,704 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [errorAppender]
+23:58:41,705 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+23:58:41,706 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/error.log" substituted for "${logging.file.path}/error.log"
+23:58:41,706 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logs/cordys-crm/history/error.%d{yyyyMMdd}-%i.log" substituted for "${logging.file.path}/history/error.%d{yyyyMMdd}-%i.log"
+23:58:41,706 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "30" substituted for "${logger.max.history:-30}"
+23:58:41,706 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@391630194 - Archive files will be limited to [50 MB] each.
+23:58:41,706 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@391630194 - No compression will be used
+23:58:41,706 |-INFO in c.q.l.core.rolling.SizeAndTimeBasedRollingPolicy@391630194 - Will use the pattern logs/cordys-crm/history/error.%d{yyyyMMdd}-%i.log for the active file
+23:58:41,706 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@445b295b - The date pattern is 'yyyyMMdd' from file name pattern 'logs/cordys-crm/history/error.%d{yyyyMMdd}-%i.log'.
+23:58:41,706 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@445b295b - Roll-over at midnight.
+23:58:41,706 |-INFO in ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy@445b295b - Setting initial period to 2026-06-17T12:43:03.579Z
+23:58:41,707 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+23:58:41,707 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[errorAppender] - Active log file name: logs/cordys-crm/error.log
+23:58:41,707 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[errorAppender] - Setting currentFileLength to 1193 for logs/cordys-crm/error.log
+23:58:41,707 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[errorAppender] - File property is set to [logs/cordys-crm/error.log]
+23:58:41,707 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [traceAsyncAppender]
+23:58:41,707 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.classic.AsyncAppender]
+23:58:41,716 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [traceAppender] to ch.qos.logback.classic.AsyncAppender[traceAsyncAppender]
+23:58:41,717 |-INFO in ch.qos.logback.classic.AsyncAppender[traceAsyncAppender] - Attaching appender named [traceAppender] to AsyncAppender.
+23:58:41,719 |-INFO in ch.qos.logback.classic.AsyncAppender[traceAsyncAppender] - Setting discardingThreshold to 2000
+23:58:41,719 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [debugAsyncAppender]
+23:58:41,719 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.classic.AsyncAppender]
+23:58:41,719 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [debugAppender] to ch.qos.logback.classic.AsyncAppender[debugAsyncAppender]
+23:58:41,719 |-INFO in ch.qos.logback.classic.AsyncAppender[debugAsyncAppender] - Attaching appender named [debugAppender] to AsyncAppender.
+23:58:41,719 |-INFO in ch.qos.logback.classic.AsyncAppender[debugAsyncAppender] - Setting discardingThreshold to 2000
+23:58:41,720 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [infoAsyncAppender]
+23:58:41,720 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.classic.AsyncAppender]
+23:58:41,721 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [infoAppender] to ch.qos.logback.classic.AsyncAppender[infoAsyncAppender]
+23:58:41,721 |-INFO in ch.qos.logback.classic.AsyncAppender[infoAsyncAppender] - Attaching appender named [infoAppender] to AsyncAppender.
+23:58:41,721 |-INFO in ch.qos.logback.classic.AsyncAppender[infoAsyncAppender] - Setting discardingThreshold to 2000
+23:58:41,723 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [warnAsyncAppender]
+23:58:41,723 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.classic.AsyncAppender]
+23:58:41,724 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [warnAppender] to ch.qos.logback.classic.AsyncAppender[warnAsyncAppender]
+23:58:41,724 |-INFO in ch.qos.logback.classic.AsyncAppender[warnAsyncAppender] - Attaching appender named [warnAppender] to AsyncAppender.
+23:58:41,725 |-INFO in ch.qos.logback.classic.AsyncAppender[warnAsyncAppender] - Setting discardingThreshold to 2000
+23:58:41,728 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [errorAsyncAppender]
+23:58:41,732 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.classic.AsyncAppender]
+23:58:41,734 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [errorAppender] to ch.qos.logback.classic.AsyncAppender[errorAsyncAppender]
+23:58:41,736 |-INFO in ch.qos.logback.classic.AsyncAppender[errorAsyncAppender] - Attaching appender named [errorAppender] to AsyncAppender.
+23:58:41,736 |-INFO in ch.qos.logback.classic.AsyncAppender[errorAsyncAppender] - Setting discardingThreshold to 2000
+23:58:41,740 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logback.level:INFO_IS_UNDEFINED" substituted for "${logback.level:INFO}"
+23:58:41,740 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [cn.cordys] to DEBUG
+23:58:41,740 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@424e1977 - Propagating DEBUG level on Logger[cn.cordys] onto the JUL framework
+23:58:41,742 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting additivity of logger [cn.cordys] to false
+23:58:41,742 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [traceAsyncAppender] to Logger[cn.cordys]
+23:58:41,742 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [debugAsyncAppender] to Logger[cn.cordys]
+23:58:41,742 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [infoAsyncAppender] to Logger[cn.cordys]
+23:58:41,742 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [warnAsyncAppender] to Logger[cn.cordys]
+23:58:41,742 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [errorAsyncAppender] to Logger[cn.cordys]
+23:58:41,742 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [console] to Logger[cn.cordys]
+23:58:41,742 |-INFO in ch.qos.logback.core.model.processor.ModelInterpretationContext@9d5509a - value "logback.level:INFO_IS_UNDEFINED" substituted for "${logback.level:INFO}"
+23:58:41,742 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [cn.cordys.Application] to DEBUG
+23:58:41,742 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@424e1977 - Propagating DEBUG level on Logger[cn.cordys.Application] onto the JUL framework
+23:58:41,743 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting additivity of logger [cn.cordys.Application] to false
+23:58:41,743 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [infoAsyncAppender] to Logger[cn.cordys.Application]
+23:58:41,744 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [org.eclipse.jetty.ee10.servlet.ServletChannel] to ERROR
+23:58:41,744 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@424e1977 - Propagating ERROR level on Logger[org.eclipse.jetty.ee10.servlet.ServletChannel] onto the JUL framework
+23:58:41,744 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+23:58:41,744 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@424e1977 - Propagating INFO level on Logger[ROOT] onto the JUL framework
+23:58:41,744 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [console] to Logger[ROOT]
+23:58:41,744 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@6a2b953e - End of configuration.
+23:58:41,745 |-INFO in org.springframework.boot.logging.logback.SpringBootJoranConfigurator@313b2ea6 - Registering current configuration as safe fallback point
+
+ ██████╗ ██████╗ ██████╗ ██████╗ ██╗   ██╗███████╗     ██████╗██████╗ ███╗   ███╗
+██╔════╝██╔═══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝    ██╔════╝██╔══██╗████╗ ████║
+██║     ██║   ██║██████╔╝██║  ██║ ╚████╔╝ ███████╗    ██║     ██████╔╝██╔████╔██║
+██║     ██║   ██║██╔══██╗██║  ██║  ╚██╔╝  ╚════██║    ██║     ██╔══██╗██║╚██╔╝██║
+╚██████╗╚██████╔╝██║  ██║██████╔╝   ██║   ███████║    ╚██████╗██║  ██║██║ ╚═╝ ██║
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝    ╚═╝   ╚══════╝     ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝
+
+2026-06-17 23:58:41,914  INFO ibernate.validator.internal.util.Version:  21 - HV000001: Hibernate Validator 8.0.3.Final
+2026-06-17 23:58:42,177  INFO .core.io.support.PropertySourceProcessor: 100 - Properties location [file:/opt/cordys/conf/cordys-crm.properties] not resolvable: /opt/cordys/conf/cordys-crm.properties (No such file or directory)
+2026-06-17 23:58:43,331  INFO y.config.RepositoryConfigurationDelegate: 294 - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-06-17 23:58:43,333  INFO y.config.RepositoryConfigurationDelegate: 145 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-06-17 23:58:43,400  INFO y.config.RepositoryConfigurationDelegate: 213 - Finished Spring Data repository scanning in 56 ms. Found 0 Redis repository interfaces.
+2026-06-17 23:58:43,682  WARN trationDelegate$BeanPostProcessorChecker: 429 - Bean 'shiroConfig' of type [cn.cordys.config.ShiroConfig$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lifecycleBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-06-17 23:58:43,708  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'sessionManager' of type [org.apache.shiro.web.session.mgt.ServletContainerSessionManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [methodValidationPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:43,709  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'memoryConstrainedCacheManager' of type [org.apache.shiro.cache.MemoryConstrainedCacheManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [methodValidationPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:43,731  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'localRealm' of type [cn.cordys.common.security.realm.LocalRealm] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [methodValidationPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:43,762  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'securityManager' of type [org.apache.shiro.web.mgt.DefaultWebSecurityManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [methodValidationPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:43,786  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'getAuthorizationAttributeSourceAdvisor' of type [org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor []? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,297  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'operationLogConfig' of type [cn.cordys.aspectj.config.OperationLogConfig$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor []? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,362  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'mybatisConfig' of type [cn.cordys.config.MybatisConfig$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,396  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'stringOrNumberMigrationVersionConverter' of type [org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration$StringOrNumberToMigrationVersionConverter] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,405  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'dataSourceProperties' of type [org.springframework.boot.autoconfigure.jdbc.DataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,436  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'dataSource' of type [com.zaxxer.hikari.HikariDataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,473  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'quartz-cn.cordys.autoconfigure.QuartzProperties' of type [cn.cordys.autoconfigure.QuartzProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,488  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'quartzDataSourceProperties' of type [org.springframework.boot.autoconfigure.jdbc.DataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,497  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'quartzDataSource' of type [com.zaxxer.hikari.HikariDataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,505  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration$JdbcTransactionManagerConfiguration' of type [org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration$JdbcTransactionManagerConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,516  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration' of type [org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,521  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'transactionExecutionListeners' of type [org.springframework.boot.autoconfigure.transaction.ExecutionListenersTransactionManagerCustomizer] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,528  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'spring.transaction-org.springframework.boot.autoconfigure.transaction.TransactionProperties' of type [org.springframework.boot.autoconfigure.transaction.TransactionProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,531  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'platformTransactionManagerCustomizers' of type [org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,539  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'transactionManager' of type [org.springframework.jdbc.support.JdbcTransactionManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,550  WARN trationDelegate$BeanPostProcessorChecker: 429 - Bean 'cn.cordys.autoconfigure.QuartzAutoConfiguration' of type [cn.cordys.autoconfigure.QuartzAutoConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [schedulerStarter] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-06-17 23:58:44,563  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'spring.flyway-org.springframework.boot.autoconfigure.flyway.FlywayProperties' of type [org.springframework.boot.autoconfigure.flyway.FlywayProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,569  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration$FlywayConfiguration' of type [org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration$FlywayConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,577  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'flywayConnectionDetails' of type [org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration$PropertiesFlywayConnectionDetails] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,580  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'resourceProviderCustomizer' of type [org.springframework.boot.autoconfigure.flyway.ResourceProviderCustomizer] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,745  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'flyway' of type [org.flywaydb.core.Flyway] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:44,765  INFO       com.zaxxer.hikari.HikariDataSource: 109 - DatebookHikariCP - Starting...
+2026-06-17 23:58:44,914  INFO        com.zaxxer.hikari.pool.HikariPool: 580 - DatebookHikariCP - Added connection com.mysql.cj.jdbc.ConnectionImpl@2d3ef181
+2026-06-17 23:58:44,916  INFO       com.zaxxer.hikari.HikariDataSource: 122 - DatebookHikariCP - Start completed.
+2026-06-17 23:58:44,951  INFO         org.flywaydb.core.FlywayExecutor:  41 - Database: jdbc:mysql://127.0.0.1:13306/stariver_crm?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&useSSL=false&sessionVariables=sql_mode=%27STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION%27 (MySQL 8.0)
+2026-06-17 23:58:45,043  INFO flywaydb.core.internal.command.DbMigrate:  41 - Current version of schema `stariver_crm`: 1.8.1.1
+2026-06-17 23:58:45,048  INFO flywaydb.core.internal.command.DbMigrate:  41 - Schema `stariver_crm` is up to date. No migration necessary.
+2026-06-17 23:58:45,057  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'flywayInitializer' of type [org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,060  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'org.springframework.boot.autoconfigure.sql.init.DataSourceInitializationConfiguration' of type [org.springframework.boot.autoconfigure.sql.init.DataSourceInitializationConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,062  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'spring.sql.init-org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties' of type [org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,066  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'dataSourceScriptDatabaseInitializer' of type [org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,100  INFO      org.quartz.impl.StdSchedulerFactory:1222 - Using default implementation for ThreadExecutor
+2026-06-17 23:58:45,111  INFO        org.quartz.simpl.SimpleThreadPool: 269 - Job execution threads will use class loader of thread: main
+2026-06-17 23:58:45,118  INFO    org.quartz.core.SchedulerSignalerImpl:  62 - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2026-06-17 23:58:45,118  INFO          org.quartz.core.QuartzScheduler: 224 - Quartz Scheduler v2.5.2 created.
+2026-06-17 23:58:45,122  INFO       com.zaxxer.hikari.HikariDataSource: 109 - DatebookHikariCP - Starting...
+2026-06-17 23:58:45,128  INFO        com.zaxxer.hikari.pool.HikariPool: 580 - DatebookHikariCP - Added connection com.mysql.cj.jdbc.ConnectionImpl@35e26d05
+2026-06-17 23:58:45,129  INFO       com.zaxxer.hikari.HikariDataSource: 122 - DatebookHikariCP - Start completed.
+2026-06-17 23:58:45,129  INFO cheduling.quartz.LocalDataSourceJobStore: 676 - Using db table-based data access locking (synchronization).
+2026-06-17 23:58:45,131  INFO cheduling.quartz.LocalDataSourceJobStore: 147 - JobStoreCMT initialized.
+2026-06-17 23:58:45,131  INFO          org.quartz.core.QuartzScheduler: 289 - Scheduler meta-data: Quartz Scheduler (v2.5.2) 'cordys-crm-quartz' with instanceId 'Mac-mini.local1781711925109'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2026-06-17 23:58:45,131  INFO      org.quartz.impl.StdSchedulerFactory:1376 - Quartz scheduler 'cordys-crm-quartz' initialized from an externally provided properties instance.
+2026-06-17 23:58:45,131  INFO      org.quartz.impl.StdSchedulerFactory:1378 - Quartz scheduler version: 2.5.2
+2026-06-17 23:58:45,132  INFO          org.quartz.core.QuartzScheduler:2250 - JobFactory set to: org.springframework.scheduling.quartz.AdaptableJobFactory@5f2de715
+2026-06-17 23:58:45,136  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'clusterSchedulerFactoryBean' of type [org.springframework.scheduling.quartz.SchedulerFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,141  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'clusterSchedulerFactoryBean' of type [org.quartz.impl.StdScheduler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,150  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'quartzTimeZone' of type [sun.util.calendar.ZoneInfo] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,158  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'quartzManageService' of type [cn.cordys.quartz.service.QuartzManageService] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [schedulerStarter]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,174  WARN trationDelegate$BeanPostProcessorChecker: 429 - Bean 'org.apache.shiro.spring.boot.autoconfigure.ShiroBeanAutoConfiguration' of type [org.apache.shiro.spring.boot.autoconfigure.ShiroBeanAutoConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [shiroEventBusAwareBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-06-17 23:58:45,178  WARN trationDelegate$BeanPostProcessorChecker: 437 - Bean 'eventBus' of type [org.apache.shiro.event.support.DefaultEventBus] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [shiroEventBusAwareBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-06-17 23:58:45,446  INFO boot.web.embedded.tomcat.TomcatWebServer: 111 - Tomcat initialized with port 8081 (http)
+2026-06-17 23:58:45,457  INFO g.apache.coyote.http11.Http11NioProtocol: 168 - Initializing ProtocolHandler ["http-nio-8081"]
+2026-06-17 23:58:45,458  INFO org.apache.catalina.core.StandardService: 168 - Starting service [Tomcat]
+2026-06-17 23:58:45,458  INFO  org.apache.catalina.core.StandardEngine: 168 - Starting Servlet engine: [Apache Tomcat/10.1.54]
+2026-06-17 23:58:45,501  INFO e.ContainerBase.[Tomcat].[localhost].[/]: 168 - Initializing Spring embedded WebApplicationContext
+2026-06-17 23:58:45,501  INFO ntext.ServletWebServerApplicationContext: 301 - Root WebApplicationContext: initialization completed in 3437 ms
+2026-06-17 23:58:45,637  INFO                     org.redisson.Version:  43 - Redisson 3.52.0
+2026-06-17 23:58:45,760  WARN lver.dns.DnsServerAddressStreamProviders:  70 - Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+2026-06-17 23:58:45,898  INFO rg.redisson.connection.ConnectionsHolder: 134 - 1 connections initialized for 127.0.0.1/127.0.0.1:16379
+2026-06-17 23:58:45,935  INFO rg.redisson.connection.ConnectionsHolder: 134 - 24 connections initialized for 127.0.0.1/127.0.0.1:16379
+2026-06-17 23:58:46,129 DEBUG mon.context.OrganizationContextWebFilter: 240 - Filter 'tenantContextWebFilter' configured for use
+2026-06-17 23:58:46,361 DEBUG system.mapper.ExtWorkerNodeMapper.insert: 135 - ==>  Preparing: insert into worker_node (host_name, port, type, launch_date, modified, created) values (?, ?, ?, ?, ?, ?)
+2026-06-17 23:58:46,372 DEBUG system.mapper.ExtWorkerNodeMapper.insert: 135 - ==> Parameters: 192.168.31.118(String), 1781711926338-1615917246(String), 2(Integer), 1781711926341(Long), 1781711926341(Long), 1781711926341(Long)
+2026-06-17 23:58:46,378 DEBUG system.mapper.ExtWorkerNodeMapper.insert: 135 - <==    Updates: 1
+2026-06-17 23:58:46,380  INFO ystem.service.DisposableWorkerIdAssigner:  38 - Add worker node:WorkerNode(id=4, hostName=192.168.31.118, port=1781711926338-1615917246, type=2, launchDate=1781711926341, modified=1781711926341, created=1781711926341)
+2026-06-17 23:58:46,381  INFO rdys.common.uid.impl.DefaultUidGenerator:  73 - Initialized UID Generator: epoch=2025-01-01, bits=(time:30, worker:21, seq:12), workerId=4
+2026-06-17 23:58:49,439  INFO g.apache.coyote.http11.Http11NioProtocol: 168 - Starting ProtocolHandler ["http-nio-8081"]
+2026-06-17 23:58:49,446  INFO boot.web.embedded.tomcat.TomcatWebServer: 243 - Tomcat started on port 8081 (http) with context path '/'
+2026-06-17 23:58:49,465  INFO k.scheduling.quartz.SchedulerFactoryBean: 735 - Will start Quartz Scheduler [cordys-crm-quartz] in 60 seconds
+2026-06-17 23:58:49,490  INFO           cn.cordys.listener.AppListener:  50 - ===== 开始初始化配置 =====
+2026-06-17 23:58:49,491 DEBUG system.mapper.ExtWorkerNodeMapper.insert: 135 - ==>  Preparing: insert into worker_node (host_name, port, type, launch_date, modified, created) values (?, ?, ?, ?, ?, ?)
+2026-06-17 23:58:49,492 DEBUG system.mapper.ExtWorkerNodeMapper.insert: 135 - ==> Parameters: 192.168.31.118(String), 1781711929490-1681183388(String), 2(Integer), 1781711929490(Long), 1781711929490(Long), 1781711929490(Long)
+2026-06-17 23:58:49,495 DEBUG system.mapper.ExtWorkerNodeMapper.insert: 135 - <==    Updates: 1
+2026-06-17 23:58:49,495  INFO ystem.service.DisposableWorkerIdAssigner:  38 - Add worker node:WorkerNode(id=5, hostName=192.168.31.118, port=1781711929490-1681183388, type=2, launchDate=1781711929490, modified=1781711929490, created=1781711929490)
+2026-06-17 23:58:49,495  INFO rdys.common.uid.impl.DefaultUidGenerator:  73 - Initialized UID Generator: epoch=2025-01-01, bits=(time:30, worker:21, seq:12), workerId=5
+2026-06-17 23:58:49,495  INFO           cn.cordys.listener.AppListener:  56 - 初始化RSA配置
+2026-06-17 23:58:49,506  INFO           cn.cordys.listener.AppListener:  59 - 初始化定时任务
+2026-06-17 23:58:49,529  INFO      cn.cordys.common.util.HikariCPUtils:  59 - HikariCP Status:
+Active Connections: 0
+Idle Connections: 10
+Total Connections: 10
+Threads Awaiting Connection: 0
+
+2026-06-17 23:58:49,530  INFO      cn.cordys.common.util.HikariCPUtils:  60 - HikariCP Configuration:
+Maximum Pool Size: 100
+Minimum Idle Connections: 10
+Connection Timeout: 30000 ms
+Idle Timeout: 300000 ms
+Max Lifetime: 1800000 ms
+
+2026-06-17 23:58:49,530  INFO           cn.cordys.listener.AppListener:  64 - 初始化默认组织数据
+2026-06-17 23:58:49,579  INFO           cn.cordys.listener.AppListener:  67 - 停止导出任务
+2026-06-17 23:58:49,581 DEBUG tExportTaskMapper.updateExportTaskStatus: 135 - ==>  Preparing: update export_task set status = ? where status = ?
+2026-06-17 23:58:49,581 DEBUG tExportTaskMapper.updateExportTaskStatus: 135 - ==> Parameters: ERROR(String), PREPARED(String)
+2026-06-17 23:58:49,583 DEBUG tExportTaskMapper.updateExportTaskStatus: 135 - <==    Updates: 0
+2026-06-17 23:58:49,584  INFO           cn.cordys.listener.AppListener:  70 - 清理表单缓存
+2026-06-17 23:58:49,590  INFO           cn.cordys.listener.AppListener:  73 - ===== 完成初始化配置 =====
+2026-06-17 23:59:03,146  INFO e.ContainerBase.[Tomcat].[localhost].[/]: 168 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-17 23:59:03,146  INFO gframework.web.servlet.DispatcherServlet: 532 - Initializing Servlet 'dispatcherServlet'
+2026-06-17 23:59:03,147  INFO gframework.web.servlet.DispatcherServlet: 554 - Completed initialization in 1 ms
+2026-06-17 23:59:03,189 ERROR e.handler.RestControllerExceptionHandler: 155 - No static resource
+2026-06-17 23:59:49,467  INFO k.scheduling.quartz.SchedulerFactoryBean: 749 - Starting Quartz Scheduler now, after delay of 60 seconds
+2026-06-17 23:59:49,509  INFO cheduling.quartz.LocalDataSourceJobStore:3561 - ClusterManager: detected 1 failed or restarted instances.
+2026-06-17 23:59:49,510  INFO cheduling.quartz.LocalDataSourceJobStore:3426 - ClusterManager: Scanning for instance "Mac-mini.local1781633584449"'s failed in-progress jobs.
+2026-06-17 23:59:49,527  INFO          org.quartz.core.QuartzScheduler: 541 - Scheduler cordys-crm-quartz_$_Mac-mini.local1781711925109 started.
+2026-06-17 23:59:49,595  INFO        cn.cordys.quartz.SchedulerStarter: 168 - reschedule all jobs...
+2026-06-17 23:59:49,781  INFO          org.quartz.core.QuartzScheduler: 541 - Scheduler cordys-crm-quartz_$_Mac-mini.local1781711925109 started.
+2026-06-18 00:00:00,087 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+00:00:00,087 |-INFO in c.q.l.co.rolling.helper.RenameUtil - Renaming file [logs/cordys-crm/debug.log] to [logs/cordys-crm/history/debug.20260617-0.log]
+00:00:00,090 |-INFO in c.q.l.core.rolling.helper.TimeBasedArchiveRemover - first clean up after appender initialization
+00:00:00,090 |-INFO in c.q.l.core.rolling.helper.TimeBasedArchiveRemover - Multiple periods, i.e. 32 periods, seem to have elapsed. This can happen at application start.
+2026-06-18 00:00:00,094 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:00:00,095 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781712000088(Long), 1781712000088(Long)
+2026-06-18 00:00:00,105 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:00:00,108 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:00:00,109 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:00:00,124 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=dataEaseSyncService, targetMethod=syncDataEase
+2026-06-18 00:00:00,124 DEBUG anizationMapper.selectAllOrganizationIds: 135 - ==>  Preparing: select id from sys_organization
+2026-06-18 00:00:00,124 DEBUG anizationMapper.selectAllOrganizationIds: 135 - ==> Parameters: 
+2026-06-18 00:00:00,127 DEBUG anizationMapper.selectAllOrganizationIds: 135 - <==      Total: 1
+2026-06-18 00:00:00,129  INFO ion.dataease.service.DataEaseSyncService:  64 - 定时同步DataEase数据，组织ID: 100001
+00:00:00,129 |-INFO in c.q.l.co.rolling.helper.RenameUtil - Renaming file [logs/cordys-crm/info.log] to [logs/cordys-crm/history/info.20260617-0.log]
+00:00:00,129 |-INFO in c.q.l.core.rolling.helper.TimeBasedArchiveRemover - first clean up after appender initialization
+00:00:00,129 |-INFO in c.q.l.core.rolling.helper.TimeBasedArchiveRemover - Multiple periods, i.e. 32 periods, seem to have elapsed. This can happen at application start.
+2026-06-18 00:00:00,129 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:00:00,130 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:00:00,133 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:00:00,135 DEBUG figDetailMapper.getOrgConfigDetailByType: 135 - ==>  Preparing: SELECT * FROM sys_organization_config_detail WHERE config_id = ? and type in ( ? )
+2026-06-18 00:00:00,135 DEBUG figDetailMapper.getOrgConfigDetailByType: 135 - ==> Parameters: 394909117447151616(String), DE_BOARD(String)
+2026-06-18 00:00:00,137 DEBUG figDetailMapper.getOrgConfigDetailByType: 135 - <==      Total: 0
+2026-06-18 00:00:00,137 ERROR ion.dataease.service.DataEaseSyncService:  75 - 获取DataEase配置失败，组织ID: 100001
+MSException{errorCode=null, message=未找到 DataEase 配置详情}
+	at cn.cordys.crm.integration.dataease.service.DataEaseService.lambda$getDeConfig$1(DataEaseService.java:71)
+	at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+	at cn.cordys.crm.integration.dataease.service.DataEaseService.getDeConfig(DataEaseService.java:70)
+	at cn.cordys.crm.integration.dataease.service.DataEaseSyncService.syncDataEase(DataEaseSyncService.java:73)
+	at cn.cordys.crm.integration.dataease.service.DataEaseSyncService.syncDataEase(DataEaseSyncService.java:65)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at cn.cordys.quartz.config.ClusterQuartzJobBean.executeInternal(ClusterQuartzJobBean.java:35)
+	at org.springframework.scheduling.quartz.QuartzJobBean.execute(QuartzJobBean.java:75)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:203)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:566)
+2026-06-18 00:00:00,138 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=dataEaseSyncService, targetMethod=syncDataEase
+00:00:00,138 |-INFO in c.q.l.co.rolling.helper.RenameUtil - Renaming file [logs/cordys-crm/error.log] to [logs/cordys-crm/history/error.20260617-0.log]
+2026-06-18 00:00:00,139 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-a9972459-783b-42ab-92a4-51755892447a
+00:00:00,139 |-INFO in c.q.l.core.rolling.helper.TimeBasedArchiveRemover - first clean up after appender initialization
+00:00:00,139 |-INFO in c.q.l.core.rolling.helper.TimeBasedArchiveRemover - Multiple periods, i.e. 32 periods, seem to have elapsed. This can happen at application start.
+2026-06-18 00:00:54,043 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:00:54,044 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:00:54,048 DEBUG s.crm.system.mapper.ExtLicenseMapper.get: 135 - ==>  Preparing: SELECT * FROM sys_license
+2026-06-18 00:00:54,049 DEBUG s.crm.system.mapper.ExtLicenseMapper.get: 135 - ==> Parameters: 
+2026-06-18 00:00:54,053 DEBUG s.crm.system.mapper.ExtLicenseMapper.get: 135 - <==      Total: 0
+2026-06-18 00:00:54,054 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:01:29,738 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:01:29,740 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:01:29,747 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:01:58,327 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:01:58,332 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:01:58,334 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:02:00,014 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=sessionJob, targetMethod=cleanSession
+2026-06-18 00:02:00,064  INFO      cn.cordys.crm.system.job.SessionJob:  85 - 用户会话统计: {}
+2026-06-18 00:02:00,064 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=sessionJob, targetMethod=cleanSession
+2026-06-18 00:02:00,064 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-cda62499-5502-47e0-a681-0ae3d8c6baca
+2026-06-18 00:02:18,768 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:02:18,770 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:02:18,775 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:02:18,776 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==>  Preparing: SELECT * FROM sys_organization_config_detail WHERE config_id = ?
+2026-06-18 00:02:18,776 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==> Parameters: 394909117447151616(String)
+2026-06-18 00:02:18,780 DEBUG etailMapper.getOrganizationConfigDetails: 135 - <==      Total: 1
+2026-06-18 00:02:18,844  INFO .cordys.crm.system.notice.sse.SseService:  47 - 当前在线用户数: 0 
+2026-06-18 00:02:18,844  INFO .cordys.crm.system.notice.sse.SseService:  50 - User ID or Client ID is blank, cannot add client.
+2026-06-18 00:02:23,887 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:02:23,891 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:02:23,901 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:02:37,973 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:02:37,976 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:02:37,980 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:02:37,980 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==>  Preparing: SELECT * FROM sys_organization_config_detail WHERE config_id = ?
+2026-06-18 00:02:37,981 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==> Parameters: 394909117447151616(String)
+2026-06-18 00:02:37,982 DEBUG etailMapper.getOrganizationConfigDetails: 135 - <==      Total: 1
+2026-06-18 00:02:54,688 ERROR e.handler.RestControllerExceptionHandler: 155 - No static resource
+2026-06-18 00:03:10,596 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:03:10,597 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:03:10,600 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:03:11,407 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:03:11,408 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:03:11,410 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:03:11,411 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==>  Preparing: SELECT * FROM sys_organization_config_detail WHERE config_id = ?
+2026-06-18 00:03:11,411 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==> Parameters: 394909117447151616(String)
+2026-06-18 00:03:11,412 DEBUG etailMapper.getOrganizationConfigDetails: 135 - <==      Total: 1
+2026-06-18 00:04:09,024  WARN                  jakarta.persistence.spi: 173 - jakarta.persistence.spi::No valid providers found.
+2026-06-18 00:04:09,058 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - ==>  Preparing: SELECT sys_user.*, sys_user_extend.avatar, sys_user_extend.platform_info FROM sys_user LEFT JOIN sys_user_extend ON sys_user.id = sys_user_extend.id WHERE sys_user.id = ? OR sys_user.phone = ? OR sys_user.email = ?
+2026-06-18 00:04:09,059 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - ==> Parameters: admin(String), admin(String), admin(String)
+2026-06-18 00:04:09,064 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - <==      Total: 1
+2026-06-18 00:04:09,064 DEBUG anizationMapper.selectAllOrganizationIds: 135 - ==>  Preparing: select id from sys_organization
+2026-06-18 00:04:09,065 DEBUG anizationMapper.selectAllOrganizationIds: 135 - ==> Parameters: 
+2026-06-18 00:04:09,066 DEBUG anizationMapper.selectAllOrganizationIds: 135 - <==      Total: 1
+2026-06-18 00:04:29,530 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:04:29,533 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:04:29,539 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:04:29,542 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==>  Preparing: SELECT * FROM sys_organization_config_detail WHERE config_id = ?
+2026-06-18 00:04:29,543 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==> Parameters: 394909117447151616(String)
+2026-06-18 00:04:29,547 DEBUG etailMapper.getOrganizationConfigDetails: 135 - <==      Total: 1
+2026-06-18 00:04:29,548 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - ==>  Preparing: select id, navigation_key, enable, organization_id, pos from sys_navigation where organization_id = ? order by pos
+2026-06-18 00:04:29,549 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - ==> Parameters: 100001(String)
+2026-06-18 00:04:29,555 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - <==      Total: 8
+2026-06-18 00:04:29,574 DEBUG icationMapper.selectLastAnnouncementList: 135 - ==>  Preparing: SELECT * FROM sys_notification WHERE sys_notification.receiver = ? and sys_notification.organization_id = ? and sys_notification.status='UNREAD' and sys_notification.resource_type = 'ANNOUNCEMENT_NOTICE' order by sys_notification.create_time DESC
+2026-06-18 00:04:29,575 DEBUG icationMapper.selectLastAnnouncementList: 135 - ==> Parameters: admin(String), 100001(String)
+2026-06-18 00:04:29,579 DEBUG icationMapper.selectLastAnnouncementList: 135 - <==      Total: 0
+2026-06-18 00:04:29,593 DEBUG per.ExtNotificationMapper.selectLastList: 135 - ==>  Preparing: SELECT * FROM sys_notification WHERE sys_notification.receiver = ? and sys_notification.organization_id = ? and sys_notification.status='UNREAD' and sys_notification.resource_type in ( ? , ? , ? , ? , ? ) order by sys_notification.create_time DESC limit 5
+2026-06-18 00:04:29,594 DEBUG per.ExtNotificationMapper.selectLastList: 135 - ==> Parameters: admin(String), 100001(String), CONTRACT(String), CLUE(String), CUSTOMER(String), OPPORTUNITY(String), SYSTEM(String)
+2026-06-18 00:04:29,596 DEBUG per.ExtNotificationMapper.selectLastList: 135 - <==      Total: 0
+2026-06-18 00:04:29,610 DEBUG pprovalTaskMapper.countPendingByApprover: 135 - ==>  Preparing: SELECT IFNULL(SUM(t.cnt), 0) AS total, IFNULL(SUM(CASE WHEN t.type IN ('quotation', 'quote') THEN t.cnt ELSE 0 END), 0) AS quotation, IFNULL(SUM(CASE WHEN t.type = 'contract' THEN t.cnt ELSE 0 END), 0) AS contract, IFNULL(SUM(CASE WHEN t.type = 'order' THEN t.cnt ELSE 0 END), 0) AS `order`, IFNULL(SUM(CASE WHEN t.type = 'invoice' THEN t.cnt ELSE 0 END), 0) AS invoice FROM (SELECT ai.type AS type, COUNT(*) AS cnt FROM (SELECT DISTINCT at.instance_id FROM approval_task at INNER JOIN approval_instance ai ON ai.id = at.instance_id INNER JOIN approval_flow_version afv ON afv.id = ai.flow_version_id WHERE at.approver_id = ? AND at.status = ? AND ai.approval_status not in ('APPROVED' , 'UNAPPROVED') AND ai.current_node_id = at.node_id) pending INNER JOIN approval_instance ai ON ai.id = pending.instance_id GROUP BY ai.type) t
+2026-06-18 00:04:29,611 DEBUG pprovalTaskMapper.countPendingByApprover: 135 - ==> Parameters: admin(String), APPROVING(String)
+2026-06-18 00:04:29,617 DEBUG pprovalTaskMapper.countPendingByApprover: 135 - <==      Total: 1
+2026-06-18 00:04:29,632 DEBUG UserRoleMapper.selectPermissionsByUserId: 135 - ==>  Preparing: SELECT sys_role_permission.permission_id from sys_role_permission where sys_role_permission.role_id in (SELECT sys_user_role.role_id from sys_user_role where sys_user_role.user_id = ?)
+2026-06-18 00:04:29,633  INFO .cordys.crm.system.notice.sse.SseService:  47 - 当前在线用户数: 0 
+2026-06-18 00:04:29,633 DEBUG UserRoleMapper.selectPermissionsByUserId: 135 - ==> Parameters: admin(String)
+2026-06-18 00:04:29,635 DEBUG UserRoleMapper.selectPermissionsByUserId: 135 - <==      Total: 0
+2026-06-18 00:04:29,768 DEBUG er.ExtModuleFieldMapper.getFormSubFields: 135 - ==>  Preparing: select * from sys_module_field_blob where id in ( select id from sys_module_field where form_id = (select id from sys_module_form where form_key = ?) and type like '%SUB_%' )
+2026-06-18 00:04:29,768 DEBUG er.ExtModuleFieldMapper.getFormSubFields: 135 - ==> Parameters: price(String)
+2026-06-18 00:04:29,770 DEBUG er.ExtModuleFieldMapper.getFormSubFields: 135 - <==      Total: 1
+2026-06-18 00:04:29,773 DEBUG r.ExtFollowUpPlanMapper.selectList_COUNT: 135 - ==>  Preparing: SELECT count(0) FROM follow_up_plan fup LEFT JOIN clue c ON c.id = fup.clue_id LEFT JOIN customer cu ON cu.id = fup.customer_id WHERE fup.organization_id = ? AND (c.transition_type IS NULL OR c.transition_type != 'CUSTOMER') AND fup.organization_id = ? AND fup.owner = ? AND fup.type IN (?, 'CUSTOMER', ?) AND (fup.customer_id IS NOT NULL OR fup.opportunity_id IS NOT NULL OR fup.clue_id IS NOT NULL)
+2026-06-18 00:04:29,773 DEBUG r.ExtFollowUpPlanMapper.selectList_COUNT: 135 - ==> Parameters: 100001(String), 100001(String), admin(String), CUSTOMER(String), CLUE(String)
+2026-06-18 00:04:29,776 DEBUG r.ExtFollowUpPlanMapper.selectList_COUNT: 135 - <==      Total: 1
+2026-06-18 00:04:29,853 DEBUG apper.ExtDepartmentMapper.selectTreeNode: 135 - ==>  Preparing: SELECT id, name, parent_id, organization_id FROM sys_department where organization_id = ? ORDER BY pos
+2026-06-18 00:04:29,853 DEBUG apper.ExtDepartmentMapper.selectTreeNode: 135 - ==> Parameters: 100001(String)
+2026-06-18 00:04:29,856 DEBUG apper.ExtDepartmentMapper.selectTreeNode: 135 - <==      Total: 1
+2026-06-18 00:04:29,908 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,907 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,907 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - ==>  Preparing: select count(*) from clue c where c.organization_id = ? and (c.transition_id is null or c.transition_id= '') and c.in_shared_pool is false and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,908 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,909 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781712000000(Long), 1781798399000(Long)
+2026-06-18 00:04:29,909 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1781712000000(Long), 1781798399000(Long)
+2026-06-18 00:04:29,907 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,909 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - ==> Parameters: 100001(String), 1781712000000(Long), 1781798399000(Long)
+2026-06-18 00:04:29,909 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781712000000(Long), 1781798399000(Long)
+2026-06-18 00:04:29,909 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1781712000000(Long), 1781798399000(Long)
+2026-06-18 00:04:29,910 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,910 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,910 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,910 DEBUG lue.mapper.ExtClueMapper.selectClueCount:   ? - <==      Total: 1
+2026-06-18 00:04:29,911 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,914 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - ==>  Preparing: select count(*) from clue c where c.organization_id = ? and (c.transition_id is null or c.transition_id= '') and c.in_shared_pool is false and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,914 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - ==> Parameters: 100001(String), 1781452800000(Long), 1782057599000(Long)
+2026-06-18 00:04:29,915 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,916 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,916 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,916 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - ==>  Preparing: select count(*) from clue c where c.organization_id = ? and (c.transition_id is null or c.transition_id= '') and c.in_shared_pool is false and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,916 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1781625600000(Long), 1781711999000(Long)
+2026-06-18 00:04:29,916 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781625600000(Long), 1781711999000(Long)
+2026-06-18 00:04:29,916 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - ==> Parameters: 100001(String), 1780243200000(Long), 1782835199000(Long)
+2026-06-18 00:04:29,916 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,916 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,916 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781625600000(Long), 1781711999000(Long)
+2026-06-18 00:04:29,916 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1781625600000(Long), 1781711999000(Long)
+2026-06-18 00:04:29,917 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,917 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,917 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,917 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,917 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,918 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,918 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - ==>  Preparing: select count(*) from clue c where c.organization_id = ? and (c.transition_id is null or c.transition_id= '') and c.in_shared_pool is false and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,918 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - ==> Parameters: 100001(String), 1767196800000(Long), 1798732799000(Long)
+2026-06-18 00:04:29,918 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1781452800000(Long), 1782057599000(Long)
+2026-06-18 00:04:29,918 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,918 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,918 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,918 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781452800000(Long), 1782057599000(Long)
+2026-06-18 00:04:29,918 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1781452800000(Long), 1782057599000(Long)
+2026-06-18 00:04:29,919 DEBUG lue.mapper.ExtClueMapper.selectClueCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,919 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,919 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781452800000(Long), 1782057599000(Long)
+2026-06-18 00:04:29,919 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,919 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,919 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,920 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,920 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,920 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1780848000000(Long), 1781452799000(Long)
+2026-06-18 00:04:29,920 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1780848000000(Long), 1781452799000(Long)
+2026-06-18 00:04:29,920 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,920 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,920 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1780848000000(Long), 1781452799000(Long)
+2026-06-18 00:04:29,920 DEBUG OpportunityMapper.selectOpportunityCount:   ? - ==> Parameters: 100001(String), 100001(String), 1780848000000(Long), 1781452799000(Long)
+2026-06-18 00:04:29,921 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,921 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,921 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,921 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,921 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,921 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,921 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1780243200000(Long), 1782835199000(Long)
+2026-06-18 00:04:29,921 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1780243200000(Long), 1782835199000(Long)
+2026-06-18 00:04:29,922 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,922 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,922 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,922 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,922 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1780243200000(Long), 1782835199000(Long)
+2026-06-18 00:04:29,922 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1780243200000(Long), 1782835199000(Long)
+2026-06-18 00:04:29,922 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,923 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1777564800000(Long), 1780243199000(Long)
+2026-06-18 00:04:29,923 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,923 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,923 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1777564800000(Long), 1780243199000(Long)
+2026-06-18 00:04:29,923 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,924 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,924 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,924 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1777564800000(Long), 1780243199000(Long)
+2026-06-18 00:04:29,924 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,924 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,925 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,925 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,925 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1777564800000(Long), 1780243199000(Long)
+2026-06-18 00:04:29,925 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,925 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1767196800000(Long), 1798732799000(Long)
+2026-06-18 00:04:29,925 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1767196800000(Long), 1798732799000(Long)
+2026-06-18 00:04:29,926 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,926 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,926 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,927 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,927 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,927 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1767196800000(Long), 1798732799000(Long)
+2026-06-18 00:04:29,927 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,927 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1735660800000(Long), 1767196799000(Long)
+2026-06-18 00:04:29,927 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 1735660800000(Long), 1767196799000(Long)
+2026-06-18 00:04:29,928 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,928 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1767196800000(Long), 1798732799000(Long)
+2026-06-18 00:04:29,928 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,928 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,928 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,929 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,929 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,929 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1735660800000(Long), 1767196799000(Long)
+2026-06-18 00:04:29,930 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,930 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'END' and rate = 100 ) and c.expected_end_time >= ? and c.expected_end_time <= ?
+2026-06-18 00:04:29,930 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1735660800000(Long), 1767196799000(Long)
+2026-06-18 00:04:29,932 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,948 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,948 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,948 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781712000000(Long), 1781798399000(Long)
+2026-06-18 00:04:29,949 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781712000000(Long), 1781798399000(Long)
+2026-06-18 00:04:29,949 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,950 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,951 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,951 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,951 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781625600000(Long), 1781711999000(Long)
+2026-06-18 00:04:29,951 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781625600000(Long), 1781711999000(Long)
+2026-06-18 00:04:29,952 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,952 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,953 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,953 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,953 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781452800000(Long), 1782057599000(Long)
+2026-06-18 00:04:29,953 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1781452800000(Long), 1782057599000(Long)
+2026-06-18 00:04:29,954 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,954 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,954 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,954 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1780848000000(Long), 1781452799000(Long)
+2026-06-18 00:04:29,954 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,955 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1780848000000(Long), 1781452799000(Long)
+2026-06-18 00:04:29,955 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,955 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,956 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,956 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1780243200000(Long), 1782835199000(Long)
+2026-06-18 00:04:29,956 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,956 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1780243200000(Long), 1782835199000(Long)
+2026-06-18 00:04:29,956 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,957 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,957 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,957 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1777564800000(Long), 1780243199000(Long)
+2026-06-18 00:04:29,957 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,958 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,958 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1777564800000(Long), 1780243199000(Long)
+2026-06-18 00:04:29,958 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,959 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,959 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,959 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1767196800000(Long), 1798732799000(Long)
+2026-06-18 00:04:29,959 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1767196800000(Long), 1798732799000(Long)
+2026-06-18 00:04:29,960 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,960 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,960 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select sum(c.amount) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,961 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1735660800000(Long), 1767196799000(Long)
+2026-06-18 00:04:29,961 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==>  Preparing: select count(*) from opportunity c where c.organization_id = ? and c.stage in ( select id from opportunity_stage_config osc where osc.organization_id = ? and osc.`type` = 'AFOOT' ) and c.create_time >= ? and c.create_time <= ?
+2026-06-18 00:04:29,961 DEBUG OpportunityMapper.selectOpportunityCount: 135 - ==> Parameters: 100001(String), 100001(String), 1735660800000(Long), 1767196799000(Long)
+2026-06-18 00:04:29,961 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:29,961 DEBUG OpportunityMapper.selectOpportunityCount: 135 - <==      Total: 1
+2026-06-18 00:04:32,096 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - ==>  Preparing: SELECT count(0) FROM customer c WHERE c.organization_id = ? AND c.in_shared_pool IS FALSE
+2026-06-18 00:04:32,097 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - ==> Parameters: 100001(String)
+2026-06-18 00:04:32,098 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - <==      Total: 1
+2026-06-18 00:05:00,042 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:05:00,051 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:05:00,052 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781712300045(Long), 1781712300045(Long)
+2026-06-18 00:05:00,054 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:05:00,055 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:05:00,055 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:05:15,762 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:05:15,766 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:05:15,770 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - ==>  Preparing: SELECT sys_user.*, sys_user_extend.avatar, sys_user_extend.platform_info FROM sys_user LEFT JOIN sys_user_extend ON sys_user.id = sys_user_extend.id WHERE sys_user.id = ? OR sys_user.phone = ? OR sys_user.email = ?
+2026-06-18 00:05:15,771 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - ==> Parameters: admin(String), admin(String), admin(String)
+2026-06-18 00:05:15,774 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - <==      Total: 1
+2026-06-18 00:05:15,774 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:05:15,776 DEBUG anizationMapper.selectAllOrganizationIds: 135 - ==>  Preparing: select id from sys_organization
+2026-06-18 00:05:15,777 DEBUG anizationMapper.selectAllOrganizationIds: 135 - ==> Parameters: 
+2026-06-18 00:05:15,781 DEBUG anizationMapper.selectAllOrganizationIds: 135 - <==      Total: 1
+2026-06-18 00:05:16,009 DEBUG icationMapper.selectLastAnnouncementList: 135 - ==>  Preparing: SELECT * FROM sys_notification WHERE sys_notification.receiver = ? and sys_notification.organization_id = ? and sys_notification.status='UNREAD' and sys_notification.resource_type = 'ANNOUNCEMENT_NOTICE' order by sys_notification.create_time DESC
+2026-06-18 00:05:16,010 DEBUG icationMapper.selectLastAnnouncementList: 135 - ==> Parameters: admin(String), 100001(String)
+2026-06-18 00:05:16,012 DEBUG per.ExtNotificationMapper.selectLastList: 135 - ==>  Preparing: SELECT * FROM sys_notification WHERE sys_notification.receiver = ? and sys_notification.organization_id = ? and sys_notification.status='UNREAD' and sys_notification.resource_type in ( ? , ? , ? , ? , ? ) order by sys_notification.create_time DESC limit 5
+2026-06-18 00:05:16,012 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - ==>  Preparing: select id, navigation_key, enable, organization_id, pos from sys_navigation where organization_id = ? order by pos
+2026-06-18 00:05:16,013 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - ==> Parameters: 100001(String)
+2026-06-18 00:05:16,012 DEBUG per.ExtNotificationMapper.selectLastList: 135 - ==> Parameters: admin(String), 100001(String), CONTRACT(String), CLUE(String), CUSTOMER(String), OPPORTUNITY(String), SYSTEM(String)
+2026-06-18 00:05:16,014 DEBUG icationMapper.selectLastAnnouncementList: 135 - <==      Total: 0
+2026-06-18 00:05:16,016 DEBUG per.ExtNotificationMapper.selectLastList: 135 - <==      Total: 0
+2026-06-18 00:05:16,017 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - <==      Total: 8
+2026-06-18 00:05:16,033  INFO .cordys.crm.system.notice.sse.SseService:  47 - 当前在线用户数: 0 
+2026-06-18 00:05:16,035 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:05:16,036 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:05:16,038 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:05:16,039 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==>  Preparing: SELECT * FROM sys_organization_config_detail WHERE config_id = ?
+2026-06-18 00:05:16,039 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==> Parameters: 394909117447151616(String)
+2026-06-18 00:05:16,040 DEBUG etailMapper.getOrganizationConfigDetails: 135 - <==      Total: 1
+2026-06-18 00:05:16,077 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - ==>  Preparing: SELECT count(0) FROM customer c WHERE c.organization_id = ? AND c.in_shared_pool IS FALSE
+2026-06-18 00:05:16,077 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - ==> Parameters: 100001(String)
+2026-06-18 00:05:16,079 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - <==      Total: 1
+2026-06-18 00:09:21,413 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:09:21,414 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:09:21,414 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - ==>  Preparing: SELECT sys_user.*, sys_user_extend.avatar, sys_user_extend.platform_info FROM sys_user LEFT JOIN sys_user_extend ON sys_user.id = sys_user_extend.id WHERE sys_user.id = ? OR sys_user.phone = ? OR sys_user.email = ?
+2026-06-18 00:09:21,415 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - ==> Parameters: admin(String), admin(String), admin(String)
+2026-06-18 00:09:21,418 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:09:21,417 DEBUG apper.ExtUserMapper.selectByPhoneOrEmail: 135 - <==      Total: 1
+2026-06-18 00:09:21,419 DEBUG anizationMapper.selectAllOrganizationIds: 135 - ==>  Preparing: select id from sys_organization
+2026-06-18 00:09:21,419 DEBUG anizationMapper.selectAllOrganizationIds: 135 - ==> Parameters: 
+2026-06-18 00:09:21,421 DEBUG anizationMapper.selectAllOrganizationIds: 135 - <==      Total: 1
+2026-06-18 00:09:40,076 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - ==>  Preparing: select id, navigation_key, enable, organization_id, pos from sys_navigation where organization_id = ? order by pos
+2026-06-18 00:09:40,076 DEBUG icationMapper.selectLastAnnouncementList: 135 - ==>  Preparing: SELECT * FROM sys_notification WHERE sys_notification.receiver = ? and sys_notification.organization_id = ? and sys_notification.status='UNREAD' and sys_notification.resource_type = 'ANNOUNCEMENT_NOTICE' order by sys_notification.create_time DESC
+2026-06-18 00:09:40,078 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - ==> Parameters: 100001(String)
+2026-06-18 00:09:40,079 DEBUG icationMapper.selectLastAnnouncementList: 135 - ==> Parameters: admin(String), 100001(String)
+2026-06-18 00:09:40,082 DEBUG icationMapper.selectLastAnnouncementList: 135 - <==      Total: 0
+2026-06-18 00:09:40,083 DEBUG em.mapper.ExtNavigationMapper.selectList: 135 - <==      Total: 8
+2026-06-18 00:09:40,083 DEBUG per.ExtNotificationMapper.selectLastList: 135 - ==>  Preparing: SELECT * FROM sys_notification WHERE sys_notification.receiver = ? and sys_notification.organization_id = ? and sys_notification.status='UNREAD' and sys_notification.resource_type in ( ? , ? , ? , ? , ? ) order by sys_notification.create_time DESC limit 5
+2026-06-18 00:09:40,084 DEBUG per.ExtNotificationMapper.selectLastList: 135 - ==> Parameters: admin(String), 100001(String), CONTRACT(String), CLUE(String), CUSTOMER(String), OPPORTUNITY(String), SYSTEM(String)
+2026-06-18 00:09:40,085 DEBUG per.ExtNotificationMapper.selectLastList: 135 - <==      Total: 0
+2026-06-18 00:09:40,106 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==>  Preparing: SELECT * FROM sys_organization_config WHERE organization_id = ? AND type = ? limit 1;
+2026-06-18 00:09:40,108 DEBUG zationConfigMapper.getOrganizationConfig: 135 - ==> Parameters: 100001(String), THIRD(String)
+2026-06-18 00:09:40,110 DEBUG zationConfigMapper.getOrganizationConfig: 135 - <==      Total: 1
+2026-06-18 00:09:40,110  INFO .cordys.crm.system.notice.sse.SseService:  47 - 当前在线用户数: 0 
+2026-06-18 00:09:40,110 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==>  Preparing: SELECT * FROM sys_organization_config_detail WHERE config_id = ?
+2026-06-18 00:09:40,110 DEBUG etailMapper.getOrganizationConfigDetails: 135 - ==> Parameters: 394909117447151616(String)
+2026-06-18 00:09:40,113 DEBUG etailMapper.getOrganizationConfigDetails: 135 - <==      Total: 1
+2026-06-18 00:09:40,150 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - ==>  Preparing: SELECT count(0) FROM customer c WHERE c.organization_id = ? AND c.in_shared_pool IS FALSE
+2026-06-18 00:09:40,151 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - ==> Parameters: 100001(String)
+2026-06-18 00:09:40,153 DEBUG omer.mapper.ExtCustomerMapper.list_COUNT: 135 - <==      Total: 1
+2026-06-18 00:10:00,048 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:10:00,050 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:10:00,050 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781712600049(Long), 1781712600049(Long)
+2026-06-18 00:10:00,051 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:10:00,051 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:10:00,051 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:13:13,411 DEBUG er.ExtUserMapper.selectUserOptionByOrgId: 135 - ==>  Preparing: SELECT su.id, su.name FROM sys_user su INNER JOIN sys_organization_user sou on su.id = sou.user_id LEFT JOIN ( SELECT distinct user_id, 1 AS is_commander FROM sys_department_commander ) uc ON su.id = uc.user_id WHERE sou.organization_id = ? ORDER BY sou.enable DESC, FIELD(department_id, '101948444972679168'), is_commander DESC, sou.create_time DESC, su.name DESC
+2026-06-18 00:13:13,414 DEBUG er.ExtUserMapper.selectUserOptionByOrgId: 135 - ==> Parameters: 100001(String)
+2026-06-18 00:13:13,426 DEBUG er.ExtUserMapper.selectUserOptionByOrgId: 135 - <==      Total: 0
+2026-06-18 00:15:00,029 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:15:00,032 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:15:00,032 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781712900030(Long), 1781712900030(Long)
+2026-06-18 00:15:00,033 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:15:00,034 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:15:00,034 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:20:00,029 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:20:00,031 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:20:00,032 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781713200030(Long), 1781713200030(Long)
+2026-06-18 00:20:00,033 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:20:00,034 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:20:00,034 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:25:00,032 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:25:00,037 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:25:00,038 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781713500034(Long), 1781713500034(Long)
+2026-06-18 00:25:00,040 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:25:00,040 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:25:00,041 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:30:00,043 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:30:00,047 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:30:00,048 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781713800044(Long), 1781713800044(Long)
+2026-06-18 00:30:00,051 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:30:00,052 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:30:00,052 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:33:15,336  WARN        com.zaxxer.hikari.pool.HikariPool: 817 - DatebookHikariCP - Retrograde clock change detected (housekeeper delta=29s851ms), soft-evicting connections from pool.
+2026-06-18 00:33:15,506  WARN        com.zaxxer.hikari.pool.HikariPool: 817 - DatebookHikariCP - Retrograde clock change detected (housekeeper delta=29s851ms), soft-evicting connections from pool.
+2026-06-18 00:35:00,025 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:35:00,031 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:35:00,033 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781714100026(Long), 1781714100026(Long)
+2026-06-18 00:35:00,035 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:35:00,036 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:35:00,036 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:40:00,025 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:40:00,027 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:40:00,027 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781714400026(Long), 1781714400026(Long)
+2026-06-18 00:40:00,029 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:40:00,029 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:40:00,030 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:45:00,032 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:45:00,035 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:45:00,036 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781714700033(Long), 1781714700033(Long)
+2026-06-18 00:45:00,038 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:45:00,038 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:45:00,038 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:50:00,022 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:50:00,028 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:50:00,029 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781715000024(Long), 1781715000024(Long)
+2026-06-18 00:50:00,032 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:50:00,033 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:50:00,033 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 00:55:00,023 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:55:00,027 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 00:55:00,027 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781715300025(Long), 1781715300025(Long)
+2026-06-18 00:55:00,029 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 00:55:00,030 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 00:55:00,030 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 01:00:00,025 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 01:00:00,029 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 01:00:00,030 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781715600027(Long), 1781715600027(Long)
+2026-06-18 01:00:00,030 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 01:00:00,031 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 01:00:00,031 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 01:05:00,032 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 01:05:00,036 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 01:05:00,037 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781715900034(Long), 1781715900034(Long)
+2026-06-18 01:05:00,039 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 01:05:00,039 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 01:05:00,040 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 01:10:00,029 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 01:10:00,031 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 01:10:00,031 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781716200029(Long), 1781716200029(Long)
+2026-06-18 01:10:00,033 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 01:10:00,033 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 01:10:00,034 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325
+2026-06-18 01:15:00,027 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  32 - The scheduled task starts：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 01:15:00,031 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==>  Preparing: SELECT * FROM sys_announcement WHERE end_time >= ? and start_time < ? and notice = false
+2026-06-18 01:15:00,031 DEBUG cementMapper.selectInEffectUnConvertData: 135 - ==> Parameters: 1781716500028(Long), 1781716500028(Long)
+2026-06-18 01:15:00,033 DEBUG cementMapper.selectInEffectUnConvertData: 135 - <==      Total: 0
+2026-06-18 01:15:00,033 DEBUG tz.config.ClusterQuartzFixedDelayJobBean:  36 - The scheduled task ends normally：targetObject=notifyOnJob, targetMethod=onEvent
+2026-06-18 01:15:00,034 DEBUG rdys.quartz.config.FixedDelayJobListener:  63 - Not a fixed delay job : DEFAULT.6da64b5bd2ee-3669419f-3cc6-4a7a-9523-fda78aa44325

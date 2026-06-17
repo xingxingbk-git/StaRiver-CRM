@@ -7,15 +7,8 @@ import {
   GetProductUrl,
   UpdateProductUrl,
 } from '@lib/shared/api/requrls/product';
-import type {
-  CommonList,
-  TableQueryParams,
-} from '@lib/shared/models/common';
-import type {
-  ProductListItem,
-  SaveProductParams,
-  UpdateProductParams,
-} from '@lib/shared/models/product';
+import type { CommonList, TableQueryParams } from '@lib/shared/models/common';
+import type { ProductListItem, SaveProductParams, UpdateProductParams } from '@lib/shared/models/product';
 
 export default function useProductApi(CDR: CordysAxios) {
   // 添加产品
