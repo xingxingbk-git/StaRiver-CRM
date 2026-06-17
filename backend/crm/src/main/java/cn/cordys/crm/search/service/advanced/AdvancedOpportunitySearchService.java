@@ -23,7 +23,7 @@ import cn.cordys.crm.opportunity.mapper.ExtOpportunityMapper;
 import cn.cordys.crm.opportunity.mapper.ExtOpportunityStageConfigMapper;
 import cn.cordys.crm.opportunity.service.OpportunityFieldService;
 import cn.cordys.crm.opportunity.service.OpportunityRuleService;
-import cn.cordys.crm.product.mapper.ExtProductMapper;
+import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
 import cn.cordys.crm.search.response.advanced.AdvancedOpportunityResponse;
 import cn.cordys.crm.search.service.BaseSearchService;
 import cn.cordys.crm.system.constants.DictModule;
@@ -70,7 +70,7 @@ public class AdvancedOpportunitySearchService extends BaseSearchService<Opportun
     @Resource
     private ModuleFormService moduleFormService;
     @Resource
-    private ExtProductMapper extProductMapper;
+    private ExtPmProductMapper extPmProductMapper;
     @Resource
     private ExtOpportunityStageConfigMapper extOpportunityStageConfigMapper;
 
@@ -206,7 +206,7 @@ public class AdvancedOpportunitySearchService extends BaseSearchService<Opportun
                 OpportunityListResponse::getContactId, OpportunityListResponse::getContactName);
         optionMap.put(BusinessModuleField.OPPORTUNITY_CONTACT.getBusinessKey(), contactFieldOption);
 
-        List<OptionDTO> productOption = extProductMapper.getOptions(orgId);
+        List<OptionDTO> productOption = extPmProductMapper.getOptions(orgId);
         optionMap.put(BusinessModuleField.OPPORTUNITY_PRODUCTS.getBusinessKey(), productOption);
 
         return optionMap;

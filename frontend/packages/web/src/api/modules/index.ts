@@ -1,4 +1,3 @@
-import createAxios from '@lib/shared/api/http';
 import useAgentApi from '@lib/shared/api/modules/agent';
 import useClueApi from '@lib/shared/api/modules/clue';
 import useContractApi from '@lib/shared/api/modules/contract';
@@ -20,6 +19,7 @@ import useOrgApi from '@lib/shared/api/modules/system/org';
 import useProcessApi from '@lib/shared/api/modules/system/process';
 import useRoleApi from '@lib/shared/api/modules/system/role';
 
+import createAxios from '@/api/http/createAxios';
 import useDiscreteApi from '@/hooks/useDiscreteApi';
 
 import checkStatus from '../http/checkStatus';

@@ -14,7 +14,7 @@ import cn.cordys.crm.contract.service.BusinessTitleService;
 import cn.cordys.crm.contract.service.ContractService;
 import cn.cordys.crm.customer.service.CustomerContactService;
 import cn.cordys.crm.opportunity.service.OpportunityService;
-import cn.cordys.crm.product.domain.Product;
+import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
 import cn.cordys.crm.system.constants.FieldType;
 import cn.cordys.crm.system.dto.field.DateTimeField;
 import cn.cordys.crm.system.dto.field.base.BaseField;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public abstract class BaseModuleLogService {
     @Resource
-    private BaseMapper<Product> productMapper;
+    private ExtPmProductMapper extPmProductMapper;
 
     protected String oldValue;
 
@@ -448,16 +448,16 @@ public abstract class BaseModuleLogService {
             List<String> ids = ((Collection<?>) oldValue).stream()
                     .map(String::valueOf)
                     .toList();
-            List<Product> products = productMapper.selectByIds(ids);
-            differ.setOldValueName(products.stream().map(Product::getName).toList());
+            List<OptionDTO> products = extPmProductMapper.listIdNameByIds(ids);
+            differ.setOldValueName(products.stream().map(OptionDTO::getName).toList());
         });
 
         Optional.ofNullable(differ.getNewValue()).ifPresent(newValue -> {
             List<String> ids = ((Collection<?>) newValue).stream()
                     .map(String::valueOf)
                     .toList();
-            List<Product> products = productMapper.selectByIds(ids);
-            differ.setNewValueName(products.stream().map(Product::getName).toList());
+            List<OptionDTO> products = extPmProductMapper.listIdNameByIds(ids);
+            differ.setNewValueName(products.stream().map(OptionDTO::getName).toList());
         });
     }
 }

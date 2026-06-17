@@ -23,8 +23,16 @@ CREATE TABLE IF NOT EXISTS pm_product
     DEFAULT CHARSET = utf8mb4
     COLLATE = utf8mb4_general_ci;
 
-CREATE INDEX idx_pm_product_org ON pm_product (`organization_id`);
-CREATE UNIQUE INDEX uk_pm_product_org_code ON pm_product (`organization_id`, `code`);
+-- 兼容已存在的索引，防止 Flyway 重复迁移报错
+SET @db = (SELECT DATABASE());
+SET @s1 = (SELECT IF((SELECT COUNT(*) FROM information_schema.STATISTICS WHERE table_schema = @db AND table_name = 'pm_product' AND index_name = 'idx_pm_product_org') = 0, 'CREATE INDEX idx_pm_product_org ON pm_product (`organization_id`)', 'SELECT 1'));
+PREPARE stmt1 FROM @s1;
+EXECUTE stmt1;
+DEALLOCATE PREPARE stmt1;
+SET @s2 = (SELECT IF((SELECT COUNT(*) FROM information_schema.STATISTICS WHERE table_schema = @db AND table_name = 'pm_product' AND index_name = 'uk_pm_product_org_code') = 0, 'CREATE UNIQUE INDEX uk_pm_product_org_code ON pm_product (`organization_id`, `code`)', 'SELECT 1'));
+PREPARE stmt2 FROM @s2;
+EXECUTE stmt2;
+DEALLOCATE PREPARE stmt2;
 
 CREATE TABLE IF NOT EXISTS pm_product_module
 (

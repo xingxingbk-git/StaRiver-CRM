@@ -45,12 +45,7 @@ import cn.cordys.crm.opportunity.service.OpportunityService;
 import cn.cordys.crm.order.dto.request.OrderPageRequest;
 import cn.cordys.crm.order.dto.response.OrderListResponse;
 import cn.cordys.crm.order.service.OrderService;
-import cn.cordys.crm.product.dto.request.ProductPageRequest;
-import cn.cordys.crm.product.dto.request.ProductPricePageRequest;
-import cn.cordys.crm.product.dto.response.ProductListResponse;
-import cn.cordys.crm.product.dto.response.ProductPriceResponse;
-import cn.cordys.crm.product.service.ProductPriceService;
-import cn.cordys.crm.product.service.ProductService;
+import cn.cordys.crm.productmgmt.service.ProductManagementService;
 import cn.cordys.crm.system.dto.DatasourceRefDTO;
 import cn.cordys.crm.system.dto.request.DatasourceRefQueryRequest;
 import cn.cordys.crm.system.dto.request.FieldRepeatCheckRequest;
@@ -97,9 +92,7 @@ public class ModuleFieldController {
     @Resource
     private ContractService contractService;
     @Resource
-    private ProductService productService;
-    @Resource
-    private ProductPriceService productPriceService;
+    private ProductManagementService productManagementService;
     @Resource
     private ContractPaymentPlanService contractPaymentPlanService;
 	@Resource
@@ -191,24 +184,6 @@ public class ModuleFieldController {
         DeptDataPermissionDTO deptDataPermission = dataScopeService.getDeptDataPermission(SessionUtils.getUserId(), OrganizationContext.getOrganizationId(), InternalUserView.ALL.name(),
                 PermissionConstants.CONTRACT_READ);
         return contractService.list(request, SessionUtils.getUserId(), OrganizationContext.getOrganizationId(), deptDataPermission, true);
-    }
-
-    @PostMapping("/source/product")
-    @Operation(summary = "分页获取产品")
-    public Pager<List<ProductListResponse>> sourceProductPage(@Valid @RequestBody ProductPageRequest request) {
-        ConditionFilterUtils.parseCondition(request, FormKey.PRODUCT.getKey());
-        request.setCombineSearch(request.getCombineSearch().convert());
-        // 数据源接口只展示上架数据
-        request.setStatus("1");
-        return productService.list(request, OrganizationContext.getOrganizationId());
-    }
-
-    @PostMapping("/source/price")
-    @Operation(summary = "分页获取产品价格表")
-    public Pager<List<ProductPriceResponse>> sourceProductPage(@Valid @RequestBody ProductPricePageRequest request) {
-        ConditionFilterUtils.parseCondition(request, FormKey.PRICE.getKey());
-        request.setCombineSearch(request.getCombineSearch().convert());
-        return productPriceService.list(request, OrganizationContext.getOrganizationId());
     }
 
     @PostMapping("/source/contract/payment-plan")

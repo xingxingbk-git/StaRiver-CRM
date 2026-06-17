@@ -12,8 +12,7 @@ import cn.cordys.common.util.CommonBeanFactory;
 import cn.cordys.common.util.JSON;
 import cn.cordys.common.util.Translator;
 import cn.cordys.crm.contract.service.BusinessTitleService;
-import cn.cordys.crm.product.service.ProductPriceService;
-import cn.cordys.crm.product.service.ProductService;
+import cn.cordys.crm.productmgmt.service.ProductManagementService;
 import cn.cordys.crm.system.constants.FieldSourceType;
 import cn.cordys.crm.system.constants.FieldType;
 import cn.cordys.crm.system.domain.ModuleField;
@@ -65,8 +64,8 @@ public class ModuleFieldService {
         FORM_TABLE.put(FormKey.CONTACT.getKey(), "customer_contact");
         FORM_TABLE.put(FormKey.OPPORTUNITY.getKey(), "opportunity");
         FORM_TABLE.put(FormKey.QUOTATION.getKey(), "opportunity_quotation");
-        FORM_TABLE.put(FormKey.PRODUCT.getKey(), "product");
-        FORM_TABLE.put(FormKey.PRICE.getKey(), "product_price");
+        FORM_TABLE.put(FormKey.PRODUCT.getKey(), "pm_product");
+        FORM_TABLE.put(FormKey.PRICE.getKey(), "pm_product");
         FORM_TABLE.put(FormKey.FOLLOW_RECORD.getKey(), "follow_up_record");
         FORM_TABLE.put(FormKey.FOLLOW_PLAN.getKey(), "follow_up_plan");
         FORM_TABLE.put(FormKey.CONTRACT.getKey(), "contract");
@@ -75,8 +74,7 @@ public class ModuleFieldService {
         FORM_TABLE.put(FormKey.INVOICE.getKey(), "contract_invoice");
         FORM_TABLE.put(FormKey.ORDER.getKey(), "sales_order");
 
-		SOURCE_REF_CLASS.put(FieldSourceType.PRODUCT.name(), ProductService.class);
-		SOURCE_REF_CLASS.put(FieldSourceType.PRICE.name(), ProductPriceService.class);
+		SOURCE_REF_CLASS.put(FieldSourceType.PRODUCT.name(), ProductManagementService.class);
 		SOURCE_REF_CLASS.put(FieldSourceType.BUSINESS_TITLE.name(), BusinessTitleService.class);
     }
 

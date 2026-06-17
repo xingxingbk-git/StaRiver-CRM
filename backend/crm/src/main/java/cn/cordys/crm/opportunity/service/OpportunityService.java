@@ -43,8 +43,8 @@ import cn.cordys.crm.opportunity.dto.response.OpportunitySearchStatisticResponse
 import cn.cordys.crm.opportunity.dto.response.StageConfigResponse;
 import cn.cordys.crm.opportunity.mapper.ExtOpportunityMapper;
 import cn.cordys.crm.opportunity.mapper.ExtOpportunityStageConfigMapper;
-import cn.cordys.crm.product.mapper.ExtProductMapper;
-import cn.cordys.crm.product.service.ProductService;
+import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
+import cn.cordys.crm.productmgmt.service.ProductManagementService;
 import cn.cordys.crm.system.constants.DictModule;
 import cn.cordys.crm.system.constants.FieldType;
 import cn.cordys.crm.system.constants.NotificationConstants;
@@ -120,7 +120,9 @@ public class OpportunityService {
     @Resource
     private ModuleFormService moduleFormService;
     @Resource
-    private ExtProductMapper extProductMapper;
+    private cn.cordys.crm.product.mapper.ExtProductMapper extProductMapper;
+    @Resource
+    private ExtPmProductMapper extPmProductMapper;
     @Resource
     private CommonNoticeSendService commonNoticeSendService;
     @Resource
@@ -128,7 +130,7 @@ public class OpportunityService {
     @Resource
     private CustomerContactService customerContactService;
     @Resource
-    private ProductService productService;
+    private ProductManagementService productManagementService;
     @Resource
     private ExtCustomerContactMapper extCustomerContactMapper;
     @Resource
@@ -182,7 +184,7 @@ public class OpportunityService {
 			optionMap.put(BusinessModuleField.OPPORTUNITY_CONTACT.getBusinessKey(), contactFieldOption);
 		}
 
-        List<OptionDTO> productOption = extProductMapper.getOptions(orgId);
+        List<OptionDTO> productOption = extPmProductMapper.getOptions(orgId);
 		if (CollectionUtils.isNotEmpty(productOption)) {
 			optionMap.put(BusinessModuleField.OPPORTUNITY_PRODUCTS.getBusinessKey(), productOption);
 		}
@@ -282,7 +284,7 @@ public class OpportunityService {
      */
     @OperationLog(module = LogModule.OPPORTUNITY_INDEX, type = LogType.ADD)
     public Opportunity add(OpportunityAddRequest request, String operatorId, String orgId) {
-        productService.checkProductList(request.getProducts());
+        productManagementService.checkProductList(request.getProducts());
         List<StageConfigResponse> stageConfigList = extOpportunityStageConfigMapper.getStageConfigList(orgId);
         Long nextPos = getNextPos(orgId, stageConfigList.getFirst().getId());
         Opportunity opportunity = new Opportunity();
@@ -340,7 +342,7 @@ public class OpportunityService {
         Opportunity oldOpportunity = opportunityMapper.selectByPrimaryKey(request.getId());
         Optional.ofNullable(oldOpportunity).ifPresentOrElse(item -> {
             Opportunity newOpportunity = BeanUtils.copyBean(new Opportunity(), item);
-            productService.checkProductList(request.getProducts());
+            productManagementService.checkProductList(request.getProducts());
             //更新商机
             Opportunity updateOpportunity = newOpportunity(newOpportunity, request, userId);
             // 获取模块字段
@@ -870,7 +872,7 @@ public class OpportunityService {
         }
 
         if (Strings.CS.equals(field.getBusinessKey(), BusinessModuleField.OPPORTUNITY_PRODUCTS.getBusinessKey())) {
-            productService.checkProductList((List<String>) request.getFieldValue());
+            productManagementService.checkProductList((List<String>) request.getFieldValue());
         }
 
         List<Opportunity> originOpportunities = opportunityMapper.selectByIds(request.getIds());

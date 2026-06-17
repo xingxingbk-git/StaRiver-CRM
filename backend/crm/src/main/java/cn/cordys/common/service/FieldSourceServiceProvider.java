@@ -9,8 +9,7 @@ import cn.cordys.crm.customer.service.CustomerService;
 import cn.cordys.crm.opportunity.service.OpportunityQuotationService;
 import cn.cordys.crm.opportunity.service.OpportunityService;
 import cn.cordys.crm.order.service.OrderService;
-import cn.cordys.crm.product.service.ProductPriceService;
-import cn.cordys.crm.product.service.ProductService;
+import cn.cordys.crm.productmgmt.service.ProductManagementService;
 import cn.cordys.crm.system.constants.FieldSourceType;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -49,9 +48,7 @@ public class FieldSourceServiceProvider {
     @Resource
     private CustomerContactService customerContactService;
     @Resource
-    private ProductService productService;
-    @Resource
-    private ProductPriceService productPriceService;
+    private ProductManagementService productManagementService;
     @Resource
     private OpportunityQuotationService opportunityQuotationService;
     @Resource
@@ -73,8 +70,8 @@ public class FieldSourceServiceProvider {
         SERVICE_MAP.put(FieldSourceType.CUSTOMER, customerService);
         SERVICE_MAP.put(FieldSourceType.OPPORTUNITY, opportunityService);
         SERVICE_MAP.put(FieldSourceType.CONTACT, customerContactService);
-        SERVICE_MAP.put(FieldSourceType.PRODUCT, productService);
-        SERVICE_MAP.put(FieldSourceType.PRICE, productPriceService);
+        SERVICE_MAP.put(FieldSourceType.PRODUCT, productManagementService);
+        SERVICE_MAP.put(FieldSourceType.PRICE, productManagementService);
         SERVICE_MAP.put(FieldSourceType.QUOTATION, opportunityQuotationService);
         SERVICE_MAP.put(FieldSourceType.CONTRACT, contractService);
         SERVICE_MAP.put(FieldSourceType.BUSINESS_TITLE, businessTitleService);

@@ -21,7 +21,7 @@ import cn.cordys.crm.clue.dto.response.ClueListResponse;
 import cn.cordys.crm.clue.mapper.ExtClueMapper;
 import cn.cordys.crm.clue.service.ClueFieldService;
 import cn.cordys.crm.clue.service.CluePoolService;
-import cn.cordys.crm.product.mapper.ExtProductMapper;
+import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
 import cn.cordys.crm.search.response.advanced.AdvancedClueResponse;
 import cn.cordys.crm.search.service.BaseSearchService;
 import cn.cordys.crm.system.constants.DictModule;
@@ -53,7 +53,7 @@ public class AdvancedClueSearchService extends BaseSearchService<CluePageRequest
     @Resource
     private ExtClueMapper extClueMapper;
     @Resource
-    private ExtProductMapper extProductMapper;
+    private ExtPmProductMapper extPmProductMapper;
     @Resource
     private ModuleFormCacheService moduleFormCacheService;
     @Resource
@@ -110,7 +110,7 @@ public class AdvancedClueSearchService extends BaseSearchService<CluePageRequest
         optionMap.put(BusinessModuleField.CLUE_OWNER.getBusinessKey(), ownerFieldOption);
 
         // 意向产品选项
-        List<OptionDTO> productOption = extProductMapper.getOptions(orgId);
+        List<OptionDTO> productOption = extPmProductMapper.getOptions(orgId);
         optionMap.put(BusinessModuleField.OPPORTUNITY_PRODUCTS.getBusinessKey(), productOption);
         return optionMap;
     }

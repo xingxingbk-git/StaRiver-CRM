@@ -1,9 +1,11 @@
 package cn.cordys.crm.productmgmt.service;
 
 import cn.cordys.common.dto.BasePageRequest;
+import cn.cordys.common.dto.OptionDTO;
 import cn.cordys.common.exception.GenericException;
 import cn.cordys.common.pager.Pager;
 import cn.cordys.common.uid.IDGenerator;
+import cn.cordys.common.util.Translator;
 import cn.cordys.context.OrganizationContext;
 import cn.cordys.crm.productmgmt.domain.ProductManagementDocument;
 import cn.cordys.crm.productmgmt.domain.ProductManagementModule;
@@ -12,6 +14,7 @@ import cn.cordys.crm.productmgmt.domain.ProductManagementRequirement;
 import cn.cordys.crm.productmgmt.domain.ProductManagementVersion;
 import cn.cordys.crm.productmgmt.dto.request.ProductManagementSaveRequest;
 import cn.cordys.crm.productmgmt.dto.request.ProductRequirementSaveRequest;
+import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
 import cn.cordys.mybatis.BaseMapper;
 import cn.cordys.mybatis.lambda.LambdaQueryWrapper;
 import cn.cordys.security.SessionUtils;
@@ -46,6 +49,22 @@ public class ProductManagementService {
     private BaseMapper<ProductManagementRequirement> requirementMapper;
     @Resource
     private BaseMapper<ProductManagementDocument> documentMapper;
+    @Resource
+    private ExtPmProductMapper extPmProductMapper;
+
+    public void checkProductList(List<String> products) {
+        if (products != null && products.size() > 20) {
+            throw new GenericException(Translator.get("product.length"));
+        }
+    }
+
+    public List<OptionDTO> listOption(String organizationId) {
+        return extPmProductMapper.getOptions(organizationId);
+    }
+
+    public List<OptionDTO> getProductOptions(String keyword, String organizationId) {
+        return extPmProductMapper.getProductOptions(keyword, organizationId);
+    }
 
     public Pager<List<Map<String, Object>>> listProducts(BasePageRequest request) {
         List<ProductManagementProduct> products = productMapper.selectListByLambda(

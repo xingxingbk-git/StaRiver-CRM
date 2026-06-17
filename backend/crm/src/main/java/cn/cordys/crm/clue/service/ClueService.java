@@ -49,8 +49,8 @@ import cn.cordys.crm.follow.service.FollowUpRecordService;
 import cn.cordys.crm.opportunity.domain.Opportunity;
 import cn.cordys.crm.opportunity.dto.request.OpportunityAddRequest;
 import cn.cordys.crm.opportunity.service.OpportunityService;
-import cn.cordys.crm.product.mapper.ExtProductMapper;
-import cn.cordys.crm.product.service.ProductService;
+import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
+import cn.cordys.crm.productmgmt.service.ProductManagementService;
 import cn.cordys.crm.system.constants.DictModule;
 import cn.cordys.crm.system.constants.NotificationConstants;
 import cn.cordys.crm.system.constants.SheetKey;
@@ -112,6 +112,8 @@ public class ClueService {
     @Resource
     private ExtClueMapper extClueMapper;
     @Resource
+    private cn.cordys.crm.product.mapper.ExtProductMapper extProductMapper;
+    @Resource
     private BaseService baseService;
     @Resource
     private DictService dictService;
@@ -150,9 +152,9 @@ public class ClueService {
     @Resource
     private PermissionCache permissionCache;
     @Resource
-    private ExtProductMapper extProductMapper;
+    private ExtPmProductMapper extPmProductMapper;
     @Resource
-    private ProductService productService;
+    private ProductManagementService productManagementService;
     @Resource
     private PoolCustomerService poolCustomerService;
     @Resource
@@ -203,7 +205,7 @@ public class ClueService {
         optionMap.put(BusinessModuleField.CLUE_OWNER.getBusinessKey(), ownerFieldOption);
 
         // 意向产品选项
-        List<OptionDTO> productOption = extProductMapper.getOptions(orgId);
+        List<OptionDTO> productOption = extPmProductMapper.getOptions(orgId);
         optionMap.put(BusinessModuleField.OPPORTUNITY_PRODUCTS.getBusinessKey(), productOption);
         return optionMap;
     }
@@ -420,7 +422,7 @@ public class ClueService {
 
     @OperationLog(module = LogModule.CLUE_INDEX, type = LogType.ADD)
     public Clue add(ClueAddRequest request, String userId, String orgId) {
-        productService.checkProductList(request.getProducts());
+        productManagementService.checkProductList(request.getProducts());
         Clue clue = BeanUtils.copyBean(new Clue(), request);
         if (StringUtils.isBlank(request.getOwner())) {
             clue.setOwner(userId);
@@ -451,7 +453,7 @@ public class ClueService {
 
     @OperationLog(module = LogModule.CLUE_INDEX, type = LogType.UPDATE, resourceId = "{#request.id}")
     public Clue update(ClueUpdateRequest request, String userId, String orgId) {
-        productService.checkProductList(request.getProducts());
+        productManagementService.checkProductList(request.getProducts());
         Clue originClue = clueMapper.selectByPrimaryKey(request.getId());
         if (!Strings.CS.equals(originClue.getOwner(), request.getOwner())) {
             poolClueService.validateCapacity(1, request.getOwner(), orgId);
@@ -1193,7 +1195,7 @@ public class ClueService {
         }
 
         if (Strings.CS.equals(field.getBusinessKey(), BusinessModuleField.CLUE_PRODUCTS.getBusinessKey())) {
-            productService.checkProductList((List<String>) request.getFieldValue());
+            productManagementService.checkProductList((List<String>) request.getFieldValue());
         }
 
         List<Clue> originClues = clueMapper.selectByIds(request.getIds());

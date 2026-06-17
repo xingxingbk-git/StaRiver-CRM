@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper">
+
+    <select id="getOptions" resultType="cn.cordys.common.dto.OptionDTO">
+        SELECT id, name
+        FROM pm_product
+        WHERE organization_id = #{orgId}
+    </select>
+
+    <select id="getProductOptions" resultType="cn.cordys.common.dto.OptionDTO">
+        SELECT id, name
+        FROM pm_product
+        WHERE organization_id = #{orgId}
+        <if test="keyword != null and keyword != ''">
+            AND name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+
+    <select id="listIdNameByIds" resultType="cn.cordys.common.dto.OptionDTO">
+        SELECT id, name
+        FROM pm_product
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

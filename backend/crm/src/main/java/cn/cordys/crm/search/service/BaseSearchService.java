@@ -13,7 +13,7 @@ import cn.cordys.context.OrganizationContext;
 import cn.cordys.crm.clue.domain.CluePool;
 import cn.cordys.crm.customer.domain.CustomerPool;
 import cn.cordys.crm.customer.mapper.ExtCustomerMapper;
-import cn.cordys.crm.product.mapper.ExtProductMapper;
+import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
 import cn.cordys.crm.search.domain.SearchFieldMaskConfig;
 import cn.cordys.crm.search.domain.UserSearchConfig;
 import cn.cordys.crm.system.constants.FieldType;
@@ -47,7 +47,7 @@ public abstract class BaseSearchService<T extends BasePageRequest, R> {
     private BaseMapper<SearchFieldMaskConfig> searchFieldMaskConfigBaseMapper;
 
     @Resource
-    private ExtProductMapper extProductMapper;
+    private ExtPmProductMapper extPmProductMapper;
 
     @Resource
     private ExtCustomerMapper extCustomerMapper;
@@ -119,7 +119,7 @@ public abstract class BaseSearchService<T extends BasePageRequest, R> {
      * @return 产品ID和名称的映射关系
      */
     public Map<String, String> getProductNameMap(String orgId) {
-        List<OptionDTO> productOption = extProductMapper.getOptions(orgId);
+        List<OptionDTO> productOption = extPmProductMapper.getOptions(orgId);
         return productOption.stream().collect(Collectors.toMap(OptionDTO::getId, OptionDTO::getName));
     }
 

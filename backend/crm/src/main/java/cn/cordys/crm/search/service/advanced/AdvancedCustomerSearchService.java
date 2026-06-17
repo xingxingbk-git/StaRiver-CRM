@@ -18,8 +18,7 @@ import cn.cordys.crm.customer.mapper.ExtCustomerMapper;
 import cn.cordys.crm.customer.service.CustomerFieldService;
 import cn.cordys.crm.customer.service.CustomerPoolService;
 import cn.cordys.crm.opportunity.mapper.ExtOpportunityMapper;
-import cn.cordys.crm.product.domain.Product;
-import cn.cordys.crm.product.mapper.ExtProductMapper;
+import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
 import cn.cordys.crm.search.response.advanced.AdvancedClueResponse;
 import cn.cordys.crm.search.response.advanced.AdvancedCustomerResponse;
 import cn.cordys.crm.search.response.advanced.OpportunityRepeatResponse;
@@ -76,7 +75,7 @@ public class AdvancedCustomerSearchService extends BaseSearchService<CustomerPag
     @Resource
     private ExtClueMapper extClueMapper;
     @Resource
-    private ExtProductMapper extProductMapper;
+    private ExtPmProductMapper extPmProductMapper;
 
     @Override
     public PagerWithOption<List<AdvancedCustomerResponse>> startSearch(CustomerPageRequest request, String orgId, String userId) {
@@ -324,7 +323,7 @@ public class AdvancedCustomerSearchService extends BaseSearchService<CustomerPag
         if (CollectionUtils.isEmpty(repeatClueList)) {
             return repeatClueList;
         }
-        List<OptionDTO> productOption = extProductMapper.getOptions(organizationId);
+        List<OptionDTO> productOption = extPmProductMapper.getOptions(organizationId);
         // 设置产品名称
         getProductNames(productOption, repeatClueList);
 
@@ -357,10 +356,10 @@ public class AdvancedCustomerSearchService extends BaseSearchService<CustomerPag
         // 3. 批量获取产品名称映射(优化数据库查询)
         Map<String, String> productNameMap = productIds.isEmpty()
                 ? Collections.emptyMap()
-                : extProductMapper.listIdNameByIds(productIds).stream()
+                : extPmProductMapper.listIdNameByIds(productIds).stream()
                 .collect(Collectors.toMap(
-                        Product::getId,
-                        Product::getName,
+                        OptionDTO::getId,
+                        OptionDTO::getName,
                         (existing, replacement) -> existing)); // 处理可能的重复键
 
         // 4. 填充每个商机的产品名称

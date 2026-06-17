@@ -11,8 +11,6 @@ import cn.cordys.crm.follow.service.FollowUpRecordLogService;
 import cn.cordys.crm.opportunity.service.OpportunityLogService;
 import cn.cordys.crm.opportunity.service.OpportunityQuotationalLogService;
 import cn.cordys.crm.order.service.OrderLogService;
-import cn.cordys.crm.product.service.PriceLogService;
-import cn.cordys.crm.product.service.ProductLogService;
 
 import java.util.HashMap;
 
@@ -27,8 +25,6 @@ public class ModuleLogServiceFactory {
         logServiceMap.put(LogModule.OPPORTUNITY_INDEX, CommonBeanFactory.getBean(OpportunityLogService.class));
         logServiceMap.put(LogModule.OPPORTUNITY_QUOTATION, CommonBeanFactory.getBean(OpportunityQuotationalLogService.class));
         logServiceMap.put(LogModule.SYSTEM_ORGANIZATION, CommonBeanFactory.getBean(OrganizationLogService.class));
-        logServiceMap.put(LogModule.PRODUCT_MANAGEMENT, CommonBeanFactory.getBean(ProductLogService.class));
-        logServiceMap.put(LogModule.PRODUCT_PRICE_MANAGEMENT, CommonBeanFactory.getBean(PriceLogService.class));
         logServiceMap.put(LogModule.CONTRACT_INDEX, CommonBeanFactory.getBean(ContractLogService.class));
         logServiceMap.put(LogModule.CLUE_INDEX, CommonBeanFactory.getBean(ClueLogService.class));
         logServiceMap.put(LogModule.CLUE_POOL_INDEX, CommonBeanFactory.getBean(ClueLogService.class));

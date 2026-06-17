@@ -1,4 +1,4 @@
-import createAxios from '@lib/shared/api/http';
+import createAxios from './createAxios';
 
 import useDiscreteApi from '@/hooks/useDiscreteApi';
 import useAppStore from '@/store/modules/app';
