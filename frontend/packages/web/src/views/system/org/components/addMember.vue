@@ -1,63 +1,70 @@
 <template>
   <CrmDrawer
     v-model:show="showDrawer"
-    :width="480"
+    :width="560"
     :title="form.id ? t('org.updateMember') : t('org.addMember')"
     :ok-text="t('common.update')"
     @cancel="cancelHandler"
   >
-    <div class="mr-[20%]">
-      <n-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-placement="left"
-        :label-width="100"
-        require-mark-placement="left"
-      >
-        <n-form-item require-mark-placement="left" label-placement="left" path="name" :label="t('org.userName')">
-          <n-input v-model:value="form.name" type="text" :placeholder="t('common.pleaseInput')" :maxlength="255" />
-        </n-form-item>
-        <n-form-item require-mark-placement="left" label-placement="left" path="gender" :label="t('org.gender')">
-          <n-radio-group v-model:value="form.gender" name="radiogroup">
-            <n-space>
-              <n-radio key="male" :value="false">
-                {{ t('org.male') }}
-              </n-radio>
-              <n-radio key="female" :value="true">
-                {{ t('org.female') }}
-              </n-radio>
-            </n-space>
-          </n-radio-group>
-        </n-form-item>
-        <n-form-item require-mark-placement="left" label-placement="left" path="phone" :label="t('common.phoneNumber')">
-          <n-input v-model:value="form.phone" type="text" :placeholder="t('common.pleaseInput')" />
-        </n-form-item>
-        <n-form-item require-mark-placement="left" label-placement="left" path="email" :label="t('org.userEmail')">
-          <n-input v-model:value="form.email" type="text" :placeholder="t('common.pleaseInput')" />
-        </n-form-item>
-        <n-form-item
-          require-mark-placement="left"
-          label-placement="left"
-          path="departmentId"
-          :label="t('org.department')"
-        >
-          <n-tree-select
-            v-model:value="form.departmentId"
-            :options="department"
-            label-field="name"
-            key-field="id"
-            filterable
-            clearable
-            children-field="children"
-          >
-            <template #empty>
-              <div class="flex w-full items-center justify-start text-[var(--text-n4)]">
-                {{ t('org.noDepartmentToChoose') }}
-              </div>
-            </template>
-            <!-- TODO xxw -->
-            <!-- <template #action>
+    <div class="org-member-drawer">
+      <section class="org-member-drawer__section">
+        <h3>基本信息</h3>
+        <n-form ref="formRef" :model="form" :rules="rules" label-placement="top" require-mark-placement="left">
+          <n-form-item require-mark-placement="left" label-placement="left" path="name" :label="t('org.userName')">
+            <n-input
+              v-model:value="form.name"
+              class="org-member-drawer__control"
+              type="text"
+              :placeholder="t('common.pleaseInput')"
+              :maxlength="255"
+            />
+          </n-form-item>
+          <n-form-item require-mark-placement="left" path="gender" :label="t('org.gender')">
+            <n-radio-group v-model:value="form.gender" class="org-member-drawer__gender" name="radiogroup">
+              <n-space :size="12">
+                <n-radio key="male" :value="false">
+                  {{ t('org.male') }}
+                </n-radio>
+                <n-radio key="female" :value="true">
+                  {{ t('org.female') }}
+                </n-radio>
+              </n-space>
+            </n-radio-group>
+          </n-form-item>
+          <n-form-item require-mark-placement="left" path="phone" :label="t('common.phoneNumber')">
+            <n-input
+              v-model:value="form.phone"
+              class="org-member-drawer__control"
+              type="text"
+              :placeholder="t('common.pleaseInput')"
+            />
+          </n-form-item>
+          <n-form-item require-mark-placement="left" path="email" :label="t('org.userEmail')">
+            <n-input
+              v-model:value="form.email"
+              class="org-member-drawer__control"
+              type="text"
+              :placeholder="t('common.pleaseInput')"
+            />
+          </n-form-item>
+          <n-form-item require-mark-placement="left" path="departmentId" :label="t('org.department')">
+            <n-tree-select
+              v-model:value="form.departmentId"
+              class="org-member-drawer__control"
+              :options="department"
+              label-field="name"
+              key-field="id"
+              filterable
+              clearable
+              children-field="children"
+            >
+              <template #empty>
+                <div class="flex w-full items-center justify-start text-[var(--text-n4)]">
+                  {{ t('org.noDepartmentToChoose') }}
+                </div>
+              </template>
+              <!-- TODO xxw -->
+              <!-- <template #action>
               <div class="text-left">
                 <n-button type="primary" text>
                   <template #icon>
@@ -67,44 +74,37 @@
                 </n-button>
               </div>
             </template> -->
-          </n-tree-select>
-        </n-form-item>
-        <n-form-item
-          require-mark-placement="left"
-          label-placement="left"
-          path="employeeId"
-          :label="t('org.employeeNumber')"
-        >
-          <n-input
-            v-model:value="form.employeeId"
-            type="text"
-            :placeholder="t('common.pleaseInput')"
-            :maxlength="255"
-          />
-        </n-form-item>
-        <CrmExpandButton v-model:expand="showForm">
-          <n-form-item
-            require-mark-placement="left"
-            label-placement="left"
-            path="employeeType"
-            :label="t('org.employeeType')"
-          >
+            </n-tree-select>
+          </n-form-item>
+          <n-form-item path="employeeId" :label="t('org.employeeNumber')">
+            <n-input
+              v-model:value="form.employeeId"
+              class="org-member-drawer__control"
+              type="text"
+              :placeholder="t('common.pleaseInput')"
+              :maxlength="255"
+            />
+          </n-form-item>
+        </n-form>
+      </section>
+
+      <section class="org-member-drawer__section">
+        <h3>更多</h3>
+        <n-form :model="form" label-placement="top" require-mark-placement="left">
+          <n-form-item path="employeeType" :label="t('org.employeeType')">
             <n-select
               v-model:value="form.employeeType"
+              class="org-member-drawer__control"
               :placeholder="t('common.pleaseSelect')"
               clearable
               :options="employeeTypeOptions"
             />
           </n-form-item>
-          <n-form-item
-            require-mark-placement="left"
-            label-placement="left"
-            path="supervisorId"
-            :label="t('org.directSuperior')"
-          >
+          <n-form-item path="supervisorId" :label="t('org.directSuperior')">
             <CrmUserSelect
               ref="crmUserSelectRef"
               v-model:value="form.supervisorId"
+              class="org-member-drawer__control"
               value-field="id"
               label-field="name"
               mode="remote"
@@ -113,38 +113,31 @@
               :fetch-api="getUserOptions"
             />
           </n-form-item>
-          <n-form-item require-mark-placement="left" label-placement="left" path="position" :label="t('org.position')">
+          <n-form-item path="position" :label="t('org.position')">
             <n-input
               v-model:value="form.position"
+              class="org-member-drawer__control"
               type="text"
               :placeholder="t('common.pleaseInput')"
               :maxlength="255"
             />
           </n-form-item>
-          <n-form-item
-            require-mark-placement="left"
-            label-placement="left"
-            path="workCity"
-            :label="t('org.workingCity')"
-          >
-            <CrmCitySelect v-model:value="form.workCity" />
+          <n-form-item path="workCity" :label="t('org.workingCity')">
+            <CrmCitySelect v-model:value="form.workCity" class="org-member-drawer__control" />
           </n-form-item>
-          <n-form-item require-mark-placement="left" label-placement="left" path="roleIds" :label="t('org.role')">
+          <n-form-item path="roleIds" :label="t('org.role')">
             <n-select
               v-model:value="form.roleIds"
+              class="org-member-drawer__control"
               multiple
               filterable
               :placeholder="t('common.pleaseSelect')"
               :options="roleOptions"
             />
           </n-form-item>
-          <n-form-item
-            require-mark-placement="left"
-            label-placement="left"
-            path="onboardingDate"
-            :label="t('org.onboardingDate')"
-          >
-            <n-date-picker v-model:value="form.onboardingDate" type="date" class="w-full"> </n-date-picker>
+          <n-form-item path="onboardingDate" :label="t('org.onboardingDate')">
+            <n-date-picker v-model:value="form.onboardingDate" type="date" class="org-member-drawer__control w-full">
+            </n-date-picker>
           </n-form-item>
           <!-- TODO  不上 -->
           <!-- <n-form-item
@@ -159,8 +152,8 @@
               :options="userGroupOptions"
             />
           </n-form-item> -->
-        </CrmExpandButton>
-      </n-form>
+        </n-form>
+      </section>
     </div>
     <template #footer>
       <div class="flex w-full items-center justify-between">
@@ -218,18 +211,12 @@
   import CrmDrawer from '@/components/pure/crm-drawer/index.vue';
   import type { CrmTreeNodeData } from '@/components/pure/crm-tree/type';
   import CrmCitySelect from '@/components/business/crm-city-select/index.vue';
-  import CrmExpandButton from '@/components/business/crm-expand-button/index.vue';
   import CrmUserSelect from '@/components/business/crm-user-select/index.vue';
 
   import { addUser, getDepartmentTree, getRoleOptions, getUserDetail, getUserOptions, updateUser } from '@/api/modules';
-  import useLicenseStore from '@/store/modules/setting/license';
 
   const Message = useMessage();
   const { t } = useI18n();
-  const licenseStore = useLicenseStore();
-  // TODO license 先放开
-  // const xPack = computed(() => licenseStore.hasLicense());
-  const xPack = ref(true);
   const emit = defineEmits<{
     (e: 'brash'): void;
     (e: 'close'): void;
@@ -295,8 +282,6 @@
     departmentId: [{ required: true, message: t('common.pleaseSelect'), trigger: ['input', 'blur'] }],
   };
 
-  const showForm = ref(false);
-
   const employeeTypeOptions = ref([
     {
       value: 'formal',
@@ -311,8 +296,6 @@
       label: t('org.outsourcingUser'),
     },
   ]);
-
-  const userGroupOptions = ref([]);
 
   const loading = ref(false);
   const formRef = ref<FormInst | null>(null);
@@ -407,4 +390,39 @@
   );
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+  .org-member-drawer {
+    padding: 8px 8px 24px;
+  }
+
+  .org-member-drawer__section {
+    margin-bottom: 22px;
+  }
+
+  .org-member-drawer__section h3 {
+    margin: 0 0 16px;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 22px;
+  }
+
+  .org-member-drawer__control {
+    width: 100%;
+  }
+
+  .org-member-drawer__gender {
+    width: 100%;
+  }
+
+  :deep(.n-form-item-label) {
+    color: #334155;
+    font-weight: 700;
+  }
+
+  :deep(.n-input),
+  :deep(.n-base-selection),
+  :deep(.n-date-picker) {
+    min-height: 40px;
+  }
+</style>

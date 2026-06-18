@@ -1,12 +1,13 @@
 <template>
-  <div class="h-full w-full px-[16px] pt-[16px]">
+  <div class="org-table-panel">
     <CrmTable
       ref="crmTableRef"
       v-model:checked-row-keys="checkedRowKeys"
       v-bind="propsRes"
-      class="crm-organization-table"
+      class="crm-organization-table org-member-table"
       :action-config="actionConfig"
-      :not-show-table-filter="isAdvancedSearchMode"
+      hidden-refresh
+      hidden-all-screen
       @page-change="propsEvent.pageChange"
       @page-size-change="propsEvent.pageSizeChange"
       @sorter-change="propsEvent.sorterChange"
@@ -15,17 +16,17 @@
       @refresh="initOrgList"
     >
       <template #actionLeft>
-        <div class="flex">
+        <div class="org-table-panel__left-actions">
           <n-button
             v-permission="['SYS_ORGANIZATION:ADD']"
-            class="mr-[12px]"
+            class="org-table-panel__primary-btn"
             type="primary"
             @click="() => addOrEditMember()"
           >
-            {{ t('org.addMember') }}
+            + 新增用户
           </n-button>
           <CrmMoreAction :options="moreActions" trigger="click" @select="selectMoreActions" @updateShow="updateShow">
-            <n-button type="default" class="outline--secondary">
+            <n-button type="default" class="outline--secondary org-table-panel__more-btn">
               {{ t('common.more') }}
               <CrmIcon class="ml-[8px]" type="iconicon_chevron_down" :size="16" />
             </n-button>
@@ -33,14 +34,36 @@
         </div>
       </template>
       <template #actionRight>
-        <CrmAdvanceFilter
-          ref="tableAdvanceFilterRef"
-          v-model:keyword="keyword"
-          :custom-fields-config-list="customFieldsFilterConfig"
-          :filter-config-list="filterConfigList"
-          @adv-search="handleAdvSearch"
-          @keyword-search="searchData"
-        />
+        <div class="org-table-panel__filters">
+          <n-input
+            v-model:value="keyword"
+            class="org-table-panel__search"
+            clearable
+            placeholder="搜索姓名 / 邮箱 / 工号"
+            @keyup.enter="searchData(keyword)"
+            @clear="searchData('')"
+          >
+            <template #prefix>
+              <CrmIcon type="iconicon_search" :size="16" />
+            </template>
+          </n-input>
+          <n-select
+            v-model:value="quickRole"
+            class="org-table-panel__select"
+            clearable
+            placeholder="角色"
+            :options="quickRoleOptions"
+            @update:value="applyQuickFilters"
+          />
+          <n-select
+            v-model:value="quickStatus"
+            class="org-table-panel__select"
+            clearable
+            placeholder="状态"
+            :options="quickStatusOptions"
+            @update:value="applyQuickFilters"
+          />
+        </div>
       </template>
     </CrmTable>
 
@@ -97,26 +120,31 @@
 
 <script setup lang="ts">
   import { ref, RendererElement } from 'vue';
-  import { DataTableRowKey, NButton, NSwitch, NTooltip, type SelectOption, selectProps, useMessage } from 'naive-ui';
+  import {
+    DataTableRowKey,
+    NButton,
+    NInput,
+    NSelect,
+    NSwitch,
+    NTooltip,
+    type SelectOption,
+    useMessage,
+  } from 'naive-ui';
   import { cloneDeep } from 'lodash-es';
   import dayjs from 'dayjs';
 
   import { CompanyTypeEnum } from '@lib/shared/enums/commonEnum';
-  import { FieldTypeEnum } from '@lib/shared/enums/formDesignEnum';
-  import { SpecialColumnEnum, TableKeyEnum } from '@lib/shared/enums/tableEnum';
+  import { TableKeyEnum } from '@lib/shared/enums/tableEnum';
   import { useI18n } from '@lib/shared/hooks/useI18n';
   import useLocale from '@lib/shared/locale/useLocale';
   import { characterLimit, getCityPath } from '@lib/shared/method';
   import type { ThirdPartyResourceConfig } from '@lib/shared/models/system/business';
   import type { MemberItem, ValidateInfo } from '@lib/shared/models/system/org';
 
-  import CrmAdvanceFilter from '@/components/pure/crm-advance-filter/index.vue';
-  import type { FilterForm, FilterFormItem, FilterResult } from '@/components/pure/crm-advance-filter/type';
   import CrmIcon from '@/components/pure/crm-icon-font/index.vue';
   import CrmMoreAction from '@/components/pure/crm-more-action/index.vue';
   import type { ActionsItem } from '@/components/pure/crm-more-action/type';
   import CrmNameTooltip from '@/components/pure/crm-name-tooltip/index.vue';
-  import CrmSearchInput from '@/components/pure/crm-search-input/index.vue';
   import CrmTable from '@/components/pure/crm-table/index.vue';
   import { BatchActionConfig, CrmDataTableColumn } from '@/components/pure/crm-table/type';
   import useTable from '@/components/pure/crm-table/useTable';
@@ -127,7 +155,6 @@
   import ImportModal from '@/components/business/crm-import-button/components/importModal.vue';
   import ValidateModal from '@/components/business/crm-import-button/components/validateModal.vue';
   import ValidateResult from '@/components/business/crm-import-button/components/validateResult.vue';
-  import CrmOperationButton from '@/components/business/crm-operation-button/index.vue';
   import AddMember from './addMember.vue';
   import batchEditModal from './batchEditModal.vue';
   import MemberDetail from './memberDetail.vue';
@@ -140,6 +167,7 @@
     deleteUser,
     deleteUserCheck,
     getConfigSynchronization,
+    getRoleOptions,
     getUserList,
     importUserPreCheck,
     importUsers,
@@ -153,8 +181,6 @@
     platFormNameMap,
     platformType,
   } from '@/config/business';
-  import { baseFilterConfigList } from '@/config/clue';
-  import useFormCreateAdvanceFilter from '@/hooks/useFormCreateAdvanceFilter';
   import useModal from '@/hooks/useModal';
   import useProgressBar from '@/hooks/useProgressBar';
   import { useAppStore } from '@/store';
@@ -163,10 +189,6 @@
 
   const userStore = useUserStore();
   const appStore = useAppStore();
-  // TODO license 先放开
-  // const xPack = computed(() => licenseStore.hasLicense());
-  const xPack = ref(true);
-
   const Message = useMessage();
 
   const { openModal } = useModal();
@@ -182,8 +204,6 @@
   const emit = defineEmits<{
     (e: 'addSuccess'): void;
   }>();
-
-  const { customFieldsFilterConfig } = useFormCreateAdvanceFilter();
 
   /**
    * 设置同步微信
@@ -235,6 +255,13 @@
   };
 
   const checkedRowKeys = ref<DataTableRowKey[]>([]);
+  const quickRole = ref<string | null>(null);
+  const quickStatus = ref<string | null>(null);
+  const quickRoleOptions = ref<SelectOption[]>([]);
+  const quickStatusOptions: SelectOption[] = [
+    { label: '启用', value: 'true' },
+    { label: '禁用', value: 'false' },
+  ];
 
   // 批量编辑
   const showEditModal = ref<boolean>(false);
@@ -328,33 +355,6 @@
         break;
     }
   }
-
-  const groupList: ActionsItem[] = [
-    {
-      label: t('common.edit'),
-      key: 'edit',
-      permission: ['SYS_ORGANIZATION:UPDATE'],
-    },
-    {
-      label: t('org.resetPassWord'),
-      key: 'resetPassWord',
-      permission: ['SYS_ORGANIZATION_USER:RESET_PASSWORD'],
-    },
-    {
-      label: 'more',
-      key: 'more',
-      slotName: 'more',
-    },
-  ];
-
-  const moreOperationList: ActionsItem[] = [
-    {
-      label: t('common.delete'),
-      key: 'delete',
-      danger: true,
-      permission: ['SYS_ORGANIZATION:DELETE'],
-    },
-  ];
 
   /**
    * 添加&编辑用户
@@ -505,19 +505,6 @@
 
   const columns: CrmDataTableColumn[] = [
     {
-      type: 'selection',
-      fixed: 'left',
-    },
-    {
-      fixed: 'left',
-      title: t('crmTable.order'),
-      width: 50,
-      key: SpecialColumnEnum.ORDER,
-      resizable: false,
-      columnSelectorDisabled: true,
-      render: (row: any, rowIndex: number) => rowIndex + 1,
-    },
-    {
       title: t('org.userName'),
       key: 'userName',
       width: 200,
@@ -540,41 +527,42 @@
           },
           {
             default: () => {
-              return h(
-                'div',
-                {
-                  class: 'flex items-center one-line-text',
-                },
-                [
-                  h(
-                    'div',
-                    {
-                      class: 'one-line-text  inline-block',
-                    },
-                    [
-                      h(
-                        CrmTableButton,
-                        {
-                          class: 'inline-block',
-                          onClick: () => showDetail(row.id),
-                        },
-                        { default: () => row.userName, trigger: () => row.userName }
-                      ),
-                    ]
-                  ),
-                  row.commander
-                    ? h(
-                        CrmTag,
-                        {
-                          type: 'primary',
-                          theme: 'lightOutLine',
-                          class: 'ml-[8px]',
-                        },
-                        { default: () => t('common.head') }
-                      )
-                    : null,
-                ]
-              );
+              return h('div', { class: 'org-member-name' }, [
+                h(
+                  'div',
+                  {
+                    class: 'org-member-name__avatar',
+                  },
+                  (row.userName || '-').slice(0, 1)
+                ),
+                h(
+                  'div',
+                  {
+                    class: 'one-line-text inline-block org-member-name__text',
+                  },
+                  [
+                    h(
+                      CrmTableButton,
+                      {
+                        class: 'inline-block',
+                        onClick: () => showDetail(row.id),
+                      },
+                      { default: () => row.userName, trigger: () => row.userName }
+                    ),
+                  ]
+                ),
+                row.commander
+                  ? h(
+                      CrmTag,
+                      {
+                        type: 'warning',
+                        theme: 'light',
+                        class: 'ml-[8px] org-member-name__head-tag',
+                      },
+                      { default: () => '负责人' }
+                    )
+                  : null,
+              ]);
             },
           }
         );
@@ -669,7 +657,7 @@
     {
       title: t('org.role'),
       key: 'roles',
-      width: 150,
+      width: 210,
       isTag: true,
       tagGroupProps: {
         labelKey: 'name',
@@ -774,12 +762,26 @@
       key: 'operation',
       width: currentLocale.value === 'en-US' ? 210 : 170,
       fixed: 'right',
-      render: (row: MemberItem) =>
-        h(CrmOperationButton, {
-          groupList,
-          moreList: row.userId === userStore.userInfo.id ? undefined : moreOperationList,
-          onSelect: (key: string) => handleActionSelect(row, key),
-        }),
+      render: (row: MemberItem) => {
+        const actions = [
+          h('button', { class: 'org-row-action', onClick: () => handleActionSelect(row, 'edit') }, t('common.edit')),
+          h(
+            'button',
+            { class: 'org-row-action', onClick: () => handleActionSelect(row, 'resetPassWord') },
+            t('org.resetPassWord')
+          ),
+        ];
+        if (row.userId !== userStore.userInfo.id) {
+          actions.push(
+            h(
+              'button',
+              { class: 'org-row-action', onClick: () => handleActionSelect(row, 'delete') },
+              t('common.delete')
+            )
+          );
+        }
+        return h('div', { class: 'org-row-actions' }, actions);
+      },
     },
   ];
 
@@ -796,7 +798,7 @@
     }
   };
 
-  const { propsRes, propsEvent, loadList, setLoadListParams, setAdvanceFilter } = useTable(
+  const { propsRes, propsEvent, loadList, setLoadListParams } = useTable(
     getUserList,
     {
       tableKey: TableKeyEnum.SYSTEM_ORG_TABLE,
@@ -911,119 +913,30 @@
   const keyword = ref('');
 
   const crmTableRef = ref<InstanceType<typeof CrmTable>>();
-  const isAdvancedSearchMode = ref(false);
 
-  const filterConfigList: FilterFormItem[] = [
-    {
-      title: t('org.userName'),
-      dataIndex: 'userName',
-      type: FieldTypeEnum.INPUT,
-    },
-    {
-      title: t('common.status'),
-      dataIndex: 'status',
-      type: FieldTypeEnum.SELECT,
-      selectProps: {
-        options: [
-          {
-            label: t('common.enable'),
-            value: true,
-          },
-          {
-            label: t('common.disable'),
-            value: false,
-          },
-        ] as unknown as SelectOption[],
-      },
-    },
-    {
-      title: t('org.gender'),
-      dataIndex: 'gender',
-      type: FieldTypeEnum.SELECT,
-      selectProps: {
-        options: [
-          {
-            label: t('org.male'),
-            value: 'male',
-          },
-          {
-            label: t('org.female'),
-            value: 'female',
-          },
-        ],
-      },
-    },
-    {
-      title: t('common.phoneNumber'),
-      dataIndex: 'phoneNumber',
-      type: FieldTypeEnum.INPUT,
-    },
-    {
-      title: t('org.userEmail'),
-      dataIndex: 'email',
-      type: FieldTypeEnum.INPUT,
-    },
-    {
-      title: t('org.directSuperior'),
-      dataIndex: 'supervisorId',
-      type: FieldTypeEnum.USER_SELECT,
-    },
-    {
-      title: t('org.employeeNumber'),
-      dataIndex: 'employeeId',
-      type: FieldTypeEnum.INPUT,
-    },
-    {
-      title: t('org.position'),
-      dataIndex: 'positionId',
-      type: FieldTypeEnum.INPUT,
-    },
-    {
-      title: t('org.employeeType'),
-      dataIndex: 'employeeType',
-      type: FieldTypeEnum.SELECT_MULTIPLE,
-      selectProps: {
-        options: [
-          {
-            label: t('org.formalUser'),
-            value: 'formal',
-          },
-          {
-            label: t('org.internshipUser'),
-            value: 'internship',
-          },
-          {
-            label: t('org.outsourcingUser'),
-            value: 'outsourcing',
-          },
-        ],
-      },
-    },
-    {
-      title: t('org.workingCity'),
-      dataIndex: 'workCity',
-      type: FieldTypeEnum.LOCATION,
-    },
-    {
-      title: t('org.onboardingDate'),
-      dataIndex: 'onboardingDate',
-      type: FieldTypeEnum.DATE_TIME,
-    },
-    ...baseFilterConfigList,
-  ];
+  function getQuickFilterParams() {
+    const filter: Record<string, unknown> = {};
+    if (quickStatus.value !== null) {
+      filter.enable = quickStatus.value === 'true';
+    }
+    if (quickRole.value) {
+      filter.roleId = quickRole.value;
+    }
+    return filter;
+  }
 
-  function handleAdvSearch(filter: FilterResult, isAdvancedMode: boolean) {
-    keyword.value = '';
-    isAdvancedSearchMode.value = isAdvancedMode;
-    setAdvanceFilter(filter);
+  function loadMembersWithCurrentParams() {
+    setLoadListParams({
+      keyword: keyword.value,
+      departmentIds: [props.activeNode, ...props.offspringIds],
+      filter: getQuickFilterParams(),
+    });
     loadList();
     crmTableRef.value?.scrollTo({ top: 0 });
   }
 
   function initOrgList() {
-    setLoadListParams({ keyword: keyword.value, departmentIds: [props.activeNode, ...props.offspringIds] });
-    loadList();
-    crmTableRef.value?.scrollTo({ top: 0 });
+    loadMembersWithCurrentParams();
   }
 
   const memberDetailRef = ref<InstanceType<typeof MemberDetail>>();
@@ -1037,6 +950,20 @@
   function searchData(val: string) {
     keyword.value = val;
     initOrgList();
+  }
+
+  async function initQuickRoleOptions() {
+    try {
+      const res = await getRoleOptions();
+      quickRoleOptions.value = res.map((e: { id: string; name: string }) => ({ label: e.name, value: e.id }));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    }
+  }
+
+  function applyQuickFilters() {
+    loadMembersWithCurrentParams();
   }
 
   watch(
@@ -1234,6 +1161,7 @@
     //   initIntegration();
     // }
     initIntegration();
+    initQuickRoleOptions();
   });
 
   onMounted(() => {
@@ -1252,4 +1180,98 @@
   });
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+  .org-table-panel {
+    height: 100%;
+    min-height: 0;
+    padding: 24px;
+  }
+
+  .org-table-panel__left-actions,
+  .org-table-panel__filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .org-table-panel__primary-btn {
+    height: 36px;
+    border-radius: 7px;
+    background: #111827;
+    border-color: #111827;
+    font-weight: 700;
+  }
+
+  .org-table-panel__more-btn,
+  .org-table-panel__search,
+  .org-table-panel__select {
+    height: 36px;
+  }
+
+  .org-table-panel__search {
+    width: 340px;
+  }
+
+  .org-table-panel__select {
+    width: 116px;
+  }
+
+  :deep(.org-member-table .n-data-table-th) {
+    height: 48px;
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+  }
+
+  :deep(.org-member-table .n-data-table-td) {
+    height: 56px;
+    color: #64748b;
+  }
+
+  :deep(.org-member-table .n-data-table-base-table) {
+    border: 1px solid #dbe4f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  :deep(.org-member-name) {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  :deep(.org-member-name__avatar) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  :deep(.org-member-name__text) {
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  :deep(.org-row-actions) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  :deep(.org-row-action) {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: #334155;
+    font-weight: 700;
+    cursor: pointer;
+  }
+</style>

@@ -1,61 +1,75 @@
 <template>
-  <div class="mb-[8px] flex items-center justify-between gap-[8px]">
-    <n-input v-model:value="keyword" :placeholder="t('common.searchByName')">
-      <template #suffix>
-        <n-icon>
-          <Search />
-        </n-icon>
-      </template>
-    </n-input>
-
+  <div class="org-tree-panel">
+    <div class="org-tree-panel__header">
+      <h2>组织架构</h2>
+      <div class="org-tree-panel__actions">
+        <button
+          v-permission="['SYS_ORGANIZATION:ADD']"
+          class="org-tree-panel__icon-btn"
+          type="button"
+          @click="addDepart"
+        >
+          <CrmIcon type="iconicon_add" :size="18" />
+        </button>
+      </div>
+    </div>
     <n-button
       v-permission="['SYS_ORGANIZATION:ADD']"
       type="primary"
       ghost
-      class="n-btn-outline-primary px-[7px]"
+      class="org-tree-panel__hidden-add"
       @click="addDepart"
     >
       <template #icon>
         <n-icon><Add /></n-icon>
       </template>
     </n-button>
+    <div class="org-tree-panel__body">
+      <CrmTree
+        ref="deptTreeRef"
+        v-model:data="orgModuleTree"
+        v-model:selected-keys="selectedKeys"
+        v-model:checked-keys="checkedKeys"
+        v-model:expanded-keys="expandedKeys"
+        v-model:default-expand-all="expandAll"
+        :draggable="hasAnyPermission(['SYS_ORGANIZATION:UPDATE'])"
+        :keyword="keyword"
+        :render-prefix="renderPrefixDom"
+        :node-more-actions="nodeMoreOptions"
+        :filter-more-action-func="filterMoreActionFunc"
+        :render-extra="renderExtraDom"
+        :virtual-scroll-props="{
+          virtualScroll: true,
+          virtualScrollHeight: licenseStore.expiredDuring ? 'calc(100vh - 300px)' : 'calc(100vh - 236px)',
+        }"
+        :field-names="{
+          keyField: 'id',
+          labelField: 'name',
+          childrenField: 'children',
+          disabledField: 'disabled',
+          isLeaf: 'isLeaf',
+        }"
+        :rename-api="renameHandler"
+        :create-api="handleCreateNode"
+        @drop="handleDrag"
+        @select="handleNodeSelect"
+        @more-action-select="handleFolderMoreSelect"
+      />
+    </div>
+    <n-input v-model:value="keyword" class="org-tree-panel__search" placeholder="请输入后回车" clearable>
+      <template #suffix>
+        <n-icon>
+          <Search />
+        </n-icon>
+      </template>
+    </n-input>
+    <SetDepHeadModal
+      v-model:show="showSetHeadModal"
+      :department-id="departmentId"
+      @close="closeSetCommanderId"
+      @load-list="() => emit('loadList')"
+    />
   </div>
-  <CrmTree
-    ref="deptTreeRef"
-    v-model:data="orgModuleTree"
-    v-model:selected-keys="selectedKeys"
-    v-model:checked-keys="checkedKeys"
-    v-model:expanded-keys="expandedKeys"
-    v-model:default-expand-all="expandAll"
-    :draggable="hasAnyPermission(['SYS_ORGANIZATION:UPDATE'])"
-    :keyword="keyword"
-    :render-prefix="renderPrefixDom"
-    :node-more-actions="nodeMoreOptions"
-    :filter-more-action-func="filterMoreActionFunc"
-    :render-extra="renderExtraDom"
-    :virtual-scroll-props="{
-      virtualScroll: true,
-      virtualScrollHeight: licenseStore.expiredDuring ? 'calc(100vh - 240px)' : 'calc(100vh - 176px)',
-    }"
-    :field-names="{
-      keyField: 'id',
-      labelField: 'name',
-      childrenField: 'children',
-      disabledField: 'disabled',
-      isLeaf: 'isLeaf',
-    }"
-    :rename-api="renameHandler"
-    :create-api="handleCreateNode"
-    @drop="handleDrag"
-    @select="handleNodeSelect"
-    @more-action-select="handleFolderMoreSelect"
-  />
-  <SetDepHeadModal
-    v-model:show="showSetHeadModal"
-    :department-id="departmentId"
-    @close="closeSetCommanderId"
-    @load-list="() => emit('loadList')"
-  />
 </template>
 
 <script setup lang="ts">
@@ -391,4 +405,80 @@
   });
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+  .org-tree-panel {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    padding: 24px;
+    flex-direction: column;
+  }
+
+  .org-tree-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .org-tree-panel__header h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 26px;
+  }
+
+  .org-tree-panel__actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .org-tree-panel__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #d7e0ec;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #1e293b;
+    cursor: pointer;
+  }
+
+  .org-tree-panel__hidden-add {
+    display: none;
+  }
+
+  .org-tree-panel__body {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .org-tree-panel__search {
+    margin-top: 16px;
+  }
+
+  :deep(.crm-tree) {
+    color: #0f172a;
+    font-size: 15px;
+  }
+
+  :deep(.n-tree-node-content) {
+    min-height: 40px;
+    border-radius: 6px;
+  }
+
+  :deep(.n-tree-node-content--selected) {
+    background: #eef2ff;
+    color: #4f46e5;
+    font-weight: 800;
+  }
+
+  :deep(.crm-suffix-btn) {
+    background: #eef2ff !important;
+    color: #4f46e5 !important;
+  }
+</style>

@@ -1,4 +1,4 @@
-2026-06-17 19:21:59,351 [cordys-crm-quartz_Worker-3] ERROR c.c.c.i.d.s.DataEaseSyncService 75 - 获取DataEase配置失败，组织ID: 100001
+2026-06-18 00:00:00,137 [cordys-crm-quartz_Worker-2] ERROR c.c.c.i.d.s.DataEaseSyncService 75 - 获取DataEase配置失败，组织ID: 100001
 MSException{errorCode=null, message=未找到 DataEase 配置详情}
 	at cn.cordys.crm.integration.dataease.service.DataEaseService.lambda$getDeConfig$1(DataEaseService.java:71)
 	at java.base/java.util.Optional.orElseThrow(Optional.java:403)
@@ -11,4 +11,4 @@ MSException{errorCode=null, message=未找到 DataEase 配置详情}
 	at org.springframework.scheduling.quartz.QuartzJobBean.execute(QuartzJobBean.java:75)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:203)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:566)
-2026-06-17 23:59:03,189 [tomcat-handler-0] ERROR c.c.c.r.h.RestControllerExceptionHandler 155 - No static resource
+2026-06-18 00:02:54,688 [tomcat-handler-32] ERROR c.c.c.r.h.RestControllerExceptionHandler 155 - No static resource
