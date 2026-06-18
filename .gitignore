@@ -23,6 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-error.log*
 backend/app/logs/
+backend/logs/
 
 ############################
 # IDE / Editor
