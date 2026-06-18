@@ -66,7 +66,6 @@ public class OrganizationLogService extends BaseModuleLogService {
                 Translator.get("log.roles"), this::handRoleValueName,
                 Translator.get("log.commander"), this::setUserFieldName,
                 Translator.get("log.departmentId"), this::setDepartmentName,
-                Translator.get("log.supervisorId"), this::setSupervisorName,
                 Translator.get("log.enable"), differ -> {
                     differ.setOldValueName(toText(differ.getOldValueName(), "log.enable.true", "log.enable.false"));
                     differ.setNewValueName(toText(differ.getNewValueName(), "log.enable.true", "log.enable.false"));
@@ -74,10 +73,6 @@ public class OrganizationLogService extends BaseModuleLogService {
                 Translator.get("log.gender"), differ -> {
                     differ.setOldValueName(toText(differ.getOldValueName(), "woman", "man"));
                     differ.setNewValueName(toText(differ.getNewValueName(), "woman", "man"));
-                },
-                Translator.get("log.employeeType"), differ -> {
-                    differ.setOldValueName(Translator.get(differ.getOldValue().toString()));
-                    differ.setNewValueName(Translator.get(differ.getNewValue().toString()));
                 },
                 Translator.get("log.onboardingDate"), differ -> {
                     setFormatDataTimeFieldValueName(differ,new SimpleDateFormat("yyyy-MM-dd"));
@@ -111,14 +106,4 @@ public class OrganizationLogService extends BaseModuleLogService {
         }
     }
 
-    protected void setSupervisorName(JsonDifferenceDTO differ) {
-        if (differ.getOldValue() != null) {
-            String userName = organizationUserService.getSupervisorName(differ.getOldValue().toString());
-            differ.setOldValueName(userName);
-        }
-        if (differ.getNewValue() != null) {
-            String userName = organizationUserService.getSupervisorName(differ.getNewValue().toString());
-            differ.setNewValueName(userName);
-        }
-    }
 }

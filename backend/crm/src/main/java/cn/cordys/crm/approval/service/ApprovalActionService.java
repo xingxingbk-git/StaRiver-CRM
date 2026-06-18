@@ -1306,15 +1306,6 @@ public class ApprovalActionService {
 	 * @return 目标审批人ID
 	 */
 	private String getTargetApproverId(String userId, String organizationId) {
-		// 尝试获取用户的上级
-		OrganizationUser criteria = new OrganizationUser();
-		criteria.setUserId(userId);
-		criteria.setOrganizationId(organizationId);
-		OrganizationUser orgUser = organizationUserMapper.selectOne(criteria);
-
-		if (orgUser != null && StringUtils.isNotBlank(orgUser.getSupervisorId())) {
-			return orgUser.getSupervisorId();
-		}
 		return InternalUser.ADMIN.getValue();
 	}
 }

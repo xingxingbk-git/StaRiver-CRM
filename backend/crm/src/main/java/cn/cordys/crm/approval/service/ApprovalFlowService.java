@@ -1344,17 +1344,10 @@ public class ApprovalFlowService {
 				return;
 			}
 			if (findUser.isPresent() && !findUser.get().getEnable()) {
-				// 审批人被禁用, 替换为直属上级
-				if (StringUtils.isNotBlank(findUser.get().getSupervisorId())) {
-					User superUser = new User();
-					superUser.setId(findUser.get().getSupervisorId());
-					resolveUsers.add(superUser);
-				} else {
-					// 直属上级为空, 替换成ADMIN
-					User admin = new User();
-					admin.setId(InternalUser.ADMIN.getValue());
-					resolveUsers.add(admin);
-				}
+				// 直属上级功能已移除
+				User admin = new User();
+				admin.setId(InternalUser.ADMIN.getValue());
+				resolveUsers.add(admin);
 				return;
 			}
 			resolveUsers.add(userMap.get(approver));
@@ -1428,20 +1421,6 @@ public class ApprovalFlowService {
         return resolveMemberApprovers(orgId, resultIds);
     }
 
-    private List<String> getAllSuperiorIds(String orgId, OrganizationUser currentUser) {
-        List<String> allSuperiorIds = new ArrayList<>();
-        String currentSupervisorId = currentUser.getSupervisorId();
-
-        while (StringUtils.isNotBlank(currentSupervisorId)) {
-            allSuperiorIds.add(currentSupervisorId);
-            OrganizationUser supervisorOrgUser = getOrganizationUser(currentSupervisorId, orgId);
-            if (supervisorOrgUser == null) {
-                break;
-            }
-            currentSupervisorId = supervisorOrgUser.getSupervisorId();
-        }
-        return allSuperiorIds;
-    }
 
     private Integer getValidLevel(List<String> approverList) {
         // 使用 ApproverLevelEnum 验证并获取有效的层级值
@@ -1607,18 +1586,8 @@ public class ApprovalFlowService {
 		// 审批人与提交人同一人时
 		Optional<User> findSame = approvers.stream().filter(approver -> Strings.CS.equals(approver.getId(), instance.getSubmitterId())).findAny();
 		if (SameSubmitterActionEnum.valueOf(nodeApprover.getSameSubmitterAction()) == SameSubmitterActionEnum.ASSIGN_SUPERIOR && findSame.isPresent()) {
-			// 转交给直属上级审批
-			OrganizationUser criteria = new OrganizationUser();
-			criteria.setUserId(findSame.get().getId());
-			criteria.setOrganizationId(currentOrgId);
-			OrganizationUser currentUser = organizationUserMapper.selectOne(criteria);
-			if (currentUser != null && StringUtils.isNotEmpty(currentUser.getSupervisorId())) {
-				// 替换审批人列表中与提审人相同审批人 => 直属上级
-				String supervisorId = currentUser.getSupervisorId();
-				return approvers.stream()
-						.map(approver -> Strings.CS.equals(approver.getId(), instance.getSubmitterId()) ? supervisorId : approver.getId())
-						.collect(Collectors.toList());
-			}
+			// 直属上级功能已移除，自动跳过
+			return approvers.stream().filter(approver -> !Strings.CS.equals(approver.getId(), instance.getSubmitterId())).map(User::getId).toList();
 		}
 		return approvers.stream().map(User::getId).toList();
 	}
@@ -1799,25 +1768,11 @@ public class ApprovalFlowService {
 			SameSubmitterActionEnum sameAction = SameSubmitterActionEnum.valueOf(nextApproverNode.getSameSubmitterAction());
 			switch (sameAction) {
 				case ASSIGN_SUPERIOR -> {
-					// 转交给直属上级审批
-					OrganizationUser criteria = new OrganizationUser();
-					criteria.setUserId(findSame.get());
-					criteria.setOrganizationId(currentOrgId);
-					OrganizationUser currentUser = organizationUserMapper.selectOne(criteria);
-					if (currentUser != null && StringUtils.isNotEmpty(currentUser.getSupervisorId())) {
-						// 替换审批人列表中与提审人相同审批人 => 直属上级
-						String supervisorId = currentUser.getSupervisorId();
-						List<String> newApproverList = nextApproverNode.getApproverList().stream()
-								.map(approver -> Strings.CS.equals(approver, instance.getSubmitterId()) ? supervisorId : approver)
-								.collect(Collectors.toList());
-						nextApproverNode.setApproverList(newApproverList);
-					} else {
-						// 不存在直属上级, 自动跳过
-						ApprovalTask autoTask = saveAutoSkipTask(instance.getId(), nextApproverNode.getId(), findSame.get());
-						saveAutoRecord(instance.getId(), nextApproverNode.getId(), ApprovalStatus.AUTO_APPROVED, "审批人与提交人为同一人时, 直属上级为空, 自动通过", autoTask.getId(), nextApproverNode.getCcList(), true, autoTask.getNodeRound());
-						updateApprovalPostField(instance, nextApproverNode.getId(), ApprovalAction.APPROVE);
-						return getNextNodeWithExceptionHandler(instance, nextApproverNode.getId(), fieldValues, currentOrgId, false);
-					}
+					// 直属上级功能已移除，自动跳过
+					ApprovalTask autoTask = saveAutoSkipTask(instance.getId(), nextApproverNode.getId(), findSame.get());
+					saveAutoRecord(instance.getId(), nextApproverNode.getId(), ApprovalStatus.AUTO_APPROVED, "审批人与提交人为同一人时, 直属上级已移除, 自动通过", autoTask.getId(), nextApproverNode.getCcList(), true, autoTask.getNodeRound());
+					updateApprovalPostField(instance, nextApproverNode.getId(), ApprovalAction.APPROVE);
+					return getNextNodeWithExceptionHandler(instance, nextApproverNode.getId(), fieldValues, currentOrgId, false);
 				}
 				case SKIP -> {
 					// 自动跳过
@@ -1907,19 +1862,11 @@ public class ApprovalFlowService {
 			return nextApproverNode;
 		}
 		if (SameSubmitterActionEnum.valueOf(nextApproverNode.getSameSubmitterAction()) == SameSubmitterActionEnum.ASSIGN_SUPERIOR) {
-			// 转交给直属上级审批
-			OrganizationUser criteria = new OrganizationUser();
-			criteria.setUserId(findSame.get());
-			criteria.setOrganizationId(currentOrgId);
-			OrganizationUser currentUser = organizationUserMapper.selectOne(criteria);
-			if (currentUser != null && StringUtils.isNotEmpty(currentUser.getSupervisorId())) {
-				// 替换审批人列表中与提审人相同审批人 => 直属上级
-				String supervisorId = currentUser.getSupervisorId();
-				List<String> newApproverList = nextApproverNode.getApproverList().stream()
-						.map(approver -> Strings.CS.equals(approver, instance.getSubmitterId()) ? supervisorId : approver)
-						.collect(Collectors.toList());
-				nextApproverNode.setApproverList(newApproverList);
-			}
+			// 直属上级功能已移除，自动跳过
+			ApprovalTask autoTask = saveAutoSkipTask(instance.getId(), nextApproverNode.getId(), findSame.get());
+			saveAutoRecord(instance.getId(), nextApproverNode.getId(), ApprovalStatus.AUTO_APPROVED, "审批人与提交人为同一人时, 直属上级已移除, 自动通过", autoTask.getId(), nextApproverNode.getCcList(), true, autoTask.getNodeRound());
+			updateApprovalPostField(instance, nextApproverNode.getId(), ApprovalAction.APPROVE);
+			return getNextNodeWithExceptionHandler(instance, nextApproverNode.getId(), fieldValues, currentOrgId, false);
 		}
 
 		return nextApproverNode;

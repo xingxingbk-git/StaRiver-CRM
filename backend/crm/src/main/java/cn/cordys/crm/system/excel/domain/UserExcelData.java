@@ -17,11 +17,6 @@ import java.util.Locale;
 @Setter
 public class UserExcelData {
     /**
-     * 工号
-     */
-    @ExcelIgnore
-    private String employeeId;
-    /**
      * 姓名
      */
     @ExcelIgnore
@@ -37,11 +32,6 @@ public class UserExcelData {
     @ExcelIgnore
     private String department;
     /**
-     * 职位
-     */
-    @ExcelIgnore
-    private String position;
-    /**
      * 手机号
      */
     @ExcelIgnore
@@ -51,21 +41,6 @@ public class UserExcelData {
      */
     @ExcelIgnore
     private String email;
-    /**
-     * 直属上级
-     */
-    @ExcelIgnore
-    private String supervisor;
-    /**
-     * 工作城市
-     */
-    @ExcelIgnore
-    private String workCity;
-    /**
-     * 员工类型
-     */
-    @ExcelIgnore
-    private String employeeType;
 
 
     public List<List<String>> getHead() {

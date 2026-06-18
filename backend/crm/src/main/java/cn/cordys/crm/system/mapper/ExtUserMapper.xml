@@ -46,11 +46,6 @@
                su.gender,
                su.phone,
                su.email,
-               sou.supervisor_id,
-               sou.employee_id,
-               sou.position,
-               sou.employee_type,
-               sou.work_city,
                sou.onboarding_date,
                sd.`name` departmentName
         FROM sys_user su
@@ -70,11 +65,6 @@
         su.gender,
         su.phone,
         su.email,
-        sou.supervisor_id,
-        sou.employee_id,
-        sou.position,
-        sou.employee_type,
-        sou.work_city,
         sd.`name` departmentName
         FROM
         sys_user su

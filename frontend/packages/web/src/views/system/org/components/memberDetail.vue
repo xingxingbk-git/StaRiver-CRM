@@ -20,12 +20,6 @@
       <template #gender="{ item }">
         {{ item.value ? t('org.female') : t('org.male') }}
       </template>
-      <template #employeeType="{ item }">
-        {{ getEmployeeType(item.value as string) }}
-      </template>
-      <template #workCity="{ item }">
-        {{ getCityPath(item.value as string) || '-' }}
-      </template>
       <template #onboardingDate="{ item }">
         {{ getDate(item.value as string) }}
       </template>
@@ -39,7 +33,6 @@
   import dayjs from 'dayjs';
 
   import { useI18n } from '@lib/shared/hooks/useI18n';
-  import { getCityPath } from '@lib/shared/method';
   import type { MemberParams } from '@lib/shared/models/system/org';
 
   import CrmDescription, { Description } from '@/components/pure/crm-description/index.vue';
@@ -71,12 +64,7 @@
     phone: '',
     email: '',
     departmentId: '',
-    employeeId: '',
-    position: '',
     enable: true,
-    employeeType: '',
-    workCity: '',
-    supervisorId: '',
     roleIds: [],
     userGroupIds: [],
     userName: '',
@@ -94,12 +82,7 @@
     { label: t('org.gender'), value: 'gender', valueSlotName: 'gender' },
     { label: t('org.userEmail'), value: 'email' },
     { label: t('org.department'), value: 'departmentName' },
-    { label: t('org.employeeNumber'), value: 'employeeId' },
-    { label: t('org.employeeType'), value: 'employeeType', valueSlotName: 'employeeType' },
-    { label: t('org.directSuperior'), value: 'supervisorName' },
-    { label: t('org.workingCity'), value: 'workCity', valueSlotName: 'workCity' },
     { label: t('org.role'), value: 'roles', tagProps: { labelKey: 'name' } },
-    { label: t('org.position'), value: 'position' },
     // TODO 不上
     // { label: t('org.userGroup'), value: 'userGroup' },
     { label: t('org.onboardingDate'), value: 'onboardingDate', valueSlotName: 'onboardingDate' },
@@ -125,19 +108,6 @@
       console.log(error);
     }
   }
-
-  const getEmployeeType = (value: string) => {
-    switch (value) {
-      case 'formal':
-        return t('org.formalUser');
-      case 'internship':
-        return t('org.internshipUser');
-      case 'outsourcing':
-        return t('org.outsourcingUser');
-      default:
-        return '-';
-    }
-  };
 
   function getDate(value: string) {
     if (!value) return '-';

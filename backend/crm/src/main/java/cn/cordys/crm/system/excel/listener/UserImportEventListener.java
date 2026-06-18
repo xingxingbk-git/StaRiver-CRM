@@ -40,16 +40,11 @@ public class UserImportEventListener extends AnalysisEventListener<Map<Integer, 
     private static final Map<String, BiConsumer<UserExcelData, String>> FIELD_SETTERS = new HashMap<>();
 
     static {
-        FIELD_SETTERS.put("employeeId", UserExcelData::setEmployeeId);
         FIELD_SETTERS.put("name", UserExcelData::setName);
         FIELD_SETTERS.put("gender", UserExcelData::setGender);
         FIELD_SETTERS.put("department", UserExcelData::setDepartment);
-        FIELD_SETTERS.put("position", UserExcelData::setPosition);
         FIELD_SETTERS.put("phone", UserExcelData::setPhone);
         FIELD_SETTERS.put("email", UserExcelData::setEmail);
-        FIELD_SETTERS.put("supervisor", UserExcelData::setSupervisor);
-        FIELD_SETTERS.put("workCity", UserExcelData::setWorkCity);
-        FIELD_SETTERS.put("employeeType", UserExcelData::setEmployeeType);
     }
 
     private final Class<?> excelDataClass;
@@ -152,21 +147,6 @@ public class UserImportEventListener extends AnalysisEventListener<Map<Integer, 
         validateDepartment(data, errMsg);
         validateLength(data, errMsg);
         handleGender(data);
-        handleEmployeeType(data);
-    }
-
-    private void handleEmployeeType(UserExcelData data) {
-        if (StringUtils.isNotEmpty(data.getEmployeeType())) {
-            if (Strings.CI.equals(data.getEmployeeType(), Translator.get("formal"))) {
-                data.setEmployeeType("formal");
-            } else if (Strings.CI.equals(data.getEmployeeType(), Translator.get("internship"))) {
-                data.setEmployeeType("internship");
-            } else if (Strings.CI.equals(data.getEmployeeType(), Translator.get("outsourcing"))) {
-                data.setEmployeeType("outsourcing");
-            } else {
-                data.setEmployeeType(null);
-            }
-        }
     }
 
     private void handleGender(UserExcelData data) {
@@ -182,15 +162,6 @@ public class UserImportEventListener extends AnalysisEventListener<Map<Integer, 
     }
 
     private void validateLength(UserExcelData data, StringBuilder errMsg) {
-        String employeeId = data.getEmployeeId();
-        if (StringUtils.isNotBlank(employeeId) && employeeId.length() > NAME_LENGTH) {
-            errMsg.append(Translator.get("employee_length")).append(ERROR_MSG_SEPARATOR);
-        }
-
-        String position = data.getPosition();
-        if (StringUtils.isNotBlank(position) && position.length() > NAME_LENGTH) {
-            errMsg.append(Translator.get("position_length")).append(ERROR_MSG_SEPARATOR);
-        }
     }
 
     private void validateDepartment(UserExcelData data, StringBuilder errMsg) {

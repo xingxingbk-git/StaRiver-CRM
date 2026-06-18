@@ -44,17 +44,11 @@
         su.gender,
         su.phone,
         su.email,
-        sou.supervisor_id,
-        sou.employee_id,
-        sou.position,
-        sou.employee_type,
-        sou.work_city,
         sou.create_time,
         sou.update_time,
         sou.create_user,
         sou.update_user,
-        sou.onboarding_date,
-        sou.position
+        sou.onboarding_date
         FROM
         sys_organization_user sou
         INNER JOIN sys_user su ON sou.user_id = su.id
@@ -98,9 +92,6 @@
                 <choose>
                     <when test="sortName == 'user_name'">
                         su.name ${sortType},
-                    </when>
-                    <when test="sortName == 'work_city_name'">
-                        sou.work_city ${sortType},
                     </when>
                     <otherwise>
                         sou.${sortName} ${sortType},
@@ -208,28 +199,10 @@
                     <property name="column" value="su.phone"/>
                 </include>
             </when>
-            <when test="condition.name == 'supervisorId'">
-                <include refid="cn.cordys.common.mapper.CommonMapper.condition">
-                    <property name="condition" value="condition"/>
-                    <property name="column" value="sou.supervisor_id"/>
-                </include>
-            </when>
             <when test="condition.name == 'departmentId'">
                 <include refid="cn.cordys.common.mapper.CommonMapper.condition">
                     <property name="condition" value="condition"/>
                     <property name="column" value="sou.department_id"/>
-                </include>
-            </when>
-            <when test="condition.name == 'employeeId'">
-                <include refid="cn.cordys.common.mapper.CommonMapper.condition">
-                    <property name="condition" value="condition"/>
-                    <property name="column" value="sou.employee_id"/>
-                </include>
-            </when>
-            <when test="condition.name == 'employeeType'">
-                <include refid="cn.cordys.common.mapper.CommonMapper.condition">
-                    <property name="condition" value="condition"/>
-                    <property name="column" value="sou.employee_type"/>
                 </include>
             </when>
             <when test="condition.name == 'updateUser'">
@@ -260,18 +233,6 @@
                 <include refid="cn.cordys.common.mapper.CommonMapper.condition">
                     <property name="condition" value="condition"/>
                     <property name="column" value="sou.update_time"/>
-                </include>
-            </when>
-            <when test="condition.name == 'workCity'">
-                <include refid="cn.cordys.common.mapper.CommonMapper.condition">
-                    <property name="condition" value="condition"/>
-                    <property name="column" value="sou.work_city"/>
-                </include>
-            </when>
-            <when test="condition.name == 'positionId'">
-                <include refid="cn.cordys.common.mapper.CommonMapper.condition">
-                    <property name="condition" value="condition"/>
-                    <property name="column" value="sou.position"/>
                 </include>
             </when>
             <when test="condition.name == 'enable'">
@@ -358,12 +319,6 @@
             <if test="request.departmentId != null">
                 department_id = #{request.departmentId},
             </if>
-            <if test="request.supervisorId != null">
-                supervisor_id = #{request.supervisorId},
-            </if>
-            <if test="request.workCity != null">
-                work_city = #{request.workCity},
-            </if>
             <if test="request.onboardingDate != null">
                 onboarding_date = #{request.onboardingDate},
             </if>
@@ -421,21 +376,6 @@
             <if test="organizationUser.enable != null">
                 `enable` = #{organizationUser.enable},
             </if>
-            <if test="organizationUser.employeeId != null">
-                employee_id = #{organizationUser.employeeId},
-            </if>
-            <if test="organizationUser.position != null">
-                `position` = #{organizationUser.position},
-            </if>
-            <if test="organizationUser.employeeType != null">
-                employee_type = #{organizationUser.employeeType},
-            </if>
-            <if test="organizationUser.supervisorId != null">
-                supervisor_id = #{organizationUser.supervisorId},
-            </if>
-            <if test="organizationUser.workCity != null">
-                work_city = #{organizationUser.workCity},
-            </if>
             <if test="organizationUser.createTime != null">
                 create_time = #{organizationUser.createTime},
             </if>
@@ -488,7 +428,7 @@
     </select>
 
     <select id="selectByIds" resultType="cn.cordys.crm.system.dto.response.UserResponse">
-        select su.name as userName, sou.user_id, sou.department_id, sou.supervisor_id, sou.work_city, sou.onboarding_date
+        select su.name as userName, sou.user_id, sou.department_id, sou.onboarding_date
         from sys_organization_user sou
         inner join sys_user su on sou.user_id = su.id
         where sou.id in
@@ -502,11 +442,6 @@
         update sys_organization_user
         set department_id   = #{organizationUser.departmentId},
             `enable`        = #{organizationUser.enable},
-            employee_id     = #{organizationUser.employeeId},
-            `position`      = #{organizationUser.position},
-            employee_type   = #{organizationUser.employeeType},
-            supervisor_id   = #{organizationUser.supervisorId},
-            work_city       = #{organizationUser.workCity},
             update_time     = #{organizationUser.updateTime},
             update_user     = #{organizationUser.updateUser},
             onboarding_date = #{organizationUser.onboardingDate}

@@ -393,7 +393,6 @@ public class DataHandleUtils {
         orgUser.setUserId(userId);
         orgUser.setResourceUserId(thirdUser.getUserId());
         orgUser.setEnable(true);
-        orgUser.setPosition(thirdUser.getPosition());
         orgUser.setCreateTime(timestamp);
         orgUser.setCreateUser(operatorId);
         orgUser.setUpdateTime(timestamp);
@@ -451,7 +450,6 @@ public class DataHandleUtils {
         OrganizationUser updateOrgUser = new OrganizationUser();
         updateOrgUser.setId(orgUser.getId());
         updateOrgUser.setDepartmentId(departmentId);
-        updateOrgUser.setPosition(thirdUser.getPosition());
         updateOrgUser.setUpdateTime(timestamp);
         updateOrgUser.setUpdateUser(operatorId);
         updateOrganizationUsers.add(updateOrgUser);
@@ -510,7 +508,6 @@ public class DataHandleUtils {
         orgUser.setUserId(id);
         orgUser.setResourceUserId(thirdUser.getUserId());
         orgUser.setEnable(true);
-        orgUser.setPosition(thirdUser.getPosition());
         orgUser.setCreateTime(timestamp);
         orgUser.setCreateUser(operatorId);
         orgUser.setUpdateTime(timestamp);

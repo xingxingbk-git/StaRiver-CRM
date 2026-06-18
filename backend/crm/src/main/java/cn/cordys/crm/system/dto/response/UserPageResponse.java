@@ -39,26 +39,8 @@ public class UserPageResponse {
     @Schema(description = "组织id")
     private String organizationId;
 
-    @Schema(description = "直属上级")
-    private String supervisorId;
-
-    @Schema(description = "直属上级名称")
-    private String supervisorName;
-
     @Schema(description = "角色列表")
     private List<UserRoleConvert> roles;
-
-    @Schema(description = "工号")
-    private String employeeId;
-
-    @Schema(description = "职位")
-    private String position;
-
-    @Schema(description = "员工类型")
-    private String employeeType;
-
-    @Schema(description = "工作城市")
-    private String workCity;
 
     @Schema(description = "用户组")
     private List<UserRoleConvert> userGroups;

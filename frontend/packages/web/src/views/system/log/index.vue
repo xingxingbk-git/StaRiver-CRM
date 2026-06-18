@@ -219,7 +219,7 @@
   async function getLogDetail(id: string) {
     try {
       activeLogDetail.value = await operationLogDetail(id);
-      const locationIds = ['workCity'];
+      const locationIds: string[] = [];
       const industryIds: string[] = [];
       // 处理地址字段的值
       const matchedKey = Object.keys(moduleFormKeyMap).find((module) => activeLogDetail.value?.module === module);

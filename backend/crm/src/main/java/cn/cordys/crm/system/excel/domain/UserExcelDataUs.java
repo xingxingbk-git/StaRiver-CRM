@@ -17,11 +17,6 @@ import java.util.Locale;
 @ColumnWidth(15)
 public class UserExcelDataUs extends UserExcelData {
 
-    @ColumnWidth(50)
-    @ExcelProperty("Employee id")
-    @NotRequired
-    private String employeeId;
-
     @NotBlank(message = "{cannot_be_null}")
     @Length(max = 255)
     @ExcelProperty("Name")
@@ -35,11 +30,6 @@ public class UserExcelDataUs extends UserExcelData {
     @ColumnWidth(30)
     private String department;
 
-
-    @ColumnWidth(50)
-    @ExcelProperty("Position")
-    private String position;
-
     @NotBlank(message = "{cannot_be_null}")
     @ColumnWidth(50)
     @Length(max = 255)
@@ -50,14 +40,6 @@ public class UserExcelDataUs extends UserExcelData {
     @ColumnWidth(50)
     @ExcelProperty("Email")
     private String email;
-
-    @ColumnWidth(50)
-    @ExcelProperty("Supervisor")
-    private String supervisor;
-
-    @ColumnWidth(50)
-    @ExcelProperty("Employee type")
-    private String employeeType;
 
     @Override
     public List<List<String>> getHead() {

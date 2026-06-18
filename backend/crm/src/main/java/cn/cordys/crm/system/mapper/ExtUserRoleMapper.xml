@@ -27,7 +27,7 @@
     </delete>
 
     <select id="list" resultType="cn.cordys.crm.system.dto.response.RoleUserListResponse">
-        select sur.id, su.id as userId, su.name as userName, sou.enable, sou.position, sou.department_id, sur.create_time, sur.update_time
+        select sur.id, su.id as userId, su.name as userName, sou.enable, sou.department_id, sur.create_time, sur.update_time
         from sys_user_role sur
         join sys_user su
              on sur.user_id = su.id and sur.role_id = #{request.roleId}
@@ -77,9 +77,6 @@
                     </when>
                     <when test="${sort}.name == 'department_id'">
                         sou.`department_id` ${sortType}
-                    </when>
-                    <when test="${sort}.name == 'position'">
-                        sou.`position` ${sortType}
                     </when>
                     <when test="${sort}.name == 'enable'">
                         sou.`enable` ${sortType}

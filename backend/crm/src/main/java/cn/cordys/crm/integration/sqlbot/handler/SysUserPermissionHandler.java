@@ -40,9 +40,6 @@ public class SysUserPermissionHandler extends OrgTablePermissionHandler {
         List<FieldDTO> filterFields = filterSystemFields(table.getFields(),
                 Set.of("organization_id", "pos", "password", "last_organization_id", "language"));
         filterFields.add(getDepartmentNameField());
-        filterFields.add(getPositionField());
-        filterFields.add(getEmployeeIdField());
-        filterFields.add(getEmployeeTypeField());
         filterFields.add(getOnboardingDateField());
         table.setFields(filterFields);
 
@@ -54,30 +51,6 @@ public class SysUserPermissionHandler extends OrgTablePermissionHandler {
         return MessageFormat.format(SYS_USER_SQL_TEMPLATE,
                 getSelectSystemFileSql(sqlBotFields),
                 tableHandleParam.getOrgId());
-    }
-
-    protected FieldDTO getPositionField() {
-        FieldDTO fieldDTO = new FieldDTO();
-        fieldDTO.setType("varchar(255)");
-        fieldDTO.setComment("职位");
-        fieldDTO.setName("position");
-        return fieldDTO;
-    }
-
-    protected FieldDTO getEmployeeIdField() {
-        FieldDTO fieldDTO = new FieldDTO();
-        fieldDTO.setType("varchar(255)");
-        fieldDTO.setComment("工号");
-        fieldDTO.setName("employee_id");
-        return fieldDTO;
-    }
-
-    protected FieldDTO getEmployeeTypeField() {
-        FieldDTO fieldDTO = new FieldDTO();
-        fieldDTO.setType("varchar(255)");
-        fieldDTO.setComment("员工类型");
-        fieldDTO.setName("employee_type");
-        return fieldDTO;
     }
 
     protected FieldDTO getOnboardingDateField() {
@@ -102,7 +75,7 @@ public class SysUserPermissionHandler extends OrgTablePermissionHandler {
             return "if(c.gender, '女', '男') as '性别'";
         } else if (Strings.CS.equals(fieldName, "department_name")) {
             return "sd.name as department_name";
-        } else if (Strings.CS.equalsAny(fieldName, "onboarding_date", "position", "employee_id")) {
+        } else if (Strings.CS.equalsAny(fieldName, "onboarding_date")) {
             return getDefaultFieldSql(sqlBotField, SYS_ORGANIZATION_USER_PREFIX);
         } else {
             return getDefaultFieldSql(sqlBotField);

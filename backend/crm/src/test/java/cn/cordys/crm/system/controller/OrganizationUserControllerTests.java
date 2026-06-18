@@ -158,7 +158,7 @@ public class OrganizationUserControllerTests extends BaseTest {
     public void batchEdit() throws Exception {
         UserBatchEditRequest request = new UserBatchEditRequest();
         request.setIds(List.of("u_1", "u_2"));
-        request.setWorkCity("深圳");
+
         // TODO 密码重置踢出用户导致后续测试失败,重新登录
         //   this.requestPost(USER_BATCH_EDIT, request).andExpect(status().isOk());
     }
@@ -301,27 +301,23 @@ public class OrganizationUserControllerTests extends BaseTest {
                 userAddRequest.setEnable(true);
                 userAddRequest.setEmail("combineTest_" + i + "@Cordys.com");
                 userAddRequest.setRoleIds(List.of("1", "2"));
-                userAddRequest.setEmployeeId("1000" + i);
+
 
                 if (i < 10) {
                     userAddRequest.setPhone("1858888000" + i);
                     userAddRequest.setDepartmentId(deptId1.get());
                     userAddRequest.setGender(true);
-                    userAddRequest.setEmployeeType("formal");
-                    userAddRequest.setWorkCity("110101");
                     userAddRequest.setOnboardingDate(System.currentTimeMillis());
                 } else {
                     userAddRequest.setPhone("183888800" + i);
                     userAddRequest.setDepartmentId(deptId2.get());
                     userAddRequest.setGender(false);
-                    userAddRequest.setSupervisorId(superiorDeptId);
-                    userAddRequest.setEmployeeType("internship");
+
                 }
 
                 if (i % 5 == 0) {
                     userAddRequest.setEnable(false);
                 }
-                userAddRequest.setPosition("测试职位");
                 this.requestPost(USER_ADD, userAddRequest).andExpect(status().isOk());
             }
         }
@@ -437,24 +433,9 @@ public class OrganizationUserControllerTests extends BaseTest {
                 Pager.class);
         Assertions.assertEquals(20, result.getTotal());
 
-        //      直属上级    supervisorId
-        filterConditionList.clear();
-        FilterCondition inCondition = new FilterCondition();
-        inCondition.setOperator(FilterCondition.CombineConditionOperator.IN.name());
-        inCondition.setName("supervisorId");
-        inCondition.setValue(List.of(superiorDeptId));
-        filterConditionList.add(inCondition);
-        request.getCombineSearch().setConditions(filterConditionList);
-        pageResult = this.requestPostWithOkAndReturn(USER_LIST, request);
-        result = JSON.parseObject(
-                JSON.toJSONString(
-                        JSON.parseObject(pageResult.getResponse().getContentAsString(StandardCharsets.UTF_8), ResultHolder.class).getData()),
-                Pager.class);
-        Assertions.assertEquals(10, result.getTotal());
-
         //      部门  departmentId
         filterConditionList.clear();
-        inCondition = new FilterCondition();
+        FilterCondition inCondition = new FilterCondition();
         inCondition.setOperator(FilterCondition.CombineConditionOperator.IN.name());
         inCondition.setName("departmentId");
         inCondition.setValue(List.of(deptId1, deptId2));

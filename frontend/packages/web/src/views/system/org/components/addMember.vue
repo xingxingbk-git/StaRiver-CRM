@@ -76,55 +76,12 @@
             </template> -->
             </n-tree-select>
           </n-form-item>
-          <n-form-item path="employeeId" :label="t('org.employeeNumber')">
-            <n-input
-              v-model:value="form.employeeId"
-              class="org-member-drawer__control"
-              type="text"
-              :placeholder="t('common.pleaseInput')"
-              :maxlength="255"
-            />
-          </n-form-item>
         </n-form>
       </section>
 
       <section class="org-member-drawer__section">
         <h3>更多</h3>
         <n-form :model="form" label-placement="top" require-mark-placement="left">
-          <n-form-item path="employeeType" :label="t('org.employeeType')">
-            <n-select
-              v-model:value="form.employeeType"
-              class="org-member-drawer__control"
-              :placeholder="t('common.pleaseSelect')"
-              clearable
-              :options="employeeTypeOptions"
-            />
-          </n-form-item>
-          <n-form-item path="supervisorId" :label="t('org.directSuperior')">
-            <CrmUserSelect
-              ref="crmUserSelectRef"
-              v-model:value="form.supervisorId"
-              class="org-member-drawer__control"
-              value-field="id"
-              label-field="name"
-              mode="remote"
-              filterable
-              clearable
-              :fetch-api="getUserOptions"
-            />
-          </n-form-item>
-          <n-form-item path="position" :label="t('org.position')">
-            <n-input
-              v-model:value="form.position"
-              class="org-member-drawer__control"
-              type="text"
-              :placeholder="t('common.pleaseInput')"
-              :maxlength="255"
-            />
-          </n-form-item>
-          <n-form-item path="workCity" :label="t('org.workingCity')">
-            <CrmCitySelect v-model:value="form.workCity" class="org-member-drawer__control" />
-          </n-form-item>
           <n-form-item path="roleIds" :label="t('org.role')">
             <n-select
               v-model:value="form.roleIds"
@@ -210,10 +167,8 @@
 
   import CrmDrawer from '@/components/pure/crm-drawer/index.vue';
   import type { CrmTreeNodeData } from '@/components/pure/crm-tree/type';
-  import CrmCitySelect from '@/components/business/crm-city-select/index.vue';
-  import CrmUserSelect from '@/components/business/crm-user-select/index.vue';
 
-  import { addUser, getDepartmentTree, getRoleOptions, getUserDetail, getUserOptions, updateUser } from '@/api/modules';
+  import { addUser, getDepartmentTree, getRoleOptions, getUserDetail, updateUser } from '@/api/modules';
 
   const Message = useMessage();
   const { t } = useI18n();
@@ -238,12 +193,7 @@
     phone: '',
     email: '',
     departmentId: '',
-    employeeId: '',
-    position: '',
     enable: true,
-    employeeType: null,
-    workCity: null,
-    supervisorId: null,
     roleIds: [],
     userGroupIds: [],
     userName: '',
@@ -282,21 +232,6 @@
     departmentId: [{ required: true, message: t('common.pleaseSelect'), trigger: ['input', 'blur'] }],
   };
 
-  const employeeTypeOptions = ref([
-    {
-      value: 'formal',
-      label: t('org.formalUser'),
-    },
-    {
-      value: 'internship',
-      label: t('org.internshipUser'),
-    },
-    {
-      value: 'outsourcing',
-      label: t('org.outsourcingUser'),
-    },
-  ]);
-
   const loading = ref(false);
   const formRef = ref<FormInst | null>(null);
 
@@ -304,8 +239,6 @@
     form.value = cloneDeep(initUserForm);
     emit('close');
   }
-
-  const crmUserSelectRef = ref<InstanceType<typeof CrmUserSelect>>();
 
   function handleSave(isContinue: boolean) {
     formRef.value?.validate(async (error) => {
@@ -322,7 +255,6 @@
 
           if (isContinue) {
             form.value = cloneDeep(initUserForm);
-            crmUserSelectRef.value?.loadUsers();
           } else {
             cancelHandler();
           }

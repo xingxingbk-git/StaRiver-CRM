@@ -222,16 +222,6 @@
       render: (row) => row.departmentName || '-',
     },
     {
-      title: t('role.job'),
-      key: 'position',
-      width: 200,
-      ellipsis: {
-        tooltip: true,
-      },
-      sortOrder: false,
-      sorter: true,
-    },
-    {
       title: t('role.role'),
       key: 'roles',
       width: 200,
@@ -270,7 +260,6 @@
     },
     (item) => ({
       ...item,
-      position: item.position || '-',
       departmentName: item.departmentName || '-',
     })
   );

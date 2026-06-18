@@ -137,16 +137,6 @@
       },
     },
     {
-      title: t('role.job'),
-      key: 'position',
-      ellipsis: {
-        tooltip: true,
-      },
-      sortOrder: false,
-      sorter: true,
-      width: 200,
-    },
-    {
       title: t('role.role'),
       key: 'roles',
       width: 200,
@@ -196,7 +186,6 @@
     (item) => {
       return {
         ...item,
-        position: item.position || '-',
         departmentName: item.departmentName || '-',
       };
     }

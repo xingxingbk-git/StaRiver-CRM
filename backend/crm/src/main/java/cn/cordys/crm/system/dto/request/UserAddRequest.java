@@ -35,21 +35,6 @@ public class UserAddRequest {
     @NotBlank
     private String departmentId;
 
-    @Schema(description = "工号")
-    private String employeeId;
-
-    @Schema(description = "员工类型")
-    private String employeeType;
-
-    @Schema(description = "直属上级")
-    private String supervisorId;
-
-    @Schema(description = "职位")
-    private String position;
-
-    @Schema(description = "工作城市")
-    private String workCity;
-
     @Schema(description = "角色")
     private List<String> roleIds;
 

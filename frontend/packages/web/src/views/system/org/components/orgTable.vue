@@ -39,7 +39,7 @@
             v-model:value="keyword"
             class="org-table-panel__search"
             clearable
-            placeholder="搜索姓名 / 邮箱 / 工号"
+            placeholder="搜索姓名 / 邮箱"
             @keyup.enter="searchData(keyword)"
             @clear="searchData('')"
           >
@@ -137,7 +137,7 @@
   import { TableKeyEnum } from '@lib/shared/enums/tableEnum';
   import { useI18n } from '@lib/shared/hooks/useI18n';
   import useLocale from '@lib/shared/locale/useLocale';
-  import { characterLimit, getCityPath } from '@lib/shared/method';
+  import { characterLimit } from '@lib/shared/method';
   import type { ThirdPartyResourceConfig } from '@lib/shared/models/system/business';
   import type { MemberItem, ValidateInfo } from '@lib/shared/models/system/org';
 
@@ -646,15 +646,6 @@
       width: 120,
     },
     {
-      title: t('org.directSuperior'),
-      key: 'supervisorId',
-      width: 120,
-      showInTable: false,
-      render: (row: MemberItem) => {
-        return h(CrmNameTooltip, { text: row.supervisorName });
-      },
-    },
-    {
       title: t('org.role'),
       key: 'roles',
       width: 210,
@@ -663,51 +654,6 @@
         labelKey: 'name',
       },
     },
-    {
-      title: t('org.employeeNumber'),
-      key: 'employeeId',
-      width: 120,
-      ellipsis: {
-        tooltip: true,
-      },
-      showInTable: false,
-    },
-    {
-      title: t('org.position'),
-      key: 'positionName',
-      width: 120,
-      ellipsis: {
-        tooltip: true,
-      },
-      showInTable: false,
-    },
-    {
-      title: t('org.employeeType'),
-      key: 'employeeType',
-      width: 120,
-      ellipsis: {
-        tooltip: true,
-      },
-      showInTable: false,
-    },
-    {
-      title: t('org.workingCity'),
-      key: 'workCityName',
-      width: 120,
-      ellipsis: {
-        tooltip: true,
-      },
-      sortOrder: false,
-      sorter: true,
-    },
-    // {
-    //   title: t('org.userGroup'),
-    //   key: 'userGroup',
-    //   width: 100,
-    //   ellipsis: {
-    //     tooltip: true,
-    //   },
-    // },
     {
       title: t('org.onboardingDate'),
       key: 'onboardingDate',
@@ -785,19 +731,6 @@
     },
   ];
 
-  const getEmployeeType = (value: string) => {
-    switch (value) {
-      case 'formal':
-        return t('org.formalUser');
-      case 'internship':
-        return t('org.internshipUser');
-      case 'outsourcing':
-        return t('org.outsourcingUser');
-      default:
-        return '-';
-    }
-  };
-
   const { propsRes, propsEvent, loadList, setLoadListParams } = useTable(
     getUserList,
     {
@@ -810,12 +743,9 @@
     (row: MemberItem) => {
       return {
         ...row,
-        positionName: row.position || '-',
         departmentName: row.departmentName || '-',
-        workCityName: getCityPath(row.workCity) || '-',
         phone: row.phone || '-',
         email: row.email || '-',
-        employeeType: getEmployeeType(row.employeeType ?? ''),
         onboardingDate: row.onboardingDate ? dayjs(row.onboardingDate).format('YYYY-MM-DD') : '-',
       };
     }

@@ -25,6 +25,6 @@ VALUES ("test.login@cordys.io",
         '717345437786112',
         'test.login');
 
-INSERT INTO `sys_organization_user`(`id`, `organization_id`, `department_id`, `resource_user_id`, `user_id`, `enable`, `employee_id`, `position`, `employee_type`, `supervisor_id`, `work_city`, `create_user`, `update_user`, `create_time`, `update_time`)
-VALUES ("test-sys_organization_user-0001", '100001', '100001', 'test.login@cordys.io', 'test.login@cordys.io', true, '', '', '', '', '', 'admin', 'admin', 1716175907000, 1716175907000);
+INSERT INTO `sys_organization_user`(`id`, `organization_id`, `department_id`, `resource_user_id`, `user_id`, `enable`, `create_user`, `update_user`, `create_time`, `update_time`)
+VALUES ("test-sys_organization_user-0001", '100001', '100001', 'test.login@cordys.io', 'test.login@cordys.io', true, 'admin', 'admin', 1716175907000, 1716175907000);
 
