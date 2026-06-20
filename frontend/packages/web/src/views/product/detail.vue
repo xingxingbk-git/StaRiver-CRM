@@ -139,10 +139,10 @@
         <section v-else-if="activeTab === 'roadmap'" class="sr-panel">
           <div class="sr-panel__header">
             <div class="sr-section-title">版本路线图</div>
-            <button class="sr-secondary-action">+ 新增版本</button>
+            <button class="sr-secondary-action" @click="openVersionCreate">+ 新增版本</button>
           </div>
           <div class="sr-roadmap-timeline">
-            <article v-for="row in roadmapRows" :key="row.id" class="sr-roadmap-item">
+            <article v-for="row in roadmapRows" :key="row.id" class="sr-roadmap-item" @click="openVersionDetail(row)">
               <span :class="['sr-roadmap-item__dot', `sr-roadmap-item__dot--${row.statusType}`]"></span>
               <div class="sr-roadmap-item__card">
                 <div class="sr-roadmap-item__meta">
@@ -156,12 +156,12 @@
                 </div>
                 <span class="sr-roadmap-item__date">{{ row.releaseDate }}</span>
                 <div class="sr-roadmap-item__desc" :class="{ 'is-expanded': isRoadmapExpanded(row.id) }">
-                  <p>{{ row.description }}</p>
+                  <p>{{ plainText(row.description) }}</p>
                   <button
                     class="sr-roadmap-expand"
                     :class="{ 'is-open': isRoadmapExpanded(row.id) }"
                     :aria-label="isRoadmapExpanded(row.id) ? '收起版本说明' : '展开版本说明'"
-                    @click="toggleRoadmap(row.id)"
+                    @click.stop="toggleRoadmap(row.id)"
                   ></button>
                 </div>
               </div>
@@ -201,25 +201,197 @@
     </div>
 
     <div v-else class="sr-detail-loading">加载中...</div>
+
+    <div v-if="versionCreateVisible" class="sr-modal-mask">
+      <div class="sr-version-modal sr-version-modal--form">
+        <header class="sr-version-modal__header">
+          <h2>新增版本 · {{ product.code || product.name }}</h2>
+          <button class="sr-version-modal__close" @click="versionCreateVisible = false">×</button>
+        </header>
+        <div class="sr-version-modal__body">
+          <div class="sr-version-form">
+            <label>
+              <span>版本号</span>
+              <input v-model="versionForm.version" class="sr-input" placeholder="v4.2" />
+            </label>
+            <label>
+              <span>产品状态</span>
+              <select v-model="versionForm.status" class="sr-input">
+                <option value="规划中">规划中</option>
+                <option value="开发中">开发中</option>
+                <option value="已发布">已发布</option>
+              </select>
+            </label>
+            <label>
+              <span>计划发布日期</span>
+              <input v-model="versionForm.releaseDate" class="sr-input" type="date" />
+            </label>
+            <label>
+              <span>产品经理（PD）</span>
+              <select v-model="versionForm.productOwnerId" class="sr-input" @change="syncVersionOwner('productOwner')">
+                <option v-for="option in userOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </label>
+            <label>
+              <span>研发负责人</span>
+              <select v-model="versionForm.devOwnerId" class="sr-input" @change="syncVersionOwner('devOwner')">
+                <option v-for="option in userOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </label>
+            <label class="sr-version-form__full">
+              <span>版本说明</span>
+              <StariverRichEditor
+                v-model="versionForm.description"
+                v-model:attachment-files="versionForm.attachmentFiles"
+                min-height="large"
+                placeholder="请输入版本说明，例如：[新功能]、[修复]"
+              />
+            </label>
+          </div>
+        </div>
+        <footer class="sr-version-modal__footer">
+          <button class="sr-btn sr-btn--ghost" @click="versionCreateVisible = false">取消</button>
+          <button class="sr-btn sr-btn--primary" :disabled="versionSaving" @click="handleVersionSave">
+            {{ versionSaving ? '保存中...' : '保存' }}
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <div v-if="versionDetailVisible && selectedVersion" class="sr-modal-mask">
+      <div class="sr-version-modal sr-version-modal--detail">
+        <header class="sr-version-modal__header">
+          <div>
+            <h2>{{ selectedVersion.version }}</h2>
+            <div class="sr-version-meta">
+              <span>产品经理：{{ ownerLabel(selectedVersion.productOwner, selectedVersion.productOwnerActive) }}</span>
+              <span>研发负责人：{{ ownerLabel(selectedVersion.devOwner, selectedVersion.devOwnerActive) }}</span>
+              <span>发布日期：{{ selectedVersion.releaseDate || '--' }}</span>
+              <em :class="['sr-status', `sr-status--${selectedVersion.statusType}`]">{{ selectedVersion.status }}</em>
+            </div>
+          </div>
+          <div class="sr-version-modal__actions">
+            <button
+              v-if="selectedVersion.status === '规划中'"
+              class="sr-version-action sr-version-action--success"
+              @click="handleVersionStatus('开发中')"
+            >
+              → 开发
+            </button>
+            <button
+              v-if="selectedVersion.status === '开发中'"
+              class="sr-version-action sr-version-action--success"
+              @click="handleVersionStatus('已发布')"
+            >
+              → 发布
+            </button>
+            <button class="sr-version-action sr-version-action--danger" @click="handleVersionDelete">删除</button>
+            <button class="sr-version-modal__close" @click="versionDetailVisible = false">×</button>
+          </div>
+        </header>
+        <div class="sr-version-modal__body">
+          <div class="sr-version-detail-block">
+            <div class="sr-version-detail-title">版本说明</div>
+            <div
+              v-if="selectedVersion.description"
+              class="sr-version-detail-desc"
+              v-html="selectedVersion.description"
+            ></div>
+            <div v-else class="sr-version-detail-desc sr-version-detail-desc--empty">暂无版本说明</div>
+            <div v-if="selectedVersion.attachments?.length" class="sr-version-attachments">
+              <a
+                v-for="file in selectedVersion.attachments"
+                :key="file.id"
+                :href="`/attachment/download/${file.id}`"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {{ file.name || file.id }}
+              </a>
+            </div>
+          </div>
+          <div class="sr-version-detail-block">
+            <div class="sr-version-detail-title">关联需求</div>
+            <div class="sr-table sr-table--requirements">
+              <div class="sr-table__head">
+                <span>ID</span>
+                <span>标题</span>
+                <span>模块</span>
+                <span>来源</span>
+                <span>优先级</span>
+                <span>状态</span>
+              </div>
+              <div v-for="row in selectedVersionRequirements" :key="row.id" class="sr-table__row">
+                <span class="sr-text-primary">{{ row.id }}</span>
+                <strong>{{ row.name }}</strong>
+                <span
+                  ><em class="sr-chip">{{ row.module }}</em></span
+                >
+                <span>{{ row.source }}</span>
+                <span
+                  ><em :class="['sr-priority', `sr-priority--${row.priorityType}`]">{{ row.priority }}</em></span
+                >
+                <span
+                  ><em :class="['sr-status', `sr-status--${row.statusType}`]">{{ row.status }}</em></span
+                >
+              </div>
+              <div v-if="!selectedVersionRequirements.length" class="sr-version-empty">暂无关联需求</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script lang="ts" setup>
+  /* eslint-disable no-use-before-define */
   import { useRoute, useRouter } from 'vue-router';
+  import { useMessage } from 'naive-ui';
 
   import deleteIcon from '@/assets/icons/project/delete.svg?raw';
   import editIcon from '@/assets/icons/project/edit.svg?raw';
 
-  import { getProductDetail, getRoadmap } from '@/api/modules/productManagement';
+  import StariverRichEditor from '@/components/business/stariver-rich-editor/index.vue';
+
+  import {
+    addProductVersion,
+    deleteProductVersion,
+    getProductDetail,
+    getRoadmap,
+    getUserOptions,
+    updateProductVersionStatus,
+  } from '@/api/modules/productManagement';
 
   const route = useRoute();
   const router = useRouter();
+  const message = useMessage();
 
   const product = ref<any>({});
   const activeTab = ref('overview');
   const productRoadmap = ref<any[]>([]);
   const expandedModules = reactive<Record<string, boolean>>({});
   const expandedRoadmap = reactive<Record<string, boolean>>({});
+  const versionCreateVisible = ref(false);
+  const versionDetailVisible = ref(false);
+  const versionSaving = ref(false);
+  const selectedVersion = ref<any>(null);
+  const userOptions = ref<Array<{ label: string; value: string }>>([]);
+  const versionForm = reactive({
+    version: '',
+    status: '规划中',
+    releaseDate: '',
+    description: '[新功能]\n\n[修复]',
+    productOwnerId: '',
+    productOwner: '',
+    devOwnerId: '',
+    devOwner: '',
+    attachmentFiles: [] as Array<{ id: string; name: string; size?: number }>,
+  });
 
   const tabs = [
     { key: 'overview', label: '总览' },
@@ -307,6 +479,13 @@
 
   const requirementTotal = computed(() => requirementRows.value.length);
 
+  const selectedVersionRequirements = computed(() => {
+    if (!selectedVersion.value) {
+      return [];
+    }
+    return requirementRows.value.filter((row) => row.version === selectedVersion.value.version);
+  });
+
   function isModuleExpanded(id: string) {
     return expandedModules[id] !== false;
   }
@@ -342,32 +521,71 @@
         ? product.value.roadmap
         : productRoadmap.value;
 
-    return rows.map((row) => ({
-      ...row,
-      status: row.status === '已发布' ? '已上线' : row.status,
-      statusType: getRoadmapStatusType(row.status),
-      description: row.description || '',
-    }));
+    const normalizedRows = rows.map((row) => {
+      const status = row.status === '已上线' ? '已发布' : row.status;
+      return {
+        ...row,
+        status,
+        statusType: getRoadmapStatusType(status),
+        description: row.description || '',
+        attachments: Array.isArray(row.attachments) ? row.attachments : [],
+        attachmentIds: Array.isArray(row.attachmentIds) ? row.attachmentIds : [],
+      };
+    });
+    if (
+      product.value.id &&
+      product.value.version &&
+      !normalizedRows.some((row) => row.version === product.value.version)
+    ) {
+      normalizedRows.push({
+        id: `${product.value.id}-${product.value.version}`,
+        productId: product.value.id,
+        version: product.value.version,
+        releaseDate: product.value.releaseDate || '--',
+        status: product.value.status === '已上线' ? '已发布' : product.value.status || '规划中',
+        statusType: getRoadmapStatusType(product.value.status || '规划中'),
+        pendingCount: 0,
+        productOwnerId: product.value.productOwnerId || '',
+        productOwner: product.value.productOwner || '',
+        productOwnerActive: Boolean(activeUserOption(product.value.productOwnerId)),
+        devOwnerId: product.value.devOwnerId || '',
+        devOwner: product.value.devOwner || '',
+        devOwnerActive: Boolean(activeUserOption(product.value.devOwnerId)),
+        description: '',
+        attachments: [],
+        attachmentIds: [],
+      });
+    }
+    return normalizedRows;
   });
 
-  onMounted(async () => {
+  async function loadProductDetail() {
     const id = route.params.id as string;
-    const tabParam = route.query.tab as string;
-    if (tabParam && tabs.some((t) => t.key === tabParam)) {
-      activeTab.value = tabParam;
-    }
     if (id) {
       try {
         const [data, roadmap] = await Promise.all([getProductDetail(id), getRoadmap()]);
         product.value = data || {};
         const matchedRoadmap = (roadmap || []).filter((r: any) => r.productId === id);
         productRoadmap.value = matchedRoadmap;
+        if (selectedVersion.value) {
+          selectedVersion.value =
+            roadmapRows.value.find((row) => row.id === selectedVersion.value.id) || selectedVersion.value;
+        }
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('获取产品详情失败', e);
         product.value = {};
       }
     }
+  }
+
+  onMounted(async () => {
+    const tabParam = route.query.tab as string;
+    if (tabParam && tabs.some((t) => t.key === tabParam)) {
+      activeTab.value = tabParam;
+    }
+    await loadProductDetail();
+    await loadUserOptions();
   });
 
   function handleEdit() {
@@ -378,6 +596,161 @@
         id: product.value.id,
       },
     });
+  }
+
+  function getNextVersionText() {
+    const versions = roadmapRows.value
+      .map((row) => String(row.version || '').match(/^v?(\d+)\.(\d+)/i))
+      .filter(Boolean)
+      .map((matched) => ({ major: Number(matched?.[1] || 0), minor: Number(matched?.[2] || 0) }))
+      .sort((a, b) => b.major - a.major || b.minor - a.minor);
+    const latest = versions[0];
+    if (latest) {
+      return `v${latest.major}.${latest.minor + 1}`;
+    }
+    const current = product.value.nextVersion || product.value.version || 'v1.0';
+    const matched = String(current).match(/^v?(\d+)\.(\d+)/i);
+    return matched ? `v${matched[1]}.${Number(matched[2]) + 1}` : current;
+  }
+
+  function openVersionCreate() {
+    const fallbackOwner = userOptions.value[0] || null;
+    const productOwnerOption = activeUserOption(product.value.productOwnerId) || fallbackOwner;
+    const devOwnerOption = activeUserOption(product.value.devOwnerId) || fallbackOwner;
+    versionForm.version = getNextVersionText();
+    versionForm.status = '规划中';
+    versionForm.releaseDate = '';
+    versionForm.description = '<p>[新功能]</p><p><br></p><p>[修复]</p>';
+    versionForm.productOwnerId = productOwnerOption?.value || '';
+    versionForm.productOwner = productOwnerOption?.label || '';
+    versionForm.devOwnerId = devOwnerOption?.value || '';
+    versionForm.devOwner = devOwnerOption?.label || '';
+    versionForm.attachmentFiles = [];
+    versionCreateVisible.value = true;
+  }
+
+  function openVersionDetail(row: any) {
+    selectedVersion.value = row;
+    versionDetailVisible.value = true;
+  }
+
+  async function handleVersionSave() {
+    if (!product.value.id || !versionForm.version.trim()) {
+      message.warning('请填写版本号');
+      return;
+    }
+    syncVersionOwner('productOwner');
+    syncVersionOwner('devOwner');
+    if (!versionForm.productOwnerId || !versionForm.devOwnerId) {
+      message.warning('当前组织暂无可用负责人，请先在组织架构中添加成员');
+      return;
+    }
+    try {
+      versionSaving.value = true;
+      await addProductVersion({
+        productId: product.value.id,
+        version: versionForm.version.trim(),
+        status: versionForm.status,
+        releaseDate: versionForm.releaseDate,
+        description: versionForm.description,
+        productOwnerId: versionForm.productOwnerId,
+        productOwner: versionForm.productOwner,
+        devOwnerId: versionForm.devOwnerId,
+        devOwner: versionForm.devOwner,
+        attachmentIds: versionForm.attachmentFiles.map((file) => file.id),
+      });
+      versionCreateVisible.value = false;
+      activeTab.value = 'roadmap';
+      await loadProductDetail();
+      message.success('版本已保存');
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('保存版本失败', e);
+      message.error('保存版本失败，请检查负责人、版本号和后端服务');
+    } finally {
+      versionSaving.value = false;
+    }
+  }
+
+  async function handleVersionStatus(status: string) {
+    if (!selectedVersion.value?.id) {
+      return;
+    }
+    try {
+      const updated = await updateProductVersionStatus(selectedVersion.value.id, status);
+      selectedVersion.value = {
+        ...selectedVersion.value,
+        ...updated,
+        status: updated.status === '已上线' ? '已发布' : updated.status,
+        statusType: getRoadmapStatusType(updated.status),
+      };
+      await loadProductDetail();
+      message.success(status === '已发布' ? '版本已发布' : '版本已转入开发');
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('更新版本状态失败', e);
+      message.error('更新版本状态失败');
+    }
+  }
+
+  async function handleVersionDelete() {
+    if (!selectedVersion.value?.id) {
+      return;
+    }
+    try {
+      await deleteProductVersion(selectedVersion.value.id);
+      versionDetailVisible.value = false;
+      selectedVersion.value = null;
+      await loadProductDetail();
+      message.success('版本已删除');
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('删除版本失败', e);
+      message.error('删除版本失败，请确认后端服务可用且产品至少保留一个版本');
+    }
+  }
+
+  async function loadUserOptions() {
+    try {
+      userOptions.value = await getUserOptions();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('获取用户选项失败', e);
+    }
+  }
+
+  function activeUserOption(value?: string) {
+    if (!value) {
+      return null;
+    }
+    return userOptions.value.find((option) => option.value === value) || null;
+  }
+
+  function ownerLabel(name?: string, active = true) {
+    if (!name) {
+      return '--';
+    }
+    return active ? name : `${name}（已移除）`;
+  }
+
+  function plainText(html?: string) {
+    if (!html) {
+      return '';
+    }
+    return html
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function syncVersionOwner(type: 'productOwner' | 'devOwner') {
+    if (type === 'productOwner') {
+      versionForm.productOwner =
+        userOptions.value.find((option) => option.value === versionForm.productOwnerId)?.label || '';
+      return;
+    }
+    versionForm.devOwner = userOptions.value.find((option) => option.value === versionForm.devOwnerId)?.label || '';
   }
 </script>
 
@@ -885,6 +1258,7 @@
   }
   .sr-roadmap-item {
     position: relative;
+    cursor: pointer;
   }
   .sr-roadmap-item__dot {
     position: absolute;
@@ -912,6 +1286,12 @@
     background: #f8fafc;
     flex-direction: column;
     gap: 4px;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .sr-roadmap-item:hover .sr-roadmap-item__card {
+    border-color: #c7d2fe;
+    box-shadow: 0 8px 20px rgb(15 23 42 / 8%);
+    transform: translateY(-1px);
   }
   .sr-roadmap-item__meta {
     display: flex;
@@ -1039,6 +1419,219 @@
     align-items: center;
     min-height: 240px;
     font-size: 14px;
+    color: #94a3b8;
+  }
+  .sr-modal-mask {
+    position: fixed;
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    inset: 0;
+    background: rgb(15 23 42 / 55%);
+  }
+  .sr-version-modal {
+    display: flex;
+    overflow: hidden;
+    width: min(1180px, calc(100vw - 64px));
+    max-height: calc(100vh - 72px);
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 24px 80px rgb(15 23 42 / 24%);
+    flex-direction: column;
+  }
+  .sr-version-modal--detail {
+    width: min(1320px, calc(100vw - 64px));
+  }
+  .sr-version-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 22px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 24px;
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 28px;
+    }
+  }
+  .sr-version-modal__close {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+    border: 0;
+    color: #64748b;
+    background: transparent;
+    cursor: pointer;
+  }
+  .sr-version-modal__body {
+    overflow: auto;
+    padding: 24px;
+    flex: 1 1 auto;
+  }
+  .sr-version-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+    gap: 10px;
+  }
+  .sr-version-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    span {
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+      line-height: 18px;
+    }
+  }
+  .sr-version-form__full {
+    grid-column: 1 / -1;
+  }
+  .sr-input,
+  .sr-version-textarea {
+    padding: 0 12px;
+    min-height: 38px;
+    font-size: 14px;
+    border: 1px solid #dbe3ef;
+    border-radius: 6px;
+    color: #0f172a;
+    background: #ffffff;
+    outline: none;
+  }
+  .sr-version-textarea {
+    padding: 12px;
+    min-height: 260px;
+    line-height: 22px;
+    resize: vertical;
+  }
+  .sr-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 18px;
+    height: 36px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .sr-btn--ghost {
+    border: 1px solid #dbe3ef;
+    color: #334155;
+    background: #ffffff;
+  }
+  .sr-btn--primary {
+    border: 1px solid #0f172a;
+    color: #ffffff;
+    background: #0f172a;
+  }
+  .sr-version-meta {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #334155;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .sr-version-modal__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .sr-version-action {
+    padding: 0;
+    font-size: 13px;
+    font-weight: 700;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .sr-version-action--success {
+    color: #16a34a;
+  }
+  .sr-version-action--danger {
+    color: #dc2626;
+  }
+  .sr-version-detail-block + .sr-version-detail-block {
+    margin-top: 24px;
+  }
+  .sr-version-detail-title {
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    line-height: 20px;
+  }
+  .sr-version-detail-desc {
+    overflow: auto;
+    padding: 18px;
+    max-height: 330px;
+    font-size: 13px;
+    border-radius: 8px;
+    color: #0f172a;
+    background: #f8fafc;
+    line-height: 22px;
+  }
+  .sr-version-detail-desc--empty {
+    color: #94a3b8;
+  }
+  .sr-version-detail-desc :deep(h1),
+  .sr-version-detail-desc :deep(h2),
+  .sr-version-detail-desc :deep(p) {
+    margin: 0 0 8px;
+  }
+  .sr-version-detail-desc :deep(pre) {
+    padding: 8px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    background: #eef2f7;
+  }
+  .sr-version-detail-desc :deep(table) {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .sr-version-detail-desc :deep(td) {
+    padding: 6px;
+    border: 1px solid #dbe3ef;
+  }
+  .sr-version-attachments {
+    display: flex;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sr-version-attachments a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 8px;
+    height: 24px;
+    font-size: 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #4f46e5;
+    background: #eef2ff;
+  }
+  .sr-version-empty {
+    padding: 22px;
+    font-size: 13px;
+    text-align: center;
     color: #94a3b8;
   }
 

@@ -1,92 +1,80 @@
 <template>
-  <StariverModulePage title="角色权限" count-label="权限矩阵" eyebrow="系统">
-    <template #toolbar>
-      <div class="stariver-tabs">
-        <button class="stariver-tab stariver-tab--active">角色权限</button>
-        <button class="stariver-tab">成员授权</button>
-        <button class="stariver-tab">数据范围</button>
-      </div>
-      <div class="stariver-filters">
-        <button class="stariver-filter">角色类型：全部</button>
-        <button class="stariver-filter">授权状态：启用</button>
-      </div>
-    </template>
+  <StariverModulePage title="角色权限">
+    <div class="role-permission-page" :class="{ 'role-permission-page--license-offset': licenseStore.expiredDuring }">
+      <section class="role-card">
+        <div class="role-card__header">
+          <h2>角色</h2>
+          <n-tooltip trigger="hover" :delay="300">
+            <template #trigger>
+              <n-button
+                v-permission="['SYSTEM_ROLE:ADD']"
+                quaternary
+                class="role-card__add"
+                :focusable="false"
+                @click="addRole"
+              >
+                <template #icon>
+                  <n-icon><Add /></n-icon>
+                </template>
+              </n-button>
+            </template>
+            {{ t('role.addRole') }}
+          </n-tooltip>
+        </div>
+        <n-scrollbar class="role-card__body">
+          <CrmTree
+            ref="roleTreeRef"
+            v-model:selected-keys="selectedKeys"
+            v-model:data="roles"
+            class="role-tree"
+            :render-prefix="renderPrefix"
+            :render-extra="renderExtra"
+            :node-more-actions="nodeMoreActions"
+            node-more-action-size="small"
+            title-tooltip-position="top-start"
+            title-class="role-tree__title"
+            :filter-more-action-func="filterMoreActionFunc"
+            :field-names="{ keyField: 'id', labelField: 'name', childrenField: 'children' }"
+            :rename-api="updateRoleName"
+            :rename-static="renameStatic"
+            :selectable="roleTreeSelectable"
+            @click="handleRoleClick"
+            @more-action-select="handleMoreActionSelect"
+          />
+        </n-scrollbar>
+      </section>
 
-    <div class="stariver-system-stack">
-      <StariverInsightStrip :metrics="roleMetrics" :process="roleProcess" :fields="roleFields" :rules="roleRules" />
-      <CrmCard
-        :loading="loading"
-        hide-footer
-        no-content-padding
-        class="stariver-system-card"
-        :special-height="licenseStore.expiredDuring ? 64 : 0"
-      >
-        <CrmSplitPanel class="h-full" :max="0.5" :min="0.25" :default-size="0.25">
-          <template #1>
-            <div class="flex h-full flex-col overflow-hidden">
-              <div class="mb-[8px] flex items-center justify-between gap-[8px] px-[24px] pt-[24px]">
-                <CrmSearchInput v-model:value="keyword" :placeholder="t('common.searchByName')" class="flex-1" />
-                <n-tooltip trigger="hover" :delay="300">
-                  <template #trigger>
-                    <n-button
-                      v-permission="['SYSTEM_ROLE:ADD']"
-                      type="primary"
-                      ghost
-                      class="n-btn-outline-primary px-[7px]"
-                      @click="addRole"
-                    >
-                      <template #icon>
-                        <n-icon><Add /></n-icon>
-                      </template>
-                    </n-button>
-                  </template>
-                  {{ t('role.addRole') }}
-                </n-tooltip>
-              </div>
-              <n-scrollbar class="px-[24px] pb-[24px]">
-                <CrmTree
-                  ref="roleTreeRef"
-                  v-model:selected-keys="selectedKeys"
-                  v-model:data="roles"
-                  :keyword="keyword"
-                  :render-prefix="renderPrefix"
-                  :node-more-actions="nodeMoreActions"
-                  title-tooltip-position="top-start"
-                  :filter-more-action-func="filterMoreActionFunc"
-                  :field-names="{ keyField: 'id', labelField: 'name', childrenField: 'children' }"
-                  :rename-api="updateRoleName"
-                  :rename-static="renameStatic"
-                  :selectable="roleTreeSelectable"
-                  @click="handleRoleClick"
-                  @more-action-select="handleMoreActionSelect"
-                />
-              </n-scrollbar>
-            </div>
-          </template>
-          <template #2>
-            <div class="h-full pt-[13px]">
-              <CrmTab v-model:active-tab="activeTab" :tab-list="tabList" type="line">
-                <template #permission>
-                  <permissionTab
-                    v-if="activeRole"
-                    :active-role-id="selectedKeys[0]"
-                    :is-new="!!activeRole.isNew"
-                    :is-copy="!!activeRole.isCopy"
-                    :copy-from="activeRole.copyFrom"
-                    :role-name="activeRole.name"
-                    @create-success="handleCreated"
-                    @cancel-create="handleCancelCreate"
-                    @unsave-change="handleUnsaveChange"
-                  />
-                </template>
-                <template #member>
-                  <memberTab v-if="activeRole" :active-role-id="selectedKeys[0]" />
-                </template>
-              </CrmTab>
-            </div>
-          </template>
-        </CrmSplitPanel>
-      </CrmCard>
+      <section class="role-detail-card">
+        <div class="role-detail-card__header">
+          <div class="role-segmented">
+            <button
+              v-for="item in tabList"
+              :key="item.name"
+              class="role-segmented__item"
+              :class="{ 'role-segmented__item--active': activeTab === item.name }"
+              type="button"
+              @click="activeTab = String(item.name)"
+            >
+              {{ item.tab }}
+            </button>
+          </div>
+        </div>
+
+        <div class="role-detail-card__body">
+          <permissionTab
+            v-if="activeRole && activeTab === 'permission'"
+            :active-role-id="selectedKeys[0]"
+            :is-new="!!activeRole.isNew"
+            :is-copy="!!activeRole.isCopy"
+            :copy-from="activeRole.copyFrom"
+            :role-name="activeRole.name"
+            @create-success="handleCreated"
+            @cancel-create="handleCancelCreate"
+            @unsave-change="handleUnsaveChange"
+          />
+          <memberTab v-if="activeRole && activeTab === 'member'" :active-role-id="selectedKeys[0]" />
+        </div>
+      </section>
     </div>
   </StariverModulePage>
 </template>
@@ -99,15 +87,9 @@
   import { characterLimit, getGenerateId } from '@lib/shared/method';
   import type { RoleItem } from '@lib/shared/models/system/role';
 
-  import CrmCard from '@/components/pure/crm-card/index.vue';
   import { ActionsItem } from '@/components/pure/crm-more-action/type';
-  import CrmSearchInput from '@/components/pure/crm-search-input/index.vue';
-  import CrmSplitPanel from '@/components/pure/crm-split-panel/index.vue';
-  import CrmTab from '@/components/pure/crm-tab/index.vue';
   import CrmTree from '@/components/pure/crm-tree/index.vue';
   import { CrmTreeNodeData } from '@/components/pure/crm-tree/type';
-  import roleTreeNodePrefix from '@/components/business/crm-select-user-drawer/roleTreeNodePrefix.vue';
-  import StariverInsightStrip from '@/components/business/stariver-insight-strip/index.vue';
   import StariverModulePage from '@/components/business/stariver-module-page/index.vue';
   import memberTab from './components/memberTab.vue';
   import permissionTab from './components/permissionTab.vue';
@@ -124,34 +106,38 @@
   const { setIsSave } = useLeaveUnSaveTip();
   const licenseStore = useLicenseStore();
 
-  const roleMetrics = [
-    { label: '系统角色', value: '9', hint: '覆盖管理员、销售、产品、财务', tone: 'blue' },
-    { label: '权限模块', value: '18', hint: '销售 CRM 与产品需求模块优先', tone: 'indigo' },
-    { label: '成员授权', value: '42', hint: '按角色绑定用户', tone: 'emerald' },
-    { label: '待审核变更', value: '3', hint: '新增角色需确认数据范围', tone: 'amber' },
-  ];
-
-  const roleProcess = ['创建角色', '选择模块权限', '配置数据范围', '绑定成员', '保存生效'];
-  const roleFields = ['角色名称', '系统内置', '模块权限', '操作权限', '数据范围', '成员列表'];
-  const roleRules = [
-    '权限页暂沿用原后端能力',
-    '销售 CRM 未启用模块不暴露入口',
-    '角色数据范围影响客户、线索、商机和合同列表',
-  ];
-
   const loading = ref(false);
-  const keyword = ref('');
   const roles = ref<RoleItem[]>([]);
   const selectedKeys = ref<string[]>([]);
   const roleTreeRef = ref<InstanceType<typeof CrmTree> | null>(null);
+  const rolePalette = [
+    '#ef4444',
+    '#7c3aed',
+    '#f0a44f',
+    '#0f82bd',
+    '#7c3aed',
+    '#c65a08',
+    '#2563eb',
+    '#7c3aed',
+    '#0ea5e9',
+  ];
 
   function renderPrefix(node: { option: CrmTreeNodeData; checked: boolean; selected: boolean }) {
-    if (node.option.internal) {
-      return h(roleTreeNodePrefix, {
-        text: t('role.sys'),
-        tooltip: t('role.systemInit'),
-      });
-    }
+    const index = roles.value.findIndex((role) => role.id === node.option.id);
+    return h('span', {
+      class: 'role-tree__color',
+      style: {
+        backgroundColor: rolePalette[index % rolePalette.length],
+      },
+    });
+  }
+
+  function getRoleMemberCount(role: CrmTreeNodeData) {
+    return role.userCount ?? role.memberCount ?? role.userNum ?? role.count ?? 0;
+  }
+
+  function renderExtra(node: { option: CrmTreeNodeData; checked: boolean; selected: boolean }) {
+    return h('span', { class: 'role-tree__count' }, String(getRoleMemberCount(node.option)));
   }
 
   function updateRoleName(node: CrmTreeNodeData) {
@@ -321,6 +307,7 @@
     try {
       roles.value = await getRoles();
       selectedKeys.value = roles.value[0] ? [roles.value[0].id] : [];
+      activeTab.value = 'permission';
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
@@ -342,6 +329,7 @@
   function handleCancelCreate() {
     roles.value = roles.value.filter((role) => role.id !== selectedKeys.value[0]);
     selectedKeys.value = roles.value[0] ? [roles.value[0].id] : [];
+    activeTab.value = 'permission';
   }
 
   function handleUnsaveChange(val: boolean) {
@@ -357,70 +345,160 @@
 </script>
 
 <style lang="less" scoped>
-  .stariver-system-stack {
-    display: flex;
+  .role-permission-page {
+    display: grid;
     height: 100%;
     min-height: 0;
-    flex-direction: column;
-    gap: 12px;
+    grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+    gap: 16px;
   }
-
-  .stariver-system-card {
+  .role-permission-page--license-offset {
+    height: calc(100% - 64px);
+  }
+  .role-card,
+  .role-detail-card {
+    display: flex;
+    overflow: hidden;
+    min-height: 0;
+    border: 1px solid #dbe5f1;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 3%);
+    flex-direction: column;
+  }
+  .role-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 22px 10px;
+  }
+  .role-card__header h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 24px;
+  }
+  .role-card__add {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #d8e2ee;
+    border-radius: 6px;
+    color: #1f2a44;
+    background: #ffffff;
+  }
+  .role-card__body {
+    padding: 4px 22px 22px;
     min-height: 0;
     flex: 1;
-    overflow: hidden;
   }
-
-  .stariver-tabs,
-  .stariver-filters {
+  .role-detail-card__header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    padding: 0 20px;
+    min-height: 64px;
+    flex-shrink: 0;
   }
-
-  .stariver-tab,
-  .stariver-filter {
-    height: 32px;
-    border: 1px solid #e2e8f0;
+  .role-detail-card__body {
+    overflow: hidden;
+    min-height: 0;
+    flex: 1;
+  }
+  .role-segmented {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    border-radius: 7px;
+    background: #f5f7fb;
+    gap: 2px;
+  }
+  .role-segmented__item {
+    padding: 0 14px;
+    min-width: 64px;
+    height: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 0;
     border-radius: 6px;
-    padding: 0 10px;
-    background: #ffffff;
     color: #64748b;
-    font-size: 13px;
+    background: transparent;
     line-height: 30px;
     cursor: pointer;
   }
-
-  .stariver-tab {
-    border-color: transparent;
-    background: transparent;
-  }
-
-  .stariver-tab--active {
-    background: #eef2ff;
+  .role-segmented__item--active {
     color: #4f46e5;
-    font-weight: 700;
-  }
-
-  .stariver-filter {
-    background: #f8fafc;
-    color: #475569;
-  }
-
-  :deep(.n-tree-node-switcher) {
-    @apply hidden;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgb(15 23 42 / 8%);
   }
   :deep(.n-tree-node-wrapper) {
     padding: 0;
   }
-  :deep(.n-tabs-nav--line-type) {
-    padding: 0 24px;
-  }
-  :deep(.n-tabs),
-  :deep(.n-tab-pane) {
-    @apply h-full overflow-hidden;
+  :deep(.n-tree-node) {
+    margin-bottom: 4px;
+    padding: 0 8px 0 10px;
+    height: 44px;
+    border-radius: 6px;
   }
   :deep(.n-tree-node-content) {
+    min-width: 0;
     max-width: 100% !important;
+    cursor: pointer;
+  }
+  :deep(.n-tree-node-switcher) {
+    display: none;
+  }
+  :deep(.n-tree-node--selected) {
+    background: #eef2ff !important;
+  }
+  :deep(.n-tree-node--selected .role-tree__title) {
+    color: #4f46e5;
+  }
+  :deep(.crm-tree-node-extra) {
+    display: flex;
+    align-items: center;
+    min-width: 54px;
+    flex-direction: row-reverse;
+    gap: 8px;
+  }
+  :deep(.role-tree__title) {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 22px;
+  }
+  :deep(.role-tree__color) {
+    display: inline-block;
+    width: 4px;
+    height: 22px;
+    border-radius: 999px;
+  }
+  :deep(.role-tree__count) {
+    min-width: 18px;
+    font-size: 14px;
+    text-align: right;
+    color: #64748b;
+    line-height: 20px;
+  }
+  :deep(.n-data-table-th) {
+    background-color: #f8fafc;
+  }
+
+  @media (max-width: 1200px) {
+    .role-permission-page {
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .role-permission-page {
+      overflow: auto;
+      grid-template-columns: minmax(280px, 1fr);
+    }
+    .role-card {
+      min-height: 360px;
+    }
+    .role-detail-card {
+      min-height: 640px;
+    }
   }
 </style>

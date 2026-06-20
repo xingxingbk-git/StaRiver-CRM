@@ -4,6 +4,7 @@ import cn.cordys.common.dto.BasePageRequest;
 import cn.cordys.common.pager.Pager;
 import cn.cordys.crm.productmgmt.dto.request.ProductManagementSaveRequest;
 import cn.cordys.crm.productmgmt.dto.request.ProductRequirementSaveRequest;
+import cn.cordys.crm.productmgmt.dto.request.ProductVersionSaveRequest;
 import cn.cordys.crm.productmgmt.service.ProductManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,6 +56,30 @@ public class ProductManagementController {
     @Operation(summary = "产品版本路线图")
     public List<Map<String, Object>> roadmap() {
         return productManagementService.roadmap();
+    }
+
+    @PostMapping("/versions")
+    @Operation(summary = "新增产品版本")
+    public Map<String, Object> saveVersion(@RequestBody ProductVersionSaveRequest request) {
+        return productManagementService.saveVersion(request);
+    }
+
+    @PostMapping("/versions/{id}/status/{status}")
+    @Operation(summary = "更新产品版本状态")
+    public Map<String, Object> updateVersionStatus(@PathVariable String id, @PathVariable String status) {
+        return productManagementService.updateVersionStatus(id, status);
+    }
+
+    @PostMapping("/versions/{id}/status")
+    @Operation(summary = "更新产品版本状态")
+    public Map<String, Object> updateVersionStatusByBody(@PathVariable String id, @RequestBody Map<String, String> request) {
+        return productManagementService.updateVersionStatus(id, request.get("status"));
+    }
+
+    @PostMapping("/versions/{id}/delete")
+    @Operation(summary = "删除产品版本")
+    public void deleteVersion(@PathVariable String id) {
+        productManagementService.deleteVersion(id);
     }
 
     @PostMapping("/requirements/page")

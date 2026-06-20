@@ -5,32 +5,6 @@
       class="flex-1 px-[24px] pb-[24px]"
       :content-style="{ 'min-width': '600px', 'width': '100%' }"
     >
-      <div class="group-title">{{ t('role.dataPermission') }}</div>
-      <div class="mb-[24px] flex h-[32px] items-center gap-[8px]">
-        <n-radio-group v-model:value="dataPermission" :disabled="isDisabled" @update-value="handleDataPermissionChange">
-          <n-space>
-            <n-radio v-for="item in dataPermissionOptions" :key="item.value" :value="item.value">
-              {{ item.label }}
-            </n-radio>
-          </n-space>
-        </n-radio-group>
-        <n-tree-select
-          v-if="dataPermission === 'DEPT_CUSTOM'"
-          v-model:value="departments"
-          :options="departmentOptions"
-          :consistent-menu-width="false"
-          max-tag-count="responsive"
-          multiple
-          class="w-[240px]"
-          :placeholder="t('role.pleaseSelectDepartment')"
-          :loading="departmentLoading"
-          :disabled="isDisabled"
-          :render-label="renderLabel"
-          key-field="id"
-          label-field="name"
-          @update-value="() => (unsave = true)"
-        />
-      </div>
       <div class="group-title">{{ t('role.featurePermission') }}</div>
       <n-data-table
         :single-line="false"
@@ -41,6 +15,38 @@
         :loading="loading"
         :scroll-x="500"
       />
+      <div class="data-scope-panel">
+        <div class="group-title">{{ t('role.dataPermission') }}</div>
+        <div class="flex h-[32px] items-center gap-[8px]">
+          <n-radio-group
+            v-model:value="dataPermission"
+            :disabled="isDisabled"
+            @update-value="handleDataPermissionChange"
+          >
+            <n-space>
+              <n-radio v-for="item in dataPermissionOptions" :key="item.value" :value="item.value">
+                {{ item.label }}
+              </n-radio>
+            </n-space>
+          </n-radio-group>
+          <n-tree-select
+            v-if="dataPermission === 'DEPT_CUSTOM'"
+            v-model:value="departments"
+            :options="departmentOptions"
+            :consistent-menu-width="false"
+            max-tag-count="responsive"
+            multiple
+            class="w-[240px]"
+            :placeholder="t('role.pleaseSelectDepartment')"
+            :loading="departmentLoading"
+            :disabled="isDisabled"
+            :render-label="renderLabel"
+            key-field="id"
+            label-field="name"
+            @update-value="() => (unsave = true)"
+          />
+        </div>
+      </div>
     </n-scrollbar>
     <div class="tab-footer">
       <n-button
@@ -437,6 +443,13 @@
     margin-bottom: 16px;
     font-weight: 600;
     color: var(--text-n1);
+  }
+  .data-scope-panel {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #ffffff;
   }
   :deep(.permission-select) {
     width: 160px;

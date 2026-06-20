@@ -1,101 +1,35 @@
 <template>
-  <CrmCard hide-footer auto-height>
-    <div class="content-title mb-[16px]">{{ t('system.business.authenticationSettings.collaborativeSoftware') }}</div>
-    <CrmTab
-      v-model:active-tab="activePlatformTab"
-      class="mb-[8px]"
-      no-content
-      :tab-list="tabList"
-      type="segment"
-      :before-leave="handleBeforeLeave"
-    />
-    <div v-if="platFormIntegrationList.length" class="grid gap-[16px] xl:grid-cols-2 2xl:grid-cols-3">
-      <div
-        v-for="item of platFormIntegrationList"
-        :key="item.type"
-        class="flex h-[140px] flex-col justify-between rounded-[6px] border border-solid border-[var(--text-n8)] bg-[var(--text-n10)] p-[24px]"
-      >
-        <div class="flex">
-          <div class="mr-[8px] flex h-[40px] w-[40px] items-center justify-center rounded-[2px] bg-[var(--text-n9)]">
-            <CrmSvgIcon
-              v-if="[CompanyTypeEnum.DATA_EASE, CompanyTypeEnum.SQLBot].includes(item.type as CompanyTypeEnum)"
-              :name="item.logo"
-              width="24px"
-              height="24px"
-            />
-            <CrmIcon v-else :type="item.logo" :size="24"></CrmIcon>
-          </div>
-          <div class="flex-1">
-            <div class="flex justify-between gap-[8px]">
-              <div>
-                <span class="mr-[8px] font-medium">{{ item.title }}</span>
-                <CrmTag v-if="!item.hasConfig" theme="light" size="small" custom-class="px-[4px]">
-                  {{ t('system.business.notConfigured') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === false"
-                  theme="light"
-                  type="error"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.fail') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === null"
-                  theme="light"
-                  type="warning"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.unVerify') }}
-                </CrmTag>
-                <CrmTag v-else theme="light" type="success" size="small" custom-class="px-[4px]">
-                  {{ t('common.success') }}
-                </CrmTag>
-              </div>
+  <div class="business-integration" :class="{ 'is-loading': loading }">
+    <section class="business-integration__section">
+      <div class="business-integration__section-title"> 企业软件协同 </div>
+      <CrmTab
+        v-model:active-tab="activePlatformTab"
+        class="business-integration__segment"
+        no-content
+        :tab-list="tabList"
+        type="segment"
+        :before-leave="handleBeforeLeave"
+      />
 
-              <div>
-                <n-button
-                  v-if="item.type === CompanyTypeEnum.DATA_EASE"
-                  v-permission="['SYSTEM_SETTING:UPDATE']"
-                  size="small"
-                  type="default"
-                  class="outline--secondary mr-[8px] px-[8px]"
-                  @click="handleSyncDE()"
-                >
-                  {{ t('common.sync') }}
-                </n-button>
-                <n-button
-                  v-permission="['SYSTEM_SETTING:UPDATE']"
-                  size="small"
-                  type="default"
-                  class="outline--secondary mr-[8px] px-[8px]"
-                  @click="handleEdit(item)"
-                >
-                  {{ t('common.config') }}
-                </n-button>
-                <n-button
-                  :disabled="!item.hasConfig"
-                  size="small"
-                  type="default"
-                  class="outline--secondary px-[8px]"
-                  @click="testLink(item)"
-                >
-                  {{ t('common.testLink') }}
-                </n-button>
-              </div>
+      <div class="business-integration__grid business-integration__grid--single">
+        <article v-for="item of platFormIntegrationList" :key="item.type" class="business-integration-card">
+          <div class="business-integration-card__main">
+            <div class="business-integration-card__logo">
+              <CrmIcon :type="item.logo" :size="26" />
             </div>
-            <p class="text-[12px] text-[var(--text-n4)]">{{ item.description }}</p>
-          </div>
-        </div>
-
-        <div class="flex justify-between gap-[8px]">
-          <div class="flex items-center gap-[8px]">
+            <div class="business-integration-card__content">
+              <div class="business-integration-card__title-row">
+                <h3>{{ item.title }}</h3>
+                <CrmTag theme="light" size="small" custom-class="px-[6px]">
+                  {{ getStatusText(item) }}
+                </CrmTag>
+              </div>
+              <p>{{ item.description }}</p>
+            </div>
             <n-tooltip :disabled="item.verify">
               <template #trigger>
                 <n-switch
-                  size="small"
+                  class="business-integration-card__switch"
                   :rubber-band="false"
                   :value="item.config.startEnable"
                   :disabled="!item.hasConfig || !item.verify || !hasAnyPermission(['SYSTEM_SETTING:UPDATE'])"
@@ -104,146 +38,63 @@
               </template>
               {{ t('system.business.notConfiguredTip') }}
             </n-tooltip>
-            <div class="text-[12px]">{{ t('system.business.authenticationSettings.syncUser') }}</div>
-            <n-tooltip trigger="hover">
-              <template #trigger>
-                <CrmIcon
-                  type="iconicon_help_circle"
-                  :size="16"
-                  class="cursor-pointer text-[var(--text-n4)] hover:text-[var(--primary-1)]"
-                />
-              </template>
-              <template #default>
-                <div>
-                  <div>{{ t('system.business.authenticationSettings.syncUsersToolTitle', { type: item.title }) }}</div>
-                  <div>{{ t('system.business.authenticationSettings.syncUsersOpenTip', { type: item.title }) }}</div>
-                  <div>{{ t('system.business.authenticationSettings.syncUsersTipContent', { type: item.title }) }}</div>
-                </div>
-              </template>
-            </n-tooltip>
           </div>
-        </div>
+          <div class="business-integration-card__actions">
+            <n-button
+              v-permission="['SYSTEM_SETTING:UPDATE']"
+              size="small"
+              type="default"
+              class="outline--secondary"
+              @click="handleEdit(item)"
+            >
+              {{ t('common.config') }}
+            </n-button>
+            <n-button
+              :disabled="!item.hasConfig"
+              size="small"
+              type="default"
+              class="outline--secondary"
+              @click="testLink(item)"
+            >
+              {{ t('common.testLink') }}
+            </n-button>
+          </div>
+        </article>
       </div>
-    </div>
-  </CrmCard>
-  <CrmCard class="my-[16px]" hide-footer auto-height :loading="loading">
-    <div class="content-title">{{ t('system.business.authenticationSettings.openSourceDataTools') }}</div>
-    <div v-if="integrationList.length" class="grid gap-[16px] xl:grid-cols-2 2xl:grid-cols-3">
-      <div
-        v-for="item of integrationList"
-        :key="item.type"
-        class="flex h-[140px] flex-col justify-between rounded-[6px] border border-solid border-[var(--text-n8)] bg-[var(--text-n10)] p-[24px]"
-      >
-        <div class="flex">
-          <div class="mr-[8px] flex h-[40px] w-[40px] items-center justify-center rounded-[2px] bg-[var(--text-n9)]">
-            <CrmSvgIcon
-              v-if="[CompanyTypeEnum.DATA_EASE, CompanyTypeEnum.SQLBot].includes(item.type as CompanyTypeEnum)"
-              :name="item.logo"
-              width="24px"
-              height="24px"
-            />
-            <CrmIcon v-else :type="item.logo" :size="24"></CrmIcon>
-          </div>
-          <div class="flex-1">
-            <div class="flex justify-between gap-[8px]">
-              <div>
-                <span class="mr-[8px] font-medium">{{ item.title }}</span>
-                <CrmTag v-if="!item.hasConfig" theme="light" size="small" custom-class="px-[4px]">
-                  {{ t('system.business.notConfigured') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === false"
-                  theme="light"
-                  type="error"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.fail') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === null"
-                  theme="light"
-                  type="warning"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.unVerify') }}
-                </CrmTag>
-                <CrmTag v-else theme="light" type="success" size="small" custom-class="px-[4px]">
-                  {{ t('common.success') }}
-                </CrmTag>
-              </div>
+    </section>
 
-              <div>
-                <n-button
-                  v-if="item.type === CompanyTypeEnum.DATA_EASE"
-                  v-permission="['SYSTEM_SETTING:UPDATE']"
-                  size="small"
-                  type="default"
-                  class="outline--secondary mr-[8px] px-[8px]"
-                  @click="handleSyncDE()"
-                >
-                  {{ t('common.sync') }}
-                </n-button>
-                <n-button
-                  v-permission="['SYSTEM_SETTING:UPDATE']"
-                  size="small"
-                  type="default"
-                  class="outline--secondary mr-[8px] px-[8px]"
-                  @click="handleEdit(item)"
-                >
-                  {{ t('common.config') }}
-                </n-button>
-                <n-button
-                  :disabled="!item.hasConfig"
-                  size="small"
-                  type="default"
-                  class="outline--secondary px-[8px]"
-                  @click="testLink(item)"
-                >
-                  {{ t('common.testLink') }}
-                </n-button>
-              </div>
+    <section class="business-integration__section">
+      <div class="business-integration__section-title">
+        {{ t('system.business.authenticationSettings.openSourceDataTools') }}
+      </div>
+      <div class="business-integration__grid">
+        <article v-for="item of integrationList" :key="item.type" class="business-integration-card">
+          <div class="business-integration-card__main">
+            <div class="business-integration-card__logo">
+              <CrmSvgIcon :name="item.logo" width="26px" height="26px" />
             </div>
-            <p class="text-[12px] text-[var(--text-n4)]">{{ item.description }}</p>
-          </div>
-        </div>
-        <div v-if="item.type === CompanyTypeEnum.DATA_EASE" class="flex items-center gap-[8px]">
-          <n-tooltip :disabled="item.verify">
-            <template #trigger>
-              <n-switch
-                size="small"
-                :rubber-band="false"
-                :value="item.config.deBoardEnable"
-                :disabled="!item.hasConfig || !item.verify || !hasAnyPermission(['SYSTEM_SETTING:UPDATE'])"
-                @update:value="handleChangeEnable(item, 'deBoardEnable')"
-              />
-            </template>
-            {{ t('system.business.notConfiguredTip') }}
-          </n-tooltip>
-          <div class="text-[12px]">{{ t('common.dashboard') }}</div>
-        </div>
-        <div v-else-if="item.type === CompanyTypeEnum.SQLBot" class="flex justify-between gap-[8px]">
-          <!--          <div class="flex items-center gap-[8px]">
+            <div class="business-integration-card__content">
+              <div class="business-integration-card__title-row">
+                <h3>{{ item.title }}</h3>
+                <CrmTag theme="light" size="small" custom-class="px-[6px]">
+                  {{ getStatusText(item) }}
+                </CrmTag>
+              </div>
+              <p>{{ item.description }}</p>
+            </div>
             <n-tooltip :disabled="item.verify">
               <template #trigger>
                 <n-switch
-                  size="small"
+                  v-if="item.type === CompanyTypeEnum.DATA_EASE"
+                  class="business-integration-card__switch"
                   :rubber-band="false"
-                  :value="item.config.sqlBotBoardEnable"
+                  :value="item.config.deBoardEnable"
                   :disabled="!item.hasConfig || !item.verify || !hasAnyPermission(['SYSTEM_SETTING:UPDATE'])"
-                  @update:value="handleChangeEnable(item, 'sqlBotBoardEnable')"
+                  @update:value="handleChangeEnable(item, 'deBoardEnable')"
                 />
-              </template>
-              {{ t('system.business.notConfiguredTip') }}
-            </n-tooltip>
-            <div class="text-[12px]">{{ t('common.dashboard') }}</div>
-          </div>-->
-          <div class="flex items-center gap-[8px]">
-            <n-tooltip :disabled="item.verify">
-              <template #trigger>
                 <n-switch
-                  size="small"
+                  v-else-if="item.type === CompanyTypeEnum.SQLBot"
+                  class="business-integration-card__switch"
                   :rubber-band="false"
                   :value="item.config.sqlBotChatEnable"
                   :disabled="!item.hasConfig || !item.verify || !hasAnyPermission(['SYSTEM_SETTING:UPDATE'])"
@@ -252,256 +103,41 @@
               </template>
               {{ t('system.business.notConfiguredTip') }}
             </n-tooltip>
-            <div class="text-[12px]">{{ t('system.business.SQLBot.switch') }}</div>
           </div>
-        </div>
+          <div class="business-integration-card__actions">
+            <n-button
+              v-if="item.type === CompanyTypeEnum.DATA_EASE"
+              v-permission="['SYSTEM_SETTING:UPDATE']"
+              size="small"
+              type="default"
+              class="outline--secondary"
+              @click="handleSyncDE()"
+            >
+              {{ t('common.sync') }}
+            </n-button>
+            <n-button
+              v-permission="['SYSTEM_SETTING:UPDATE']"
+              size="small"
+              type="default"
+              class="outline--secondary"
+              @click="handleEdit(item)"
+            >
+              {{ t('common.config') }}
+            </n-button>
+            <n-button
+              :disabled="!item.hasConfig"
+              size="small"
+              type="default"
+              class="outline--secondary"
+              @click="testLink(item)"
+            >
+              {{ t('common.testLink') }}
+            </n-button>
+          </div>
+        </article>
       </div>
-    </div>
-  </CrmCard>
-  <CrmCard class="my-[16px]" hide-footer auto-height>
-    <div class="content-title mb-[16px]">{{ t('system.business.agent.agentTitle') }}</div>
-    <div v-if="agentIntegrationList.length" class="grid gap-[16px] xl:grid-cols-2 2xl:grid-cols-3">
-      <div
-        v-for="item of agentIntegrationList"
-        :key="item.type"
-        class="flex h-[140px] flex-col justify-between rounded-[6px] border border-solid border-[var(--text-n8)] bg-[var(--text-n10)] p-[24px]"
-      >
-        <div class="flex">
-          <div class="mr-[8px] flex h-[40px] w-[40px] items-center justify-center rounded-[2px] bg-[var(--text-n9)]">
-            <CrmSvgIcon
-              v-if="[CompanyTypeEnum.MAXKB].includes(item.type as CompanyTypeEnum)"
-              :name="item.logo"
-              width="24px"
-              height="24px"
-            />
-            <CrmIcon v-else :type="item.logo" :size="24"></CrmIcon>
-          </div>
-          <div class="flex-1">
-            <div class="flex justify-between gap-[8px]">
-              <div>
-                <span class="mr-[8px] font-medium">{{ item.title }}</span>
-                <CrmTag v-if="!item.hasConfig" theme="light" size="small" custom-class="px-[4px]">
-                  {{ t('system.business.notConfigured') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === false"
-                  theme="light"
-                  type="error"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.fail') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === null"
-                  theme="light"
-                  type="warning"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.unVerify') }}
-                </CrmTag>
-                <CrmTag v-else theme="light" type="success" size="small" custom-class="px-[4px]">
-                  {{ t('common.success') }}
-                </CrmTag>
-              </div>
-              <div>
-                <n-button
-                  v-permission="['SYSTEM_SETTING:UPDATE']"
-                  size="small"
-                  type="default"
-                  class="outline--secondary mr-[8px] px-[8px]"
-                  @click="handleEdit(item)"
-                >
-                  {{ t('common.config') }}
-                </n-button>
-                <n-button
-                  :disabled="!item.hasConfig"
-                  size="small"
-                  type="default"
-                  class="outline--secondary px-[8px]"
-                  @click="testLink(item)"
-                >
-                  {{ t('common.testLink') }}
-                </n-button>
-              </div>
-            </div>
-            <p class="text-[12px] text-[var(--text-n4)]">{{ item.description }}</p>
-          </div>
-        </div>
-        <div class="flex justify-between gap-[8px]">
-          <div class="flex items-center gap-[8px]">
-            <n-tooltip :disabled="item.verify">
-              <template #trigger>
-                <n-switch
-                  size="small"
-                  :rubber-band="false"
-                  :value="item.config.mkEnable"
-                  :disabled="!item.hasConfig || !item.verify || !hasAnyPermission(['SYSTEM_SETTING:UPDATE'])"
-                  @update:value="handleChangeEnable(item, 'mkEnable')"
-                />
-              </template>
-              {{ t('system.business.notConfiguredTip') }}
-            </n-tooltip>
-            <div class="text-[12px]">{{ t('module.agent') }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </CrmCard>
-  <CrmCard hide-footer auto-height>
-    <div class="content-title mb-[16px]">{{ t('system.business.tender') }}</div>
-    <div v-if="tenderIntegrationList.length" class="grid gap-[16px] xl:grid-cols-2 2xl:grid-cols-3">
-      <div
-        v-for="item of tenderIntegrationList"
-        :key="item.type"
-        class="flex h-[140px] flex-col justify-between rounded-[6px] border border-solid border-[var(--text-n8)] bg-[var(--text-n10)] p-[24px]"
-      >
-        <div class="flex">
-          <div class="mr-[8px] flex h-[40px] w-[40px] items-center justify-center rounded-[2px] bg-[var(--text-n9)]">
-            <CrmSvgIcon :name="item.logo" width="24px" height="24px" />
-          </div>
-          <div class="flex-1">
-            <div class="flex justify-between gap-[8px]">
-              <div>
-                <span class="mr-[8px] font-medium">{{ item.title }}</span>
-                <CrmTag
-                  v-if="item.hasConfig && item.verify === false"
-                  theme="light"
-                  type="error"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.fail') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === null"
-                  theme="light"
-                  type="warning"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.unVerify') }}
-                </CrmTag>
-                <CrmTag v-else theme="light" type="success" size="small" custom-class="px-[4px]">
-                  {{ t('common.success') }}
-                </CrmTag>
-              </div>
-              <div>
-                <n-button size="small" type="default" class="outline--secondary px-[8px]" @click="testLink(item)">
-                  {{ t('common.testLink') }}
-                </n-button>
-              </div>
-            </div>
-            <p class="text-[12px] text-[var(--text-n4)]">{{ item.description }}</p>
-          </div>
-        </div>
-        <div class="flex justify-between gap-[8px]">
-          <div class="flex items-center gap-[8px]">
-            <n-tooltip :disabled="item.verify">
-              <template #trigger>
-                <n-switch
-                  size="small"
-                  :rubber-band="false"
-                  :value="item.config.tenderEnable"
-                  :disabled="!item.verify || !hasAnyPermission(['SYSTEM_SETTING:UPDATE'])"
-                  @update:value="handleChangeEnable(item, 'tenderEnable')"
-                />
-              </template>
-              {{ t('system.business.notConfiguredTip') }}
-            </n-tooltip>
-            <div class="text-[12px]">大单网</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </CrmCard>
-
-  <CrmCard hide-footer auto-height class="mt-[16px]">
-    <div class="content-title mb-[16px]">{{ t('system.business.thirdPartyPlatform') }}</div>
-    <div v-if="thirdPartyIntegrationList.length" class="grid gap-[16px] xl:grid-cols-2 2xl:grid-cols-3">
-      <div
-        v-for="item of thirdPartyIntegrationList"
-        :key="item.type"
-        class="flex h-[140px] flex-col justify-between rounded-[6px] border border-solid border-[var(--text-n8)] bg-[var(--text-n10)] p-[24px]"
-      >
-        <div class="flex">
-          <div class="mr-[8px] flex h-[40px] w-[40px] items-center justify-center rounded-[2px] bg-[var(--text-n9)]">
-            <CrmSvgIcon :name="item.logo" width="24px" height="24px" />
-          </div>
-          <div class="flex-1">
-            <div class="flex justify-between gap-[8px]">
-              <div>
-                <span class="mr-[8px] font-medium">{{ item.title }}</span>
-                <CrmTag v-if="!item.hasConfig" theme="light" size="small" custom-class="px-[4px]">
-                  {{ t('system.business.notConfigured') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === false"
-                  theme="light"
-                  type="error"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.fail') }}
-                </CrmTag>
-                <CrmTag
-                  v-else-if="item.hasConfig && item.verify === null"
-                  theme="light"
-                  type="warning"
-                  size="small"
-                  custom-class="px-[4px]"
-                >
-                  {{ t('common.unVerify') }}
-                </CrmTag>
-                <CrmTag v-else theme="light" type="success" size="small" custom-class="px-[4px]">
-                  {{ t('common.success') }}
-                </CrmTag>
-              </div>
-              <div>
-                <n-button
-                  v-permission="['SYSTEM_SETTING:UPDATE']"
-                  size="small"
-                  type="default"
-                  class="outline--secondary mr-[8px] px-[8px]"
-                  @click="handleEdit(item)"
-                >
-                  {{ t('common.config') }}
-                </n-button>
-                <n-button
-                  :disabled="!item.hasConfig"
-                  size="small"
-                  type="default"
-                  class="outline--secondary px-[8px]"
-                  @click="testLink(item)"
-                >
-                  {{ t('common.testLink') }}
-                </n-button>
-              </div>
-            </div>
-            <p class="text-[12px] text-[var(--text-n4)]">{{ item.description }}</p>
-          </div>
-        </div>
-        <div class="flex justify-between gap-[8px]">
-          <div class="flex items-center gap-[8px]">
-            <n-tooltip :disabled="item.verify">
-              <template #trigger>
-                <n-switch
-                  size="small"
-                  :rubber-band="false"
-                  :value="item.config.qccEnable"
-                  :disabled="!item.verify || !hasAnyPermission(['SYSTEM_SETTING:UPDATE'])"
-                  @update:value="handleChangeEnable(item, 'qccEnable')"
-                />
-              </template>
-              {{ t('system.business.notConfiguredTip') }}
-            </n-tooltip>
-            <div class="text-[12px]">{{ t('system.business.qichacha') }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </CrmCard>
+    </section>
+  </div>
   <EditIntegrationModal
     v-model:show="showEditIntegrationModal"
     :title="currentTitle"
@@ -518,7 +154,6 @@
   import { loadScript, removeScript } from '@lib/shared/method/scriptLoader';
   import type { IntegrationItem, ThirdPartyResourceConfig } from '@lib/shared/models/system/business';
 
-  import CrmCard from '@/components/pure/crm-card/index.vue';
   import CrmSvgIcon from '@/components/pure/crm-svg/index.vue';
   import CrmTab from '@/components/pure/crm-tab/index.vue';
   import CrmTag from '@/components/pure/crm-tag/index.vue';
@@ -607,17 +242,12 @@
     originIntegrationList.value.filter((e) => e.type === activePlatformTab.value)
   );
 
-  const agentIntegrationList = computed<IntegrationItem[]>(() =>
-    originIntegrationList.value.filter((e) => e.type === CompanyTypeEnum.MAXKB)
-  );
-
-  const tenderIntegrationList = computed<IntegrationItem[]>(() =>
-    originIntegrationList.value.filter((e) => e.type === CompanyTypeEnum.TENDER)
-  );
-
-  const thirdPartyIntegrationList = computed<IntegrationItem[]>(() =>
-    originIntegrationList.value.filter((e) => e.type === CompanyTypeEnum.QCC)
-  );
+  function getStatusText(item: IntegrationItem) {
+    if (!item.hasConfig) return t('system.business.notConfigured');
+    if (item.verify === false) return t('common.fail');
+    if (item.verify === null) return t('common.unVerify');
+    return t('common.success');
+  }
 
   const loading = ref(false);
   async function initSyncList() {
@@ -833,8 +463,101 @@
 </script>
 
 <style lang="less" scoped>
-  .content-title {
-    color: var(--text-n1);
-    @apply mb-4 font-medium;
+  .business-integration {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+  .business-integration.is-loading {
+    opacity: 0.72;
+  }
+  .business-integration__section {
+    padding: 24px;
+    border-radius: 8px;
+    background: #ffffff;
+  }
+  .business-integration__section-title {
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 24px;
+  }
+  .business-integration__segment {
+    margin-bottom: 16px;
+    width: 330px;
+  }
+  .business-integration__grid {
+    display: grid;
+    max-width: 980px;
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .business-integration__grid--single {
+    grid-template-columns: minmax(320px, 460px);
+  }
+  .business-integration-card {
+    display: flex;
+    justify-content: space-between;
+    padding: 24px;
+    min-height: 150px;
+    border: 1px solid #dbe5f1;
+    border-radius: 8px;
+    background: #ffffff;
+    flex-direction: column;
+  }
+  .business-integration-card__main {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .business-integration-card__logo {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    flex-shrink: 0;
+  }
+  .business-integration-card__content {
+    min-width: 0;
+    flex: 1;
+  }
+  .business-integration-card__title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .business-integration-card__title-row h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 22px;
+  }
+  .business-integration-card__content p {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 20px;
+  }
+  .business-integration-card__switch {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .business-integration-card__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  @media (max-width: 1280px) {
+    .business-integration__grid {
+      grid-template-columns: minmax(320px, 1fr);
+    }
   }
 </style>

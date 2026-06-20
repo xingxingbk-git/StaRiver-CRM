@@ -203,7 +203,9 @@
     { label: '已发布', value: '已发布' },
   ];
 
-  const editProductId = computed(() => route.query.id?.toString() || '');
+  const editProductId = computed(
+    () => route.query.id?.toString() || route.query.productId?.toString() || route.params.id?.toString() || ''
+  );
   const isEditMode = computed(() => route.query.mode === 'edit' && !!editProductId.value);
   const pageTitle = computed(() => (isEditMode.value ? '编辑产品' : '新建产品'));
   const pageDescription = computed(() =>
@@ -262,6 +264,36 @@
     modules: [createModuleGroup()],
   });
 
+  function createInitialFormState(): ProductFormState {
+    return {
+      code: '',
+      name: '',
+      version: 'v1.0',
+      status: '',
+      releaseDate: null,
+      slogan: '',
+      productOwner: '',
+      productOwnerId: null,
+      devOwner: '',
+      devOwnerId: null,
+      modules: [createModuleGroup()],
+    };
+  }
+
+  function resetForm() {
+    Object.assign(form, createInitialFormState());
+  }
+
+  function ensureUserOption(value?: string | null, label?: string) {
+    if (!value) {
+      return;
+    }
+    const exists = userOptions.value.some((option) => option.value === value);
+    if (!exists) {
+      userOptions.value = [{ value, label: label || value }, ...userOptions.value];
+    }
+  }
+
   function normalizeModules(modules: unknown): ProductModuleGroup[] {
     if (!Array.isArray(modules) || !modules.length) {
       return [createModuleGroup()];
@@ -295,6 +327,7 @@
   }
 
   function fillForm(data: Record<string, any>) {
+    resetForm();
     form.code = data.code || '';
     form.name = data.name || '';
     form.version = data.version || 'v1.0';
@@ -306,6 +339,8 @@
     form.devOwner = data.devOwner || '';
     form.devOwnerId = data.devOwnerId || null;
     form.modules = normalizeModules(data.modules);
+    ensureUserOption(form.productOwnerId, form.productOwner);
+    ensureUserOption(form.devOwnerId, form.devOwner);
   }
 
   function addModule() {
@@ -349,7 +384,15 @@
   }
 
   async function loadUserOptions(keyword = '') {
-    userOptions.value = await getUserOptions(keyword);
+    try {
+      const options = await getUserOptions(keyword);
+      userOptions.value = options;
+      ensureUserOption(form.productOwnerId, form.productOwner);
+      ensureUserOption(form.devOwnerId, form.devOwner);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('获取用户选项失败', e);
+    }
   }
 
   function handleUserSearch(keyword: string) {
@@ -417,11 +460,13 @@
 
   async function loadEditProduct() {
     if (!isEditMode.value || !editProductId.value) {
+      if (!route.query.mode) {
+        resetForm();
+      }
       return;
     }
 
     try {
-      await loadUserOptions();
       const data = await getProductDetail(editProductId.value);
       if (data) {
         fillForm(data);

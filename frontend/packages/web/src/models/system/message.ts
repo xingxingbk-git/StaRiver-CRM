@@ -47,6 +47,7 @@ export interface AnnouncementItemDetail {
 export interface MessageTaskDetailDTOItem {
   event: string;
   eventName: string;
+  template?: string;
   sysEnable: boolean;
   emailEnable: boolean;
   weComEnable: boolean;
@@ -78,6 +79,7 @@ export interface MessageSettingsConfig {
 export interface SaveMessageConfigParams {
   module: string;
   event: string;
+  template?: string;
   emailEnable?: boolean;
   sysEnable?: boolean;
   weComEnable?: boolean;

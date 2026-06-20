@@ -85,6 +85,7 @@
 - 产品需求先形成独立闭环，再进入销售 CRM 主链路。
 - 每个模块都要产出字段清单、接口清单、权限矩阵、状态流转说明、问题清单和验收记录。
 - 页面调整优先复用现有组件和业务模式。
+- 全局页面面包屑统一由 `frontend/packages/web/src/layout/components/layout-header.vue` 维护；业务页面内容区不得重复渲染面包屑。新建/详情等子状态优先通过路由 `query.mode` 或独立子路由暴露给 layout header，样式和层级参考产品需求页：`产品需求 / 需求管理 / 新建产品需求`。
 - 后端改动优先落在当前业务域包内，必要的公共能力再进入 `common` 或系统模块。
 - 数据库变化必须进入 `backend/crm/src/main/resources/migration`。
 - 权限必须同时校验菜单、按钮、接口和数据范围。

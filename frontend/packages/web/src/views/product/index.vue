@@ -89,7 +89,7 @@
           </div>
           <div v-for="row in filteredRoadmap" :key="row.id" class="stariver-roadmap-table__row">
             <span>
-              <em class="stariver-product-chip" :class="`stariver-product-chip--${row.productType}`">
+              <em class="stariver-product-chip" :style="getProductChipStyle(row.productKey)">
                 {{ row.product }}
               </em>
             </span>
@@ -110,6 +110,7 @@
 </template>
 
 <script lang="ts" setup>
+  /* eslint-disable no-use-before-define */
   import { useRouter } from 'vue-router';
   import { NButton } from 'naive-ui';
 
@@ -121,26 +122,66 @@
 
   const activeFilter = ref('all');
 
-  const productFilters = [
-    { key: 'all', label: '全部' },
-    { key: 'stariver', label: 'StaRiver' },
-    { key: 'optiqa', label: 'OptiQA' },
-  ];
-
   // 产品列表数据，通过 API 获取
   const productList = ref<any[]>([]);
   // 版本路线图数据，通过 API 获取
   const roadmapData = ref<any[]>([]);
+
+  const productTonePalette = [
+    { color: '#4f46e5', background: '#eef2ff' },
+    { color: '#ea580c', background: '#fff7ed' },
+    { color: '#0f766e', background: '#ccfbf1' },
+    { color: '#2563eb', background: '#dbeafe' },
+    { color: '#7c3aed', background: '#f3e8ff' },
+    { color: '#16a34a', background: '#dcfce7' },
+  ];
 
   const productCount = computed(() => ({
     industry: productList.value.length ? 2 : 0,
     customer: productList.value.length * 18,
   }));
 
+  const productFilters = computed(() => [
+    { key: 'all', label: '全部' },
+    ...productList.value.map((product) => ({
+      key: getProductKey(product),
+      label: getProductLabel(product),
+    })),
+  ]);
+
+  const productMap = computed(() => {
+    const map = new Map<string, any>();
+    productList.value.forEach((product) => {
+      const label = getProductLabel(product);
+      const keys = [product.id, product.productId, product.code, product.name, label, getProductKey(product)]
+        .filter(Boolean)
+        .map((key) => String(key));
+      keys.forEach((key) => {
+        map.set(key, product);
+        map.set(key.toLowerCase(), product);
+      });
+    });
+    return map;
+  });
+
+  const roadmapRows = computed(() => {
+    const rows = normalizeRoadmapRows();
+    const existingProductKeys = new Set(rows.map((row) => row.productKey));
+    const fallbackRows = productList.value
+      .filter((product) => !existingProductKeys.has(getProductKey(product)))
+      .map((product) => createFallbackRoadmapRow(product));
+
+    return [...rows, ...fallbackRows].sort((a, b) => {
+      if (a.releaseDate === '--') return 1;
+      if (b.releaseDate === '--') return -1;
+      return String(b.releaseDate).localeCompare(String(a.releaseDate));
+    });
+  });
+
   // 根据筛选条件过滤路线图
   const filteredRoadmap = computed(() => {
-    if (activeFilter.value === 'all') return roadmapData.value;
-    return roadmapData.value.filter((r) => r.productType === activeFilter.value);
+    if (activeFilter.value === 'all') return roadmapRows.value;
+    return roadmapRows.value.filter((row) => row.productKey === activeFilter.value);
   });
 
   // 页面加载时通过 API 获取数据
@@ -149,6 +190,9 @@
       const [productRes, roadmapRes] = await Promise.all([getProductList(), getRoadmap()]);
       productList.value = productRes?.list || [];
       roadmapData.value = roadmapRes || [];
+      if (!productFilters.value.some((filter) => filter.key === activeFilter.value)) {
+        activeFilter.value = 'all';
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error('获取产品数据失败', e);
@@ -168,6 +212,101 @@
   // 跳转到产品详情页的路线图 tab
   function goToRoadmap(productId: string) {
     router.push({ name: 'productDetail', params: { id: productId }, query: { tab: 'roadmap' } });
+  }
+
+  function normalizeProductCode(code?: string) {
+    const preset: Record<string, string> = {
+      OPTIQA: 'OptiQA',
+      STARIVER: 'StaRiver',
+    };
+    if (!code) return '';
+    return preset[code.toUpperCase()] || code;
+  }
+
+  function getProductKey(product: any) {
+    return String(product?.id || product?.productId || product?.code || product?.name || '');
+  }
+
+  function getProductLabel(product: any) {
+    return (
+      normalizeProductCode(product?.code) || product?.shortName || product?.name || product?.product || '未命名产品'
+    );
+  }
+
+  function getRoadmapProduct(row: any) {
+    const matchedProduct =
+      productMap.value.get(String(row.productId || '')) ||
+      productMap.value.get(String(row.productKey || '')) ||
+      productMap.value.get(String(row.productType || '')) ||
+      productMap.value.get(String(row.product || '')) ||
+      productMap.value.get(String(row.productId || '').toLowerCase()) ||
+      productMap.value.get(String(row.productKey || '').toLowerCase()) ||
+      productMap.value.get(String(row.productType || '').toLowerCase()) ||
+      productMap.value.get(String(row.product || '').toLowerCase());
+
+    return matchedProduct || null;
+  }
+
+  function getRoadmapStatusType(status?: string) {
+    if (status === '已上线' || status === '已发布') {
+      return 'released';
+    }
+    if (status === '开发中') {
+      return 'developing';
+    }
+    return 'planning';
+  }
+
+  function normalizeRoadmapRows() {
+    return (roadmapData.value || []).map((row, index) => {
+      const matchedProduct = getRoadmapProduct(row);
+      const productKey = matchedProduct
+        ? getProductKey(matchedProduct)
+        : String(row.productId || row.productType || row.product);
+      const productLabel = matchedProduct
+        ? getProductLabel(matchedProduct)
+        : normalizeProductCode(row.product) || row.product || '--';
+      const productId = matchedProduct?.id || row.productId || productKey;
+      const status = row.status === '已发布' ? '已上线' : row.status || '规划中';
+
+      return {
+        ...row,
+        id: row.id || `${productKey}-${row.version || index}`,
+        product: productLabel,
+        productId,
+        productKey,
+        version: row.version || row.release || matchedProduct?.nextVersion || matchedProduct?.version || '--',
+        releaseDate: row.releaseDate || matchedProduct?.releaseDate || '--',
+        status,
+        statusType: getRoadmapStatusType(status),
+        pendingCount: row.pendingCount ?? row.requirementCount ?? matchedProduct?.requirementCount ?? 0,
+      };
+    });
+  }
+
+  function createFallbackRoadmapRow(product: any) {
+    const productKey = getProductKey(product);
+    const status = product.status || '规划中';
+    return {
+      id: `${productKey}-${product.nextVersion || product.version || 'roadmap'}`,
+      product: getProductLabel(product),
+      productId: product.id || productKey,
+      productKey,
+      version: product.nextVersion || product.version || '--',
+      releaseDate: product.releaseDate || '--',
+      status,
+      statusType: getRoadmapStatusType(status),
+      pendingCount: product.requirementCount ?? product.pendingCount ?? 0,
+    };
+  }
+
+  function getProductChipStyle(productKey: string) {
+    const index = productFilters.value.findIndex((filter) => filter.key === productKey) - 1;
+    const tone = productTonePalette[index >= 0 ? index % productTonePalette.length : 0];
+    return {
+      color: tone.color,
+      background: tone.background,
+    };
   }
 </script>
 

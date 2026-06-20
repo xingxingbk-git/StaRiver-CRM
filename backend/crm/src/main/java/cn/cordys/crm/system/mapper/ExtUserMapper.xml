@@ -82,6 +82,7 @@
         SELECT sys_user.id, sys_user.name, sys_user.email, sys_user.phone
         FROM sys_user LEFT JOIN sys_organization_user on sys_organization_user.user_id = sys_user.id
         WHERE sys_organization_user.organization_id = #{organizationId}
+        AND sys_organization_user.enable = TRUE
         AND sys_user.id IN
         <foreach collection="userIds" item="id" index="index"
                  open="(" close=")" separator=",">
@@ -163,6 +164,7 @@
         LEFT JOIN
         ( SELECT distinct user_id, 1 AS is_commander FROM sys_department_commander ) uc ON su.id = uc.user_id
         WHERE sou.organization_id = #{orgId}
+          AND sou.enable = TRUE
         ORDER BY sou.enable DESC,
         <if test="defaultOrder != null and defaultOrder != ''">
             ${defaultOrder},

@@ -22,6 +22,9 @@ public class MessageTaskRequest {
     @NotBlank(message = "{message_task.event.not_blank}", groups = {Created.class, Updated.class})
     public String event;
 
+    @Schema(description = "消息正文模板")
+    private String template;
+
     @Schema(description = "邮件启用")
     private boolean emailEnable;
 

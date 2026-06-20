@@ -20,6 +20,9 @@ public class MessageTaskDetailDTO implements Serializable {
     @Schema(description = "消息配置事件名称")
     public String eventName;
 
+    @Schema(description = "消息正文模板")
+    private String template;
+
     @Schema(description = "邮件启用")
     private Boolean emailEnable;
 

@@ -23,6 +23,20 @@ export interface ProductSavePayload {
   modules?: ProductModulePayload[];
 }
 
+export interface ProductVersionSavePayload {
+  id?: string;
+  productId: string;
+  version: string;
+  status?: string;
+  releaseDate?: string;
+  description?: string;
+  productOwnerId?: string;
+  productOwner?: string;
+  devOwnerId?: string;
+  devOwner?: string;
+  attachmentIds?: string[];
+}
+
 export interface RequirementSavePayload {
   title: string;
   type: string;
@@ -66,6 +80,41 @@ export function getRoadmap() {
   return CDR.get<any[]>({
     url: '/product-management/roadmap',
   });
+}
+
+export function addProductVersion(data: ProductVersionSavePayload) {
+  return CDR.post<any>(
+    {
+      url: '/product-management/versions',
+      data,
+    },
+    {
+      ignoreCancelToken: true,
+    }
+  );
+}
+
+export function updateProductVersionStatus(id: string, status: string) {
+  return CDR.post<any>(
+    {
+      url: `/product-management/versions/${id}/status`,
+      data: { status },
+    },
+    {
+      ignoreCancelToken: true,
+    }
+  );
+}
+
+export function deleteProductVersion(id: string) {
+  return CDR.post<void>(
+    {
+      url: `/product-management/versions/${id}/delete`,
+    },
+    {
+      ignoreCancelToken: true,
+    }
+  );
 }
 
 export async function getUserOptions(keyword = '') {

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -67,7 +68,10 @@ public class MessageDetailService {
             MessageDetailDTO messageDetailDTO = new MessageDetailDTO();
             BeanUtils.copyBean(messageDetailDTO, messageTask);
             if (!useTemplate) {
-                String template = MessageTemplateUtils.getTemplate(messageTask.getEvent());
+                String template = readTemplate(messageTask);
+                if (template == null || template.isBlank()) {
+                    template = MessageTemplateUtils.getTemplate(messageTask.getEvent());
+                }
                 messageDetailDTO.setTemplate(template);
             } else {
                 //这里特殊处理,如果使用模版，这里用调用处传来的模板
@@ -75,6 +79,12 @@ public class MessageDetailService {
             }
             messageDetails.add(messageDetailDTO);
         });
+    }
+
+    private String readTemplate(MessageTask messageTask) {
+        byte[] template = messageTask.getTemplate();
+        if (template == null || template.length == 0) return null;
+        return new String(template, StandardCharsets.UTF_8);
     }
 
 }

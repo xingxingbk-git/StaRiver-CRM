@@ -14,7 +14,13 @@ import cn.cordys.crm.productmgmt.domain.ProductManagementRequirement;
 import cn.cordys.crm.productmgmt.domain.ProductManagementVersion;
 import cn.cordys.crm.productmgmt.dto.request.ProductManagementSaveRequest;
 import cn.cordys.crm.productmgmt.dto.request.ProductRequirementSaveRequest;
+import cn.cordys.crm.productmgmt.dto.request.ProductVersionSaveRequest;
 import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
+import cn.cordys.crm.system.domain.Attachment;
+import cn.cordys.crm.system.domain.User;
+import cn.cordys.crm.system.dto.request.UploadTransferRequest;
+import cn.cordys.crm.system.mapper.ExtUserMapper;
+import cn.cordys.crm.system.service.AttachmentService;
 import cn.cordys.mybatis.BaseMapper;
 import cn.cordys.mybatis.lambda.LambdaQueryWrapper;
 import cn.cordys.security.SessionUtils;
@@ -50,7 +56,13 @@ public class ProductManagementService {
     @Resource
     private BaseMapper<ProductManagementDocument> documentMapper;
     @Resource
+    private BaseMapper<Attachment> attachmentMapper;
+    @Resource
     private ExtPmProductMapper extPmProductMapper;
+    @Resource
+    private ExtUserMapper extUserMapper;
+    @Resource
+    private AttachmentService attachmentService;
 
     public void checkProductList(List<String> products) {
         if (products != null && products.size() > 20) {
@@ -168,6 +180,115 @@ public class ProductManagementService {
                 .toList();
     }
 
+    public Map<String, Object> saveVersion(ProductVersionSaveRequest request) {
+        if (StringUtils.isBlank(request.getProductId()) || StringUtils.isBlank(request.getVersion())) {
+            throw new GenericException("产品ID和版本号不能为空");
+        }
+        ProductManagementProduct product = productMapper.selectByPrimaryKey(request.getProductId());
+        if (product == null) {
+            throw new GenericException("产品不存在");
+        }
+
+        ProductManagementVersion version = StringUtils.isBlank(request.getId())
+                ? new ProductManagementVersion()
+                : versionMapper.selectByPrimaryKey(request.getId());
+        boolean isCreate = version == null || StringUtils.isBlank(version.getId());
+        if (isCreate) {
+            version = new ProductManagementVersion();
+            version.setId(IDGenerator.nextStr());
+            version.setProductId(product.getId());
+            fillCreateBase(version);
+        }
+        version.setVersion(request.getVersion().trim());
+        version.setStatus(StringUtils.defaultIfBlank(request.getStatus(), "规划中"));
+        version.setReleaseDate(request.getReleaseDate());
+        version.setDescription(request.getDescription());
+        version.setAttachmentIds(serializeAttachmentIds(request.getAttachmentIds()));
+        if (version.getPendingCount() == null) {
+            version.setPendingCount(0);
+        }
+        User productOwner = resolveActiveOrgUser(
+                StringUtils.defaultIfBlank(request.getProductOwnerId(), product.getProductOwnerId()),
+                "产品负责人不在当前组织或已被移除"
+        );
+        User devOwner = resolveActiveOrgUser(
+                StringUtils.defaultIfBlank(request.getDevOwnerId(), product.getDevOwnerId()),
+                "研发负责人不在当前组织或已被移除"
+        );
+        version.setProductOwnerId(productOwner == null ? null : productOwner.getId());
+        version.setProductOwnerName(productOwner == null ? null : productOwner.getName());
+        version.setDevOwnerId(devOwner == null ? null : devOwner.getId());
+        version.setDevOwnerName(devOwner == null ? null : devOwner.getName());
+        version.setOrganizationId(orgId());
+        version.setUpdateTime(System.currentTimeMillis());
+        version.setUpdateUser(userId());
+
+        if (isCreate) {
+            versionMapper.insert(version);
+        } else {
+            versionMapper.updateById(version);
+        }
+        if (CollectionUtils.isNotEmpty(request.getAttachmentIds())) {
+            attachmentService.appendTemp(new UploadTransferRequest(orgId(), version.getId(), userId(), request.getAttachmentIds()));
+        }
+        syncProductVersion(product, version);
+        return roadmapRow(version, productMapper.selectByPrimaryKey(product.getId()));
+    }
+
+    public Map<String, Object> updateVersionStatus(String id, String status) {
+        ProductManagementVersion version = versionMapper.selectByPrimaryKey(id);
+        if (version == null) {
+            throw new GenericException("版本不存在");
+        }
+        String targetStatus = normalizeVersionTargetStatus(status);
+        if (!canMoveVersionStatus(version.getStatus(), targetStatus)) {
+            throw new GenericException("当前版本状态不允许该操作");
+        }
+        version.setStatus(targetStatus);
+        version.setUpdateTime(System.currentTimeMillis());
+        version.setUpdateUser(userId());
+        versionMapper.updateById(version);
+
+        ProductManagementProduct product = productMapper.selectByPrimaryKey(version.getProductId());
+        if (product != null) {
+            syncProductVersion(product, version);
+        }
+        return roadmapRow(version, product);
+    }
+
+    public void deleteVersion(String id) {
+        ProductManagementVersion version = versionMapper.selectByPrimaryKey(id);
+        if (version == null || !Objects.equals(version.getOrganizationId(), orgId())) {
+            throw new GenericException("版本不存在");
+        }
+        ProductManagementProduct product = productMapper.selectByPrimaryKey(version.getProductId());
+        List<ProductManagementVersion> productVersions = listVersions(version.getProductId());
+        boolean isCurrentVersion = product != null && Objects.equals(product.getVersion(), version.getVersion());
+        if (!canDeleteVersion(isCurrentVersion, productVersions.size())) {
+            throw new GenericException("产品至少需要保留一个版本");
+        }
+        versionMapper.deleteByPrimaryKey(id);
+        if (isCurrentVersion) {
+            List<ProductManagementVersion> remainingVersions = productVersions.stream()
+                    .filter(item -> !Objects.equals(item.getId(), id))
+                    .toList();
+            ProductManagementVersion replacement = selectCurrentVersionReplacement(remainingVersions);
+            if (replacement != null) {
+                product.setVersion(replacement.getVersion());
+                product.setStatus(normalizeOnlineStatus(replacement.getStatus()));
+                product.setReleaseDate(replacement.getReleaseDate());
+                product.setNextVersion(remainingVersions.stream()
+                        .filter(item -> !StringUtils.equalsAny(normalizeOnlineStatus(item.getStatus()), "已发布", "已上线"))
+                        .max(versionOrder())
+                        .map(ProductManagementVersion::getVersion)
+                        .orElse(null));
+                product.setUpdateTime(System.currentTimeMillis());
+                product.setUpdateUser(userId());
+                productMapper.updateById(product);
+            }
+        }
+    }
+
     public Pager<List<Map<String, Object>>> listRequirements(BasePageRequest request) {
         List<Map<String, Object>> rows = listRequirementsByOrg().stream()
                 .sorted(Comparator.comparing(ProductManagementRequirement::getCreateTime, Comparator.nullsLast(Long::compareTo)).reversed())
@@ -200,7 +321,7 @@ public class ProductManagementService {
         requirement.setStage("需求池");
         requirement.setExpectedRelease(request.getRelease());
         requirement.setOwnerId(product == null ? null : product.getProductOwnerId());
-        requirement.setOwnerName(product == null ? "陈立文" : StringUtils.defaultIfBlank(product.getProductOwnerName(), "陈立文"));
+        requirement.setOwnerName(product == null ? "Administrator" : StringUtils.defaultIfBlank(product.getProductOwnerName(), "Administrator"));
         requirement.setDescription(request.getDescription());
         requirement.setAcceptanceCriteria(request.getAcceptance());
         fillCreateBase(requirement);
@@ -256,10 +377,73 @@ public class ProductManagementService {
         version.setVersion(product.getVersion());
         version.setStatus(product.getStatus());
         version.setReleaseDate(product.getReleaseDate());
-        version.setDescription(StringUtils.defaultIfBlank(product.getSlogan(), product.getName()));
+        version.setDescription("");
         version.setPendingCount(0);
+        version.setProductOwnerId(product.getProductOwnerId());
+        version.setProductOwnerName(product.getProductOwnerName());
+        version.setDevOwnerId(product.getDevOwnerId());
+        version.setDevOwnerName(product.getDevOwnerName());
+        version.setAttachmentIds("");
         fillCreateBase(version);
         versionMapper.insert(version);
+    }
+
+    private void syncProductVersion(ProductManagementProduct product, ProductManagementVersion version) {
+        if (product == null || version == null) {
+            return;
+        }
+        if (Objects.equals(version.getStatus(), "已发布") || Objects.equals(version.getStatus(), "已上线")) {
+            product.setVersion(version.getVersion());
+            product.setStatus("已发布");
+            product.setReleaseDate(version.getReleaseDate());
+        } else {
+            product.setNextVersion(version.getVersion());
+            product.setStatus(version.getStatus());
+        }
+        product.setUpdateTime(System.currentTimeMillis());
+        product.setUpdateUser(userId());
+        productMapper.updateById(product);
+    }
+
+    private String normalizeVersionTargetStatus(String status) {
+        if (StringUtils.equalsAny(status, "developing", "开发", "开发中")) {
+            return "开发中";
+        }
+        if (StringUtils.equalsAny(status, "released", "online", "发布", "已发布", "已上线")) {
+            return "已发布";
+        }
+        return "规划中";
+    }
+
+    static boolean canMoveVersionStatus(String currentStatus, String targetStatus) {
+        String current = normalizeOnlineStatus(currentStatus);
+        if (Objects.equals(current, targetStatus)) {
+            return true;
+        }
+        if (Objects.equals(current, "规划中")) {
+            return Objects.equals(targetStatus, "开发中");
+        }
+        if (Objects.equals(current, "开发中")) {
+            return Objects.equals(targetStatus, "已发布");
+        }
+        return false;
+    }
+
+    static boolean canDeleteVersion(boolean currentVersion, int versionCount) {
+        return !currentVersion || versionCount > 1;
+    }
+
+    static ProductManagementVersion selectCurrentVersionReplacement(List<ProductManagementVersion> versions) {
+        Comparator<ProductManagementVersion> order = versionOrder();
+        return versions.stream()
+                .filter(version -> StringUtils.equalsAny(normalizeOnlineStatus(version.getStatus()), "已发布", "已上线"))
+                .max(order)
+                .orElseGet(() -> versions.stream().max(order).orElse(null));
+    }
+
+    private static Comparator<ProductManagementVersion> versionOrder() {
+        return Comparator.comparing(ProductManagementVersion::getReleaseDate, Comparator.nullsFirst(String::compareTo))
+                .thenComparing(ProductManagementVersion::getCreateTime, Comparator.nullsFirst(Long::compareTo));
     }
 
     private List<Map<String, Object>> buildModuleTree(List<ProductManagementModule> modules) {
@@ -316,8 +500,74 @@ public class ProductManagementService {
         row.put("status", normalizeOnlineStatus(version.getStatus()));
         row.put("statusType", statusType(version.getStatus()));
         row.put("pendingCount", version.getPendingCount());
+        row.put("productOwnerId", version.getProductOwnerId());
+        row.put("productOwner", StringUtils.defaultIfBlank(version.getProductOwnerName(), product == null ? "" : product.getProductOwnerName()));
+        row.put("devOwnerId", version.getDevOwnerId());
+        row.put("devOwner", StringUtils.defaultIfBlank(version.getDevOwnerName(), product == null ? "" : product.getDevOwnerName()));
+        Map<String, Boolean> ownerActiveMap = userActiveMap(List.of(version.getProductOwnerId(), version.getDevOwnerId()));
+        row.put("productOwnerActive", StringUtils.isBlank(version.getProductOwnerId()) || ownerActiveMap.containsKey(version.getProductOwnerId()));
+        row.put("devOwnerActive", StringUtils.isBlank(version.getDevOwnerId()) || ownerActiveMap.containsKey(version.getDevOwnerId()));
         row.put("description", version.getDescription());
+        List<String> attachmentIds = parseAttachmentIds(version.getAttachmentIds());
+        row.put("attachmentIds", attachmentIds);
+        row.put("attachments", attachmentRows(attachmentIds));
         return row;
+    }
+
+    private User resolveActiveOrgUser(String userId, String errorMessage) {
+        if (StringUtils.isBlank(userId)) {
+            return null;
+        }
+        List<User> users = extUserMapper.getOrgUserByUserIds(orgId(), List.of(userId));
+        if (CollectionUtils.isEmpty(users)) {
+            throw new GenericException(errorMessage);
+        }
+        return users.getFirst();
+    }
+
+    private Map<String, Boolean> userActiveMap(List<String> userIds) {
+        List<String> ids = userIds.stream().filter(StringUtils::isNotBlank).distinct().toList();
+        if (CollectionUtils.isEmpty(ids)) {
+            return Map.of();
+        }
+        return extUserMapper.getOrgUserByUserIds(orgId(), ids).stream()
+                .collect(Collectors.toMap(User::getId, user -> true, (a, b) -> a));
+    }
+
+    private String serializeAttachmentIds(List<String> attachmentIds) {
+        if (CollectionUtils.isEmpty(attachmentIds)) {
+            return "";
+        }
+        return attachmentIds.stream()
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .collect(Collectors.joining(","));
+    }
+
+    private List<String> parseAttachmentIds(String attachmentIds) {
+        if (StringUtils.isBlank(attachmentIds)) {
+            return List.of();
+        }
+        return List.of(StringUtils.split(attachmentIds, ',')).stream()
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .toList();
+    }
+
+    private List<Map<String, Object>> attachmentRows(List<String> attachmentIds) {
+        if (CollectionUtils.isEmpty(attachmentIds)) {
+            return List.of();
+        }
+        Map<String, Attachment> attachmentMap = attachmentMapper.selectByIds(attachmentIds).stream()
+                .collect(Collectors.toMap(Attachment::getId, Function.identity(), (a, b) -> a));
+        return attachmentIds.stream().map(id -> {
+            Attachment attachment = attachmentMap.get(id);
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("id", id);
+            row.put("name", attachment == null ? id : attachment.getName());
+            row.put("size", attachment == null ? null : attachment.getSize());
+            return row;
+        }).toList();
     }
 
     private Map<String, Object> requirementRow(ProductManagementRequirement requirement) {
@@ -510,7 +760,7 @@ public class ProductManagementService {
         return "已上线".equals(status) || "已发布".equals(status) ? "#16a34a" : "#4f46e5";
     }
 
-    private String normalizeOnlineStatus(String status) {
+    private static String normalizeOnlineStatus(String status) {
         return "已发布".equals(status) ? "已上线" : status;
     }
 

@@ -186,6 +186,9 @@
     if (routeName === ProductRouteEnum.PRODUCT_REQUIREMENT && route.query.mode === 'detail') {
       return 'PRM-2026-0106-01';
     }
+    if (routeName === SystemRouteEnum.SYSTEM_MESSAGE && route.query.mode === 'create') {
+      return '新建通知模板';
+    }
     if (routeName in pageTitleMap) {
       return pageTitleMap[routeName];
     }
@@ -222,6 +225,14 @@
       items.push(
         { label: '需求管理', clickable: false, current: false },
         { label: 'PRM-2026-0106-01', clickable: false, current: true }
+      );
+      return items;
+    }
+
+    if (routeName === SystemRouteEnum.SYSTEM_MESSAGE && route.query.mode === 'create') {
+      items.push(
+        { label: '通知模板', clickable: false, current: false },
+        { label: '新建通知模板', clickable: false, current: true }
       );
       return items;
     }

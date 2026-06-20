@@ -1379,48 +1379,15 @@ public class ApprovalFlowService {
             return List.of();
         }
 
-        List<String> allSuperiorIds = getAllSuperiorIds(orgId, currentUser);
-        String approver = getLevelUserId(allSuperiorIds, approvalLevel, direction);
-        if (StringUtils.isBlank(approver)) {
-            return List.of();
-        }
-
-        return resolveMemberApprovers(orgId, List.of(approver));
+        return List.of();
     }
 
     /**
      * 解析多级上级审批人
      */
     private List<User> resolveMultipleSuperiorApprovers(String orgId, OrganizationUser currentUser, List<String> approverList, ApproverDirectionEnum direction) {
-		if (currentUser == null) {
-			return List.of();
-		}
-        int approvalLevel = getValidLevel(approverList);
-        if (approvalLevel <= 0) {
-            return List.of();
-        }
-
-        List<String> allSuperiorIds = getAllSuperiorIds(orgId, currentUser);
-        if (allSuperiorIds.isEmpty()) {
-            return List.of();
-        }
-        if (approvalLevel > allSuperiorIds.size()) {
-            return List.of();
-        }
-
-        // 根据方向截取：BOTTOM_UP 取前 approvalLevel 个；TOP_DOWN 取到从顶往下第 approvalLevel 层
-        List<String> resultIds;
-        if (direction == ApproverDirectionEnum.TOP_DOWN) {
-            int total = allSuperiorIds.size();
-            int endExclusive = total - approvalLevel + 1;
-            resultIds = allSuperiorIds.subList(0, endExclusive);
-        } else {
-            resultIds = allSuperiorIds.subList(0, approvalLevel);
-        }
-
-        return resolveMemberApprovers(orgId, resultIds);
+		return List.of();
     }
-
 
     private Integer getValidLevel(List<String> approverList) {
         // 使用 ApproverLevelEnum 验证并获取有效的层级值
@@ -1708,7 +1675,7 @@ public class ApprovalFlowService {
 
 		if (ApprovalNodeTypeEnum.valueOf(nextNode.getNodeType()) == ApprovalNodeTypeEnum.APPROVER) {
 			if (preview) {
-				return previewNextApproverNodeWithExceptionHandler(instance, nextNode, currentOrgId);
+				return previewNextApproverNodeWithExceptionHandler(instance, nextNode, fieldValues, currentOrgId);
 			} else {
 				Integer round = extApprovalInstanceMapper.getNodeRound(instance.getId(), nodeId);
 				List<ApprovalTask> approvedTasks = approvalTaskMapper.selectListByLambda(new LambdaQueryWrapper<ApprovalTask>().eq(ApprovalTask::getInstanceId, instance.getId())
@@ -1839,7 +1806,7 @@ public class ApprovalFlowService {
 	 * @param currentOrgId 当前组织ID
 	 * @return 下一个节点 (审批节点)
 	 */
-	private ApprovalNodeResponse previewNextApproverNodeWithExceptionHandler(ApprovalInstance instance, ApprovalNodeResponse nextNode, String currentOrgId) {
+	private ApprovalNodeResponse previewNextApproverNodeWithExceptionHandler(ApprovalInstance instance, ApprovalNodeResponse nextNode, List<BaseModuleFieldValue> fieldValues, String currentOrgId) {
 		ApprovalNodeApproverResponse nextApproverNode = (ApprovalNodeApproverResponse) nextNode;
 		if (ApprovalTypeEnum.valueOf(nextApproverNode.getApprovalType()) == ApprovalTypeEnum.AUTO_PASS || ApprovalTypeEnum.valueOf(nextApproverNode.getApprovalType()) == ApprovalTypeEnum.AUTO_REJECT) {
 			// 自动节点, 直接返回

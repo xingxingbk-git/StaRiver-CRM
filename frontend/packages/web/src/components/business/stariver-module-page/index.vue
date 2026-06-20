@@ -49,7 +49,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 24px;
+    padding: 14px 24px;
     min-height: 64px;
     border-bottom: 1px solid #e2e8f0;
     background: #ffffff;
@@ -59,7 +59,7 @@
     display: flex;
     min-width: 0;
     flex-direction: column;
-    gap: 4px;
+    gap: 14px;
   }
   .stariver-module-page__eyebrow {
     font-size: 11px;
@@ -99,7 +99,7 @@
   }
   .stariver-module-page__subtitle-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     font-size: 13px;
     color: #64748b;
     gap: 10px;

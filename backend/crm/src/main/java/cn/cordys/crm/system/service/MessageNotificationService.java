@@ -27,6 +27,7 @@ import cn.cordys.mybatis.lambda.LambdaQueryWrapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,7 +87,7 @@ public class MessageNotificationService {
 
         MessageTask messageTask = buildMessageTask(request, organizationId, userId);
 
-        String template = MessageTemplateUtils.getTemplate(request.getEvent());
+        String template = StringUtils.defaultIfBlank(request.getTemplate(), MessageTemplateUtils.getTemplate(request.getEvent()));
         messageTask.setTemplate(template.getBytes(StandardCharsets.UTF_8));
 
         messageTaskMapper.insert(messageTask);
@@ -119,6 +120,9 @@ public class MessageNotificationService {
         updateTask.setWeComEnable(request.isWeComEnable());
         updateTask.setDingTalkEnable(request.isDingTalkEnable());
         updateTask.setLarkEnable(request.isLarkEnable());
+        if (StringUtils.isNotBlank(request.getTemplate())) {
+            updateTask.setTemplate(request.getTemplate().getBytes(StandardCharsets.UTF_8));
+        }
         updateTask.setUpdateUser(userId);
         updateTask.setUpdateTime(System.currentTimeMillis());
 
@@ -189,6 +193,7 @@ public class MessageNotificationService {
                 detail.setWeComEnable(task.getWeComEnable());
                 detail.setDingTalkEnable(task.getDingTalkEnable());
                 detail.setLarkEnable(task.getLarkEnable());
+                detail.setTemplate(readTemplate(task));
             }
         }
 
@@ -464,8 +469,16 @@ public class MessageNotificationService {
         task.setWeComEnable(request.isWeComEnable());
         task.setDingTalkEnable(request.isDingTalkEnable());
         task.setLarkEnable(request.isLarkEnable());
+        if (StringUtils.isNotBlank(request.getTemplate())) {
+            task.setTemplate(request.getTemplate().getBytes(StandardCharsets.UTF_8));
+        }
 
         return task;
+    }
+
+    private static String readTemplate(MessageTask task) {
+        if (task == null || task.getTemplate() == null || task.getTemplate().length == 0) return null;
+        return new String(task.getTemplate(), StandardCharsets.UTF_8);
     }
 
     private List<MessageTaskDTO> loadTemplateMessageTasks() {
