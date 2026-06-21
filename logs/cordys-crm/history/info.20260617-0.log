@@ -1,7 +1,0 @@
-2026-06-18 00:00:00,129 [cordys-crm-quartz_Worker-2] INFO  c.c.c.i.d.s.DataEaseSyncService 64 - 定时同步DataEase数据，组织ID: 100001
-2026-06-18 00:02:00,064 [cordys-crm-quartz_Worker-3] INFO  cn.cordys.crm.system.job.SessionJob ? - 用户会话统计: {}
-2026-06-18 00:02:18,844 [tomcat-handler-25] INFO  c.c.crm.system.notice.sse.SseService ? - 当前在线用户数: 0 
-2026-06-18 00:02:18,844 [tomcat-handler-25] INFO  c.c.crm.system.notice.sse.SseService 50 - User ID or Client ID is blank, cannot add client.
-2026-06-18 00:04:29,633 [tomcat-handler-56] INFO  c.c.crm.system.notice.sse.SseService 47 - 当前在线用户数: 0 
-2026-06-18 00:05:16,033 [tomcat-handler-78] INFO  c.c.crm.system.notice.sse.SseService ? - 当前在线用户数: 0 
-2026-06-18 00:09:40,110 [tomcat-handler-93] INFO  c.c.crm.system.notice.sse.SseService 47 - 当前在线用户数: 0 
