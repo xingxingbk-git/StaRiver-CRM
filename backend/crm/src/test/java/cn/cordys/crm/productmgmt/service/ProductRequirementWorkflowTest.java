@@ -71,4 +71,23 @@ class ProductRequirementWorkflowTest {
         assertFalse(config.requiresProductLink("技术评审"));
         assertTrue(config.requiresProductLink("产品验收"));
     }
+
+    @Test
+    void requirementNumberContinuesFromHighestExistingSequence() {
+        assertEquals(
+                "PRM-2026-0149-01",
+                ProductManagementService.nextRequirementNo(
+                        2026,
+                        List.of(
+                                "PRM-2026-0104-01",
+                                "PRM-2026-0105-01",
+                                "PRM-2026-0106-01",
+                                "PRM-2026-0110-01",
+                                "PRM-2026-0148-01",
+                                "PRM-2025-9999-01",
+                                "invalid"
+                        )
+                )
+        );
+    }
 }

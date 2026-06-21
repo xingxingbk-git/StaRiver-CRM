@@ -1683,7 +1683,7 @@
     gap: 8px;
   }
   .sr-field__label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #334155;
     line-height: 18px;
@@ -1693,7 +1693,7 @@
   }
   .sr-input {
     padding: 0 12px;
-    min-height: 38px;
+    min-height: 40px;
     font-size: 14px;
     border: 1px solid #dbe3ef;
     border-radius: 6px;
@@ -1702,7 +1702,18 @@
     outline: none;
   }
   .sr-native-control {
+    min-height: 40px;
+  }
+  :deep(.sr-native-control .n-base-selection) {
+    min-height: 40px;
+  }
+  :deep(.sr-native-control .n-base-selection-label) {
     min-height: 38px;
+    font-size: 14px;
+  }
+  :deep(.sr-native-control .n-base-selection-input),
+  :deep(.sr-native-control .n-base-selection-placeholder) {
+    font-size: 14px;
   }
   .sr-btn {
     display: inline-flex;

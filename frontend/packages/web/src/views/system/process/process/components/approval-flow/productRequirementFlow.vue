@@ -51,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+  /* eslint import/no-unresolved: off */
   import { computed, onMounted, ref, watch } from 'vue';
   import { NCheckbox, NInput, NSelect } from 'naive-ui';
 

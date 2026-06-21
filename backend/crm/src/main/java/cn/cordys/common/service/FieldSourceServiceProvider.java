@@ -83,6 +83,7 @@ public class FieldSourceServiceProvider {
 		APPROVAL_FORM_SERVICE_MAP.put(FormKey.CONTRACT.getKey(), contractService);
 		APPROVAL_FORM_SERVICE_MAP.put(FormKey.INVOICE.getKey(), invoiceService);
 		APPROVAL_FORM_SERVICE_MAP.put(FormKey.ORDER.getKey(), orderService);
+		APPROVAL_FORM_SERVICE_MAP.put(FormKey.PRODUCT_REQUIREMENT.getKey(), productManagementService);
     }
 
     /**

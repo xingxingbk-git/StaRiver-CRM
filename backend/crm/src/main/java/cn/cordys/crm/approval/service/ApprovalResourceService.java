@@ -67,6 +67,7 @@ public class ApprovalResourceService {
      * 开启的审批流表单表格映射
      */
     public static final Map<String, String> FORM_APPROVAL_TABLE = new HashMap<>(4);
+    public static final Map<String, String> FORM_APPROVAL_NAME_COLUMN = new HashMap<>(4);
     public static final Map<FormKey, String> FORM_SERVICE = new HashMap<>(4);
 	public static final String NULL_POST_CONFIG = "null";
 
@@ -76,6 +77,12 @@ public class ApprovalResourceService {
         FORM_APPROVAL_TABLE.put(FormKey.INVOICE.getKey(), "contract_invoice");
         FORM_APPROVAL_TABLE.put(FormKey.ORDER.getKey(), "sales_order");
         FORM_APPROVAL_TABLE.put(FormKey.PRODUCT_REQUIREMENT.getKey(), "pm_product_requirement");
+
+        FORM_APPROVAL_NAME_COLUMN.put(FormKey.QUOTATION.getKey(), "name");
+        FORM_APPROVAL_NAME_COLUMN.put(FormKey.CONTRACT.getKey(), "name");
+        FORM_APPROVAL_NAME_COLUMN.put(FormKey.INVOICE.getKey(), "name");
+        FORM_APPROVAL_NAME_COLUMN.put(FormKey.ORDER.getKey(), "name");
+        FORM_APPROVAL_NAME_COLUMN.put(FormKey.PRODUCT_REQUIREMENT.getKey(), "title");
 
 		FORM_SERVICE.put(FormKey.QUOTATION, "opportunityQuotationService");
 		FORM_SERVICE.put(FormKey.CONTRACT, "contractService");
@@ -232,10 +239,11 @@ public class ApprovalResourceService {
 			throw new GenericException(Translator.get("module.form.illegal"));
 		}
 		String tableName = FORM_APPROVAL_TABLE.get(formKey.getKey());
-		if (StringUtils.isBlank(tableName)) {
+		String nameColumn = FORM_APPROVAL_NAME_COLUMN.get(formKey.getKey());
+		if (StringUtils.isBlank(tableName) || StringUtils.isBlank(nameColumn)) {
 			throw new GenericException(Translator.get("module.form.illegal"));
 		}
-		return extApprovalInstanceMapper.selectBusinessName(tableName, resourceId);
+		return extApprovalInstanceMapper.selectBusinessName(tableName, nameColumn, resourceId);
 	}
 
 	/**

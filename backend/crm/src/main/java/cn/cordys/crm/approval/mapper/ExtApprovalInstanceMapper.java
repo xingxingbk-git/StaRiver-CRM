@@ -19,7 +19,9 @@ public interface ExtApprovalInstanceMapper {
 	 * @param sourceTable
 	 * @param id
 	 */
-	String selectBusinessName(@Param("sourceTable") String sourceTable, @Param("id") String id);
+	String selectBusinessName(@Param("sourceTable") String sourceTable,
+							  @Param("nameColumn") String nameColumn,
+							  @Param("id") String id);
 
 	String getResourceOwner(@Param("sourceTable")String sourceTable, @Param("id")String id);
 

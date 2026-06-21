@@ -54,12 +54,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 @Slf4j
 public class ProductManagementService {
+
+    private static final Pattern REQUIREMENT_NO_PATTERN = Pattern.compile("^PRM-(\\d{4})-(\\d{4})-01$");
 
     @Resource
     private BaseMapper<ProductManagementProduct> productMapper;
@@ -333,6 +337,26 @@ public class ProductManagementService {
         }
         syncStatusFromApproval(requirement);
         return requirementRow(requirement);
+    }
+
+    /**
+     * 获取产品需求简要信息（审批资源反射调用）。
+     */
+    public Map<String, Object> getSimple(String id) {
+        return getRequirement(id);
+    }
+
+    /**
+     * 批量获取产品需求简要信息（审批资源反射调用）。
+     */
+    public List<Map<String, Object>> batchGetSimpleByIds(List<String> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return List.of();
+        }
+        return ids.stream()
+                .map(this::getRequirement)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     public Map<String, Object> saveRequirement(ProductRequirementSaveRequest request) {
@@ -1241,9 +1265,24 @@ public class ProductManagementService {
         }
     }
 
-    private String nextRequirementNo() {
-        int seq = listRequirementsByOrg().size() + 101;
-        return "PRM-%s-%04d-01".formatted(Year.now().getValue(), seq);
+    private synchronized String nextRequirementNo() {
+        List<String> existingNumbers = requirementMapper.selectListByLambda(new LambdaQueryWrapper<ProductManagementRequirement>())
+                .stream()
+                .map(ProductManagementRequirement::getRequirementNo)
+                .toList();
+        return nextRequirementNo(Year.now().getValue(), existingNumbers);
+    }
+
+    static String nextRequirementNo(int year, List<String> existingNumbers) {
+        int maxSequence = existingNumbers.stream()
+                .filter(StringUtils::isNotBlank)
+                .map(REQUIREMENT_NO_PATTERN::matcher)
+                .filter(Matcher::matches)
+                .filter(matcher -> Integer.parseInt(matcher.group(1)) == year)
+                .mapToInt(matcher -> Integer.parseInt(matcher.group(2)))
+                .max()
+                .orElse(100);
+        return "PRM-%s-%04d-01".formatted(year, maxSequence + 1);
     }
 
     private String orgId() {
