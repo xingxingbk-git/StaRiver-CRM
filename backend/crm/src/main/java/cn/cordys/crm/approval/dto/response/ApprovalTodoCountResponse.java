@@ -20,4 +20,7 @@ public class ApprovalTodoCountResponse {
 
     @Schema(description = "发票待审批数量")
     private Integer invoice;
+
+    @Schema(description = "产品需求待审批数量")
+    private Integer productRequirement;
 }

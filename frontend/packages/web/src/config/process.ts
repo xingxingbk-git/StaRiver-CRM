@@ -197,6 +197,10 @@ export const businessTypeOptions = [
     label: t('module.order'),
     value: FormDesignKeyEnum.ORDER,
   },
+  {
+    label: '产品需求',
+    value: FormDesignKeyEnum.PRODUCT_REQUIREMENT,
+  },
 ];
 
 const approvalTypeOptionConfigs: Array<{

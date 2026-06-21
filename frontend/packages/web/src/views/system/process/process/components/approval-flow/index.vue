@@ -1,5 +1,11 @@
 <template>
   <div class="h-full w-full">
+    <productRequirementFlow
+      v-if="isProductRequirement"
+      v-model:business-config="businessConfig"
+      :readonly="props.readonly"
+    />
+    <div v-if="isProductRequirement" class="px-[20px] pb-[8px] pt-[16px] font-semibold">需求评审审批人配置</div>
     <CrmFlow
       ref="crmFlowRef"
       v-model:model="flowSchema"
@@ -62,6 +68,7 @@
 <script setup lang="ts">
   import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
+  import { FormDesignKeyEnum } from '@lib/shared/enums/formDesignEnum';
   import { ApprovalTypeEnum } from '@lib/shared/enums/process';
   import { useI18n } from '@lib/shared/hooks/useI18n';
   import type {
@@ -80,6 +87,7 @@
   import type { FlowNode, FlowSchema, NodeSelectionState } from '@/components/business/crm-flow/types';
   import approvalActionNodeForm from './approval-node/index.vue';
   import basicForm from './basicForm.vue';
+  import productRequirementFlow from './productRequirementFlow.vue';
   import setConditionDrawer from './setConditionDrawer.vue';
 
   import {
@@ -115,6 +123,8 @@
       ...defaultBasicForm,
     }),
   });
+  const businessConfig = defineModel<string>('businessConfig', { default: '' });
+  const isProductRequirement = computed(() => basicConfig.value.formType === FormDesignKeyEnum.PRODUCT_REQUIREMENT);
 
   // 右侧面板仅展示开始节点与审批节点配置
   function isRightContentVisible(selection: NodeSelectionState) {

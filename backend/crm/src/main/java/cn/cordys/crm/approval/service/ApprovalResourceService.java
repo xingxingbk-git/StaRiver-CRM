@@ -75,11 +75,13 @@ public class ApprovalResourceService {
         FORM_APPROVAL_TABLE.put(FormKey.CONTRACT.getKey(), "contract");
         FORM_APPROVAL_TABLE.put(FormKey.INVOICE.getKey(), "contract_invoice");
         FORM_APPROVAL_TABLE.put(FormKey.ORDER.getKey(), "sales_order");
+        FORM_APPROVAL_TABLE.put(FormKey.PRODUCT_REQUIREMENT.getKey(), "pm_product_requirement");
 
 		FORM_SERVICE.put(FormKey.QUOTATION, "opportunityQuotationService");
 		FORM_SERVICE.put(FormKey.CONTRACT, "contractService");
 		FORM_SERVICE.put(FormKey.INVOICE, "contractInvoiceService");
 		FORM_SERVICE.put(FormKey.ORDER, "orderService");
+		FORM_SERVICE.put(FormKey.PRODUCT_REQUIREMENT, "productManagementService");
     }
 
     public ResourceApprovalResponse resourceDetail(String resourceId) {

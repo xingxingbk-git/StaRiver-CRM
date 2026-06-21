@@ -292,6 +292,8 @@
         return hasAnyPermission(['ORDER:READ']);
       case ApprovalResourceTypeEnum.QUOTATION:
         return hasAnyPermission(['OPPORTUNITY_QUOTATION:READ']);
+      case ApprovalResourceTypeEnum.PRODUCT_REQUIREMENT:
+        return hasAnyPermission(['PRODUCT_MANAGEMENT:READ']);
       default:
         return false;
     }

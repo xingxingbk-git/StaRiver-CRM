@@ -14,6 +14,7 @@ import cn.cordys.crm.contract.domain.Contract;
 import cn.cordys.crm.contract.domain.ContractInvoice;
 import cn.cordys.crm.opportunity.domain.OpportunityQuotation;
 import cn.cordys.crm.order.domain.Order;
+import cn.cordys.crm.productmgmt.domain.ProductManagementRequirement;
 import cn.cordys.crm.system.domain.User;
 import cn.cordys.mybatis.BaseMapper;
 import cn.cordys.mybatis.lambda.LambdaQueryWrapper;
@@ -46,6 +47,8 @@ public class ApprovalTodoService {
     @Resource
     private BaseMapper<ContractInvoice> invoiceMapper;
     @Resource
+    private BaseMapper<ProductManagementRequirement> requirementMapper;
+    @Resource
     private ExtApprovalTaskMapper extApprovalTaskMapper;
 
     public Pager<List<ApprovalTodoItemResponse>> getTodoPage(ApprovalTodoPageRequest request, String userId) {
@@ -65,7 +68,7 @@ public class ApprovalTodoService {
         List<ApprovalTodoItemResponse> items = extApprovalTaskMapper.selectPendingTasks(
                 userId,
                 ApprovalState.APPROVING.getId(),
-                filterType == null ? null : filterType.name().toLowerCase(),
+                filterType == null ? null : filterType.getValue(),
                 StringUtils.trimToNull(request.getKeyword())
         );
         if (items.isEmpty()) {
@@ -84,6 +87,7 @@ public class ApprovalTodoService {
         response.setContract(0);
         response.setOrder(0);
         response.setInvoice(0);
+        response.setProductRequirement(0);
         // 未登录用户直接返回空统计。
         if (StringUtils.isBlank(userId)) {
             return response;
@@ -98,6 +102,7 @@ public class ApprovalTodoService {
         response.setContract(Optional.ofNullable(count.getContract()).orElse(0));
         response.setOrder(Optional.ofNullable(count.getOrder()).orElse(0));
         response.setInvoice(Optional.ofNullable(count.getInvoice()).orElse(0));
+        response.setProductRequirement(Optional.ofNullable(count.getProductRequirement()).orElse(0));
         return response;
     }
 
@@ -116,7 +121,7 @@ public class ApprovalTodoService {
         String keyword = StringUtils.trimToNull(request.getKeyword());
         List<ApprovalTodoItemResponse> items = extApprovalTaskMapper.selectProcessedTasks(
                 userId,
-                filterType == null ? null : filterType.name().toLowerCase(),
+                filterType == null ? null : filterType.getValue(),
                 keyword
         );
         return PageUtils.setPageInfo(page, items);
@@ -138,7 +143,7 @@ public class ApprovalTodoService {
         String keyword = StringUtils.trimToNull(request.getKeyword());
         List<ApprovalTodoItemResponse> items = extApprovalTaskMapper.selectInitiatedTasks(
                 userId,
-                filterType == null ? null : filterType.name().toLowerCase(),
+                filterType == null ? null : filterType.getValue(),
                 keyword
         );
         // 返回分页结果，分页元信息沿用 PageHelper 查询结果。
@@ -161,7 +166,7 @@ public class ApprovalTodoService {
         String keyword = StringUtils.trimToNull(request.getKeyword());
         List<ApprovalTodoItemResponse> items = extApprovalTaskMapper.selectCcTasks(
                 userId,
-                filterType == null ? null : filterType.name().toLowerCase(),
+                filterType == null ? null : filterType.getValue(),
                 keyword
         );
         return PageUtils.setPageInfo(page, items);
@@ -233,6 +238,8 @@ public class ApprovalTodoService {
                         .collect(Collectors.toMap(Order::getId, Order::getName, (prev, next) -> prev)));
                 case INVOICE -> resourceNameMap.put(formType, invoiceMapper.selectByIds(distinctIds).stream()
                         .collect(Collectors.toMap(ContractInvoice::getId, ContractInvoice::getName, (prev, next) -> prev)));
+                case PRODUCT_REQUIREMENT -> resourceNameMap.put(formType, requirementMapper.selectByIds(distinctIds).stream()
+                        .collect(Collectors.toMap(ProductManagementRequirement::getId, ProductManagementRequirement::getTitle, (prev, next) -> prev)));
             }
         });
         return resourceNameMap;
@@ -254,6 +261,7 @@ public class ApprovalTodoService {
             case "contract" -> ApprovalFormTypeEnum.CONTRACT;
             case "order" -> ApprovalFormTypeEnum.ORDER;
             case "invoice" -> ApprovalFormTypeEnum.INVOICE;
+            case "productrequirement", "product_requirement" -> ApprovalFormTypeEnum.PRODUCT_REQUIREMENT;
             default -> null;
         };
     }
@@ -303,6 +311,13 @@ public class ApprovalTodoService {
         if (!invoiceIds.isEmpty()) {
             resourceIdsByType.put(ApprovalFormTypeEnum.INVOICE, invoiceIds);
         }
+        LambdaQueryWrapper<ProductManagementRequirement> requirementWrapper = new LambdaQueryWrapper<>();
+        requirementWrapper.like(ProductManagementRequirement::getTitle, resourceName);
+        List<String> requirementIds = requirementMapper.selectListByLambda(requirementWrapper).stream()
+                .map(ProductManagementRequirement::getId).filter(StringUtils::isNotBlank).toList();
+        if (!requirementIds.isEmpty()) {
+            resourceIdsByType.put(ApprovalFormTypeEnum.PRODUCT_REQUIREMENT, requirementIds);
+        }
         if (resourceIdsByType.isEmpty()) {
             return Collections.emptySet();
         }
@@ -315,6 +330,7 @@ public class ApprovalTodoService {
                 case CONTRACT -> List.of("contract");
                 case ORDER -> List.of("order");
                 case INVOICE -> List.of("invoice");
+                case PRODUCT_REQUIREMENT -> List.of("productRequirement");
             };
             LambdaQueryWrapper<ApprovalInstance> wrapper = new LambdaQueryWrapper<>();
             wrapper.in(ApprovalInstance::getType, aliases)

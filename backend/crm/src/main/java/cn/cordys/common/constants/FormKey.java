@@ -69,7 +69,11 @@ public enum FormKey {
     /**
      * 订单
      */
-    ORDER("order");
+    ORDER("order"),
+	/**
+	 * 产品需求
+	 */
+	PRODUCT_REQUIREMENT("productRequirement");
 
     private final String key;
 
@@ -91,6 +95,6 @@ public enum FormKey {
 	}
 
 	public boolean hasSnapshot() {
-		return Strings.CI.equalsAny(this.key, CONTRACT.getKey(), INVOICE.getKey(), QUOTATION.getKey(), ORDER.getKey());
+		return Strings.CI.equalsAny(this.key, CONTRACT.getKey(), INVOICE.getKey(), QUOTATION.getKey(), ORDER.getKey(), PRODUCT_REQUIREMENT.getKey());
 	}
 }

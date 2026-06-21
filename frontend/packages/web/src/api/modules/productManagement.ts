@@ -38,6 +38,7 @@ export interface ProductVersionSavePayload {
 }
 
 export interface RequirementSavePayload {
+  id?: string;
   title: string;
   type: string;
   source: string;
@@ -47,6 +48,13 @@ export interface RequirementSavePayload {
   priority: string;
   description: string;
   acceptance: string;
+}
+
+export interface RequirementAdvanceStagePayload {
+  content?: string;
+  attachmentIds?: string[];
+  moduleId?: string;
+  versionId?: string;
 }
 
 export function getProductList() {
@@ -148,6 +156,45 @@ export function getRequirementDetail(id: string) {
 export function addRequirement(data: RequirementSavePayload) {
   return CDR.post<any>({
     url: '/product-management/requirements',
+    data,
+  });
+}
+
+export function updateRequirement(data: RequirementSavePayload) {
+  return CDR.post<any>({
+    url: '/product-management/requirements/update',
+    data,
+  });
+}
+
+export function deleteRequirement(id: string) {
+  return CDR.post<void>({
+    url: `/product-management/requirements/${id}/delete`,
+  });
+}
+
+export function submitRequirementForReview(id: string) {
+  return CDR.post<any>({
+    url: `/product-management/requirements/${id}/submit-review`,
+  });
+}
+
+export function revokeRequirementReview(id: string) {
+  return CDR.post<any>({
+    url: `/product-management/requirements/${id}/revoke-review`,
+  });
+}
+
+export function advanceRequirementStage(id: string, data?: RequirementAdvanceStagePayload) {
+  return CDR.post<any>({
+    url: `/product-management/requirements/${id}/advance-stage`,
+    data,
+  });
+}
+
+export function returnRequirementStage(id: string, data?: RequirementAdvanceStagePayload) {
+  return CDR.post<any>({
+    url: `/product-management/requirements/${id}/return-stage`,
     data,
   });
 }

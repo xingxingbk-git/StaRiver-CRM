@@ -42,6 +42,18 @@ public class ProductManagementRequirement extends BaseModel {
     private String description;
     @Schema(description = "验收标准")
     private String acceptanceCriteria;
+    @Schema(description = "审批状态")
+    private String approvalStatus;
+    @Schema(description = "流程记录JSON")
+    private String stageRecordJson;
+    @Schema(description = "交付流程配置快照JSON")
+    private String workflowConfigJson;
+    @Schema(description = "当前阶段负责人ID列表JSON")
+    private String currentAssigneeIds;
+    @Schema(description = "当前阶段负责人名称")
+    private String currentAssigneeNames;
+    @Schema(description = "预发布版本ID")
+    private String targetVersionId;
     @Schema(description = "组织ID")
     private String organizationId;
 }

@@ -1,22 +1,35 @@
 package cn.cordys.crm.productmgmt.service;
 
+import cn.cordys.common.constants.FormKey;
 import cn.cordys.common.dto.BasePageRequest;
 import cn.cordys.common.dto.OptionDTO;
 import cn.cordys.common.exception.GenericException;
 import cn.cordys.common.pager.Pager;
 import cn.cordys.common.uid.IDGenerator;
+import cn.cordys.common.util.JSON;
 import cn.cordys.common.util.Translator;
 import cn.cordys.context.OrganizationContext;
+import cn.cordys.crm.approval.constants.ApprovalStatus;
+import cn.cordys.crm.approval.domain.ApprovalInstance;
+import cn.cordys.crm.approval.domain.ApprovalRecord;
+import cn.cordys.crm.approval.dto.ApprovalResourceBaseParam;
+import cn.cordys.crm.approval.dto.ResourceApprovalPostUpdateParam;
+import cn.cordys.crm.approval.dto.ResourceSnapshotApprovalParam;
+import cn.cordys.crm.approval.service.ApprovalFlowService;
+import cn.cordys.crm.approval.service.ApprovalResourceService;
 import cn.cordys.crm.productmgmt.domain.ProductManagementDocument;
 import cn.cordys.crm.productmgmt.domain.ProductManagementModule;
 import cn.cordys.crm.productmgmt.domain.ProductManagementProduct;
 import cn.cordys.crm.productmgmt.domain.ProductManagementRequirement;
 import cn.cordys.crm.productmgmt.domain.ProductManagementVersion;
 import cn.cordys.crm.productmgmt.dto.request.ProductManagementSaveRequest;
+import cn.cordys.crm.productmgmt.dto.request.ProductRequirementAdvanceStageRequest;
 import cn.cordys.crm.productmgmt.dto.request.ProductRequirementSaveRequest;
 import cn.cordys.crm.productmgmt.dto.request.ProductVersionSaveRequest;
+import cn.cordys.crm.productmgmt.dto.ProductRequirementWorkflowConfig;
 import cn.cordys.crm.productmgmt.mapper.ExtPmProductMapper;
 import cn.cordys.crm.system.domain.Attachment;
+import cn.cordys.crm.system.domain.OrganizationUser;
 import cn.cordys.crm.system.domain.User;
 import cn.cordys.crm.system.dto.request.UploadTransferRequest;
 import cn.cordys.crm.system.mapper.ExtUserMapper;
@@ -25,8 +38,10 @@ import cn.cordys.mybatis.BaseMapper;
 import cn.cordys.mybatis.lambda.LambdaQueryWrapper;
 import cn.cordys.security.SessionUtils;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +58,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
+@Slf4j
 public class ProductManagementService {
 
     @Resource
@@ -58,11 +74,23 @@ public class ProductManagementService {
     @Resource
     private BaseMapper<Attachment> attachmentMapper;
     @Resource
+    private BaseMapper<User> userMapper;
+    @Resource
+    private BaseMapper<OrganizationUser> organizationUserMapper;
+    @Resource
+    private BaseMapper<ApprovalInstance> approvalInstanceMapper;
+    @Resource
+    private BaseMapper<ApprovalRecord> approvalRecordMapper;
+    @Resource
     private ExtPmProductMapper extPmProductMapper;
     @Resource
     private ExtUserMapper extUserMapper;
     @Resource
     private AttachmentService attachmentService;
+    @Resource
+    private ApprovalResourceService approvalResourceService;
+    @Resource
+    private ApprovalFlowService approvalFlowService;
 
     public void checkProductList(List<String> products) {
         if (products != null && products.size() > 20) {
@@ -291,6 +319,7 @@ public class ProductManagementService {
 
     public Pager<List<Map<String, Object>>> listRequirements(BasePageRequest request) {
         List<Map<String, Object>> rows = listRequirementsByOrg().stream()
+                .peek(this::syncStatusFromApproval)
                 .sorted(Comparator.comparing(ProductManagementRequirement::getCreateTime, Comparator.nullsLast(Long::compareTo)).reversed())
                 .map(this::requirementRow)
                 .toList();
@@ -299,7 +328,11 @@ public class ProductManagementService {
 
     public Map<String, Object> getRequirement(String idOrNo) {
         ProductManagementRequirement requirement = findRequirement(idOrNo);
-        return requirement == null ? null : requirementRow(requirement);
+        if (requirement == null) {
+            return null;
+        }
+        syncStatusFromApproval(requirement);
+        return requirementRow(requirement);
     }
 
     public Map<String, Object> saveRequirement(ProductRequirementSaveRequest request) {
@@ -324,9 +357,255 @@ public class ProductManagementService {
         requirement.setOwnerName(product == null ? "Administrator" : StringUtils.defaultIfBlank(product.getProductOwnerName(), "Administrator"));
         requirement.setDescription(request.getDescription());
         requirement.setAcceptanceCriteria(request.getAcceptance());
+        requirement.setApprovalStatus(ApprovalStatus.PENDING.name());
         fillCreateBase(requirement);
+        requirement.setStageRecordJson(JSON.toJSONString(initRequirementRecords(requirement)));
         requirementMapper.insert(requirement);
+        submitRequirementToReview(requirement);
         return requirementRow(requirement);
+    }
+
+    public Map<String, Object> updateRequirement(ProductRequirementSaveRequest request) {
+        if (StringUtils.isBlank(request.getId())) {
+            throw new GenericException("需求ID不能为空");
+        }
+        ProductManagementRequirement requirement = requirementMapper.selectByPrimaryKey(request.getId());
+        if (requirement == null || !Objects.equals(requirement.getOrganizationId(), orgId())) {
+            throw new GenericException("需求不存在");
+        }
+        if (!canEditRequirement(requirement.getStatus(), requirement.getApprovalStatus())) {
+            throw new GenericException("当前需求状态不允许编辑");
+        }
+        ProductManagementProduct product = resolveProduct(request.getProductId(), request.getProduct());
+        requirement.setTitle(request.getTitle().trim());
+        requirement.setType(StringUtils.defaultIfBlank(request.getType(), requirement.getType()));
+        requirement.setSource(StringUtils.defaultIfBlank(request.getSource(), requirement.getSource()));
+        requirement.setProductId(product == null ? requirement.getProductId() : product.getId());
+        requirement.setProductName(product == null ? request.getProduct() : productTag(product));
+        requirement.setTargetVersion(StringUtils.defaultIfBlank(request.getRelease(), requirement.getTargetVersion()));
+        requirement.setPriority(StringUtils.defaultIfBlank(request.getPriority(), requirement.getPriority()));
+        requirement.setDescription(request.getDescription());
+        requirement.setAcceptanceCriteria(request.getAcceptance());
+        requirement.setUpdateTime(System.currentTimeMillis());
+        requirement.setUpdateUser(userId());
+        requirementMapper.updateById(requirement);
+        return requirementRow(requirement);
+    }
+
+    public void deleteRequirement(String id) {
+        ProductManagementRequirement requirement = requirementMapper.selectByPrimaryKey(id);
+        if (requirement == null || !Objects.equals(requirement.getOrganizationId(), orgId())) {
+            throw new GenericException("需求不存在");
+        }
+        if (!canDeleteRequirement(requirement.getStatus(), requirement.getApprovalStatus())) {
+            throw new GenericException("当前需求状态不允许删除");
+        }
+        requirementMapper.deleteByPrimaryKey(id);
+    }
+
+    public Map<String, Object> submitForReview(String id) {
+        ProductManagementRequirement requirement = requirementMapper.selectByPrimaryKey(id);
+        if (requirement == null || !Objects.equals(requirement.getOrganizationId(), orgId())) {
+            throw new GenericException("需求不存在");
+        }
+        if (!canSubmitForReview(requirement.getStatus(), requirement.getApprovalStatus())) {
+            throw new GenericException("当前需求状态不允许重新提交评审");
+        }
+        submitRequirementToReview(requirement);
+        return getRequirement(requirement.getId());
+    }
+
+    public Map<String, Object> revokeRequirementReview(String id) {
+        ProductManagementRequirement requirement = requirementMapper.selectByPrimaryKey(id);
+        if (requirement == null || !Objects.equals(requirement.getOrganizationId(), orgId())) {
+            throw new GenericException("需求不存在");
+        }
+        if (!canRevokeRequirementReview(requirement.getStatus(), requirement.getApprovalStatus(), requirement.getCreateUser(), userId())) {
+            throw new GenericException("当前需求状态不允许撤回");
+        }
+        ApprovalResourceBaseParam param = new ApprovalResourceBaseParam();
+        param.setResourceId(requirement.getId());
+        param.setFormKey(FormKey.PRODUCT_REQUIREMENT.getKey());
+        approvalResourceService.revoke(param, userId());
+        applyRequirementStatusByApproval(requirement, ApprovalStatus.REVOKED.name(), resolveUserDisplayName(userId(), requirement.getOwnerName()));
+        return requirementRow(requirement);
+    }
+
+    public Map<String, Object> advanceStage(String id, ProductRequirementAdvanceStageRequest request) {
+        ProductManagementRequirement requirement = requirementMapper.selectByPrimaryKey(id);
+        if (requirement == null || !Objects.equals(requirement.getOrganizationId(), orgId())) {
+            throw new GenericException("需求不存在");
+        }
+        ProductRequirementWorkflowConfig workflow = workflowConfig(requirement);
+        ProductRequirementWorkflowConfig.Stage currentStage = workflow.stage(requirement.getStage());
+        if (currentStage == null || !canCurrentUserOperate(currentStage, requirement)) {
+            throw new GenericException("你不是当前阶段负责人，无法推进阶段");
+        }
+        ProductRequirementWorkflowConfig.Stage nextStage = workflow.nextStage(requirement.getStage());
+        if (nextStage == null) {
+            throw new GenericException("当前需求已到最后阶段");
+        }
+        if (currentStage.requiresProductLink()) {
+            bindAcceptanceProduct(requirement, request);
+        }
+        List<Map<String, Object>> records = readStageRecords(requirement);
+        removeLastPending(records);
+        appendDoneRecord(
+                records,
+                currentStage.name() + "提交",
+                resolveUserDisplayName(userId(), currentStage.ownerLabel(requirement.getOwnerName())),
+                request == null ? null : request.getContent(),
+                attachmentRows(request == null ? List.of() : request.getAttachmentIds())
+        );
+        appendPendingStageRecord(records, nextStage.name(), nextStage.ownerLabel(requirement.getOwnerName()));
+        requirement.setStageRecordJson(JSON.toJSONString(records));
+        applyCurrentStage(requirement, nextStage);
+        requirement.setUpdateTime(System.currentTimeMillis());
+        requirement.setUpdateUser(userId());
+        requirementMapper.updateById(requirement);
+        return requirementRow(requirement);
+    }
+
+    public Map<String, Object> returnStage(String id, ProductRequirementAdvanceStageRequest request) {
+        ProductManagementRequirement requirement = requirementMapper.selectByPrimaryKey(id);
+        if (requirement == null || !Objects.equals(requirement.getOrganizationId(), orgId())) {
+            throw new GenericException("需求不存在");
+        }
+        ProductRequirementWorkflowConfig workflow = workflowConfig(requirement);
+        ProductRequirementWorkflowConfig.Stage currentStage = workflow.stage(requirement.getStage());
+        ProductRequirementWorkflowConfig.Stage previousStage = workflow.previousStage(requirement.getStage());
+        if (currentStage == null || previousStage == null || !currentStage.returnable()) {
+            throw new GenericException("当前阶段不允许退回");
+        }
+        if (!canCurrentUserOperate(currentStage, requirement)) {
+            throw new GenericException("你不是当前阶段负责人，无法退回需求");
+        }
+        List<Map<String, Object>> records = readStageRecords(requirement);
+        removeLastPending(records);
+        records.add(buildRecord(
+                currentStage.name() + "退回",
+                resolveUserDisplayName(userId(), currentStage.ownerLabel(requirement.getOwnerName())),
+                System.currentTimeMillis(),
+                "rejected",
+                request == null ? null : request.getContent(),
+                attachmentRows(request == null ? List.of() : request.getAttachmentIds())
+        ));
+        appendPendingStageRecord(records, previousStage.name(), previousStage.ownerLabel(requirement.getOwnerName()));
+        requirement.setStageRecordJson(JSON.toJSONString(records));
+        applyCurrentStage(requirement, previousStage);
+        requirement.setUpdateTime(System.currentTimeMillis());
+        requirement.setUpdateUser(userId());
+        requirementMapper.updateById(requirement);
+        return requirementRow(requirement);
+    }
+
+    private void submitRequirementToReview(ProductManagementRequirement requirement) {
+        List<Map<String, Object>> records = readStageRecords(requirement);
+        if (CollectionUtils.isEmpty(records)) {
+            records = initRequirementRecords(requirement);
+        }
+        if (!hasCreateApprovalFlow()) {
+            log.warn("产品需求未命中创建审批流, requirementId={}", requirement.getId());
+            requirement.setApprovalStatus(ApprovalStatus.PENDING.name());
+            requirement.setStatus("需求池");
+            requirement.setStage("需求池");
+            appendPendingStageRecord(records, "需求池", StringUtils.defaultIfBlank(requirement.getOwnerName(), "审批流程角色"));
+            requirement.setStageRecordJson(JSON.toJSONString(records));
+            requirement.setUpdateTime(System.currentTimeMillis());
+            requirement.setUpdateUser(userId());
+            requirementMapper.updateById(requirement);
+            return;
+        }
+        ApprovalResourceBaseParam param = new ApprovalResourceBaseParam();
+        param.setResourceId(requirement.getId());
+        param.setFormKey(FormKey.PRODUCT_REQUIREMENT.getKey());
+        ProductRequirementWorkflowConfig workflow = enabledWorkflowConfig();
+        requirement.setWorkflowConfigJson(JSON.toJSONString(workflow));
+        approvalResourceService.push(param, orgId(), userId());
+        applyRequirementStatusByApproval(requirement, ApprovalStatus.APPROVING.name(), StringUtils.defaultIfBlank(requirement.getOwnerName(), "审批流程角色"));
+    }
+
+    private boolean hasCreateApprovalFlow() {
+        var approvalFlow = approvalFlowService.getEnabledFlow(FormKey.PRODUCT_REQUIREMENT.getKey(), orgId());
+        return approvalFlow != null && Boolean.TRUE.equals(approvalFlow.getCreateExecute());
+    }
+
+    static boolean canEditRequirement(String status, String approvalStatus) {
+        return Strings.CI.equals(status, "需求池")
+                && Strings.CI.equalsAny(approvalStatus, ApprovalStatus.UNAPPROVED.name(), ApprovalStatus.REVOKED.name());
+    }
+
+    static boolean canDeleteRequirement(String status, String approvalStatus) {
+        return canEditRequirement(status, approvalStatus);
+    }
+
+    static boolean canSubmitForReview(String status, String approvalStatus) {
+        return canEditRequirement(status, approvalStatus);
+    }
+
+    static boolean canRevokeRequirementReview(String status, String approvalStatus, String creatorId, String currentUserId) {
+        return Strings.CI.equals(status, "需求评审")
+                && Strings.CI.equals(approvalStatus, ApprovalStatus.APPROVING.name())
+                && StringUtils.isNotBlank(currentUserId)
+                && StringUtils.equals(creatorId, currentUserId);
+    }
+
+    static boolean canAdvanceRequirementStage(String status) {
+        return Strings.CI.equals(status, "产品设计");
+    }
+
+    static String resolveRequirementStatusByApproval(String currentStatus, String approvalStatus) {
+        boolean reviewStage = Strings.CI.equalsAny(currentStatus, "需求池", "需求评审");
+        if (reviewStage && Strings.CI.equals(approvalStatus, ApprovalStatus.APPROVED.name())) {
+            return "产品设计";
+        }
+        if (reviewStage && Strings.CI.equals(approvalStatus, ApprovalStatus.APPROVING.name())) {
+            return "需求评审";
+        }
+        if (reviewStage && Strings.CI.equalsAny(approvalStatus, ApprovalStatus.UNAPPROVED.name(), ApprovalStatus.REVOKED.name())) {
+            return "需求池";
+        }
+        return StringUtils.defaultIfBlank(currentStatus, "需求池");
+    }
+
+    private void applyRequirementStatusByApproval(ProductManagementRequirement requirement, String approvalStatus, String actorName) {
+        String previousStatus = requirement.getStatus();
+        String previousApprovalStatus = requirement.getApprovalStatus();
+        String resolvedStatus = resolveRequirementStatusByApproval(requirement.getStatus(), approvalStatus);
+        requirement.setApprovalStatus(approvalStatus);
+        requirement.setStatus(resolvedStatus);
+        requirement.setStage(resolvedStatus);
+        if (Strings.CI.equals(resolvedStatus, "产品设计")) {
+            ProductRequirementWorkflowConfig.Stage stage = workflowConfig(requirement).stage(resolvedStatus);
+            if (stage != null) {
+                applyCurrentStage(requirement, stage);
+            }
+        }
+        requirement.setStageRecordJson(JSON.toJSONString(syncRequirementRecords(requirement, previousStatus, previousApprovalStatus, actorName)));
+        requirement.setUpdateTime(System.currentTimeMillis());
+        requirement.setUpdateUser(userId());
+        requirementMapper.updateById(requirement);
+    }
+
+    public void updateSnapshotApprovalStatus(ResourceSnapshotApprovalParam param) {
+        if (param == null || StringUtils.isBlank(param.getResourceId()) || StringUtils.isBlank(param.getApprovalStatus())) {
+            return;
+        }
+        ProductManagementRequirement requirement = requirementMapper.selectByPrimaryKey(param.getResourceId());
+        if (requirement != null) {
+            applyRequirementStatusByApproval(requirement, param.getApprovalStatus(), resolveLatestApprovalActorName(requirement));
+        }
+    }
+
+    public void updateApprovalPostField(ResourceApprovalPostUpdateParam postFieldParam) {
+        if (postFieldParam == null || StringUtils.isBlank(postFieldParam.getResourceId())) {
+            return;
+        }
+        ProductManagementRequirement requirement = requirementMapper.selectByPrimaryKey(postFieldParam.getResourceId());
+        if (requirement == null) {
+            return;
+        }
+        applyRequirementStatusByApproval(requirement, requirement.getApprovalStatus(), resolveLatestApprovalActorName(requirement));
     }
 
     private void replaceModules(String productId, List<ProductManagementSaveRequest.ModulePayload> modules) {
@@ -570,6 +849,75 @@ public class ProductManagementService {
         }).toList();
     }
 
+    private ProductRequirementWorkflowConfig enabledWorkflowConfig() {
+        var flow = approvalFlowService.getEnabledFlow(FormKey.PRODUCT_REQUIREMENT.getKey(), orgId());
+        if (flow == null || StringUtils.isBlank(flow.getBusinessConfig())) {
+            return ProductRequirementWorkflowConfig.defaultConfig();
+        }
+        ProductRequirementWorkflowConfig config = JSON.parseObject(flow.getBusinessConfig(), ProductRequirementWorkflowConfig.class);
+        return config == null || CollectionUtils.isEmpty(config.stages())
+                ? ProductRequirementWorkflowConfig.defaultConfig()
+                : config;
+    }
+
+    private ProductRequirementWorkflowConfig workflowConfig(ProductManagementRequirement requirement) {
+        if (requirement == null || StringUtils.isBlank(requirement.getWorkflowConfigJson())) {
+            return enabledWorkflowConfig();
+        }
+        ProductRequirementWorkflowConfig config = JSON.parseObject(
+                requirement.getWorkflowConfigJson(),
+                ProductRequirementWorkflowConfig.class
+        );
+        return config == null || CollectionUtils.isEmpty(config.stages())
+                ? ProductRequirementWorkflowConfig.defaultConfig()
+                : config;
+    }
+
+    private void applyCurrentStage(ProductManagementRequirement requirement, ProductRequirementWorkflowConfig.Stage stage) {
+        requirement.setStatus(stage.name());
+        requirement.setStage(stage.name());
+        requirement.setCurrentAssigneeIds(JSON.toJSONString(stage.assigneeIds()));
+        requirement.setCurrentAssigneeNames(stage.ownerLabel(requirement.getOwnerName()));
+    }
+
+    private boolean canCurrentUserOperate(
+            ProductRequirementWorkflowConfig.Stage stage,
+            ProductManagementRequirement requirement
+    ) {
+        if (stage == null) {
+            return false;
+        }
+        List<String> activeAssigneeIds = stage.assigneeIds().isEmpty()
+                ? List.of()
+                : organizationUserMapper.selectListByLambda(
+                        new LambdaQueryWrapper<OrganizationUser>()
+                                .eq(OrganizationUser::getOrganizationId, orgId())
+                                .eq(OrganizationUser::getEnable, true)
+                                .in(OrganizationUser::getUserId, stage.assigneeIds())
+                ).stream().map(OrganizationUser::getUserId).distinct().toList();
+        String fallbackOwnerId = StringUtils.defaultIfBlank(requirement.getOwnerId(), requirement.getCreateUser());
+        return activeAssigneeIds.isEmpty()
+                ? StringUtils.equals(userId(), fallbackOwnerId)
+                : activeAssigneeIds.contains(userId());
+    }
+
+    private void bindAcceptanceProduct(ProductManagementRequirement requirement, ProductRequirementAdvanceStageRequest request) {
+        if (request == null || StringUtils.isAnyBlank(request.getModuleId(), request.getVersionId())) {
+            throw new GenericException("产品验收时必须选择关联模块和预发布版本");
+        }
+        ProductManagementModule module = moduleMapper.selectByPrimaryKey(request.getModuleId());
+        ProductManagementVersion version = versionMapper.selectByPrimaryKey(request.getVersionId());
+        if (module == null || version == null
+                || !Objects.equals(module.getProductId(), requirement.getProductId())
+                || !Objects.equals(version.getProductId(), requirement.getProductId())) {
+            throw new GenericException("关联模块或预发布版本不属于当前产品");
+        }
+        requirement.setModuleId(module.getId());
+        requirement.setModuleName(module.getName());
+        requirement.setTargetVersionId(version.getId());
+        requirement.setTargetVersion(version.getVersion());
+    }
+
     private Map<String, Object> requirementRow(ProductManagementRequirement requirement) {
         Map<String, Object> row = new LinkedHashMap<>();
         row.put("rawId", requirement.getId());
@@ -577,6 +925,7 @@ public class ProductManagementService {
         row.put("title", requirement.getTitle());
         row.put("detailTitle", requirement.getTitle());
         row.put("product", requirement.getProductName());
+        row.put("productId", requirement.getProductId());
         row.put("productKey", productKey(requirement.getProductName()));
         row.put("version", StringUtils.defaultIfBlank(requirement.getTargetVersion(), "--"));
         row.put("source", requirement.getSource());
@@ -592,6 +941,23 @@ public class ProductManagementService {
         row.put("description", requirement.getDescription());
         row.put("acceptance", requirement.getAcceptanceCriteria());
         row.put("expectedRelease", requirement.getExpectedRelease());
+        row.put("approvalStatus", requirement.getApprovalStatus());
+        row.put("createUser", requirement.getCreateUser());
+        row.put("records", buildRequirementRecordsView(requirement));
+        ProductRequirementWorkflowConfig workflow = workflowConfig(requirement);
+        ProductRequirementWorkflowConfig.Stage currentStage = workflow.stage(requirement.getStage());
+        boolean currentOwner = canCurrentUserOperate(currentStage, requirement);
+        row.put("workflowStages", workflow.stages());
+        row.put("currentAssigneeNames", requirement.getCurrentAssigneeNames());
+        row.put("targetVersionId", requirement.getTargetVersionId());
+        row.put("availableActions", Map.of(
+                "edit", canEditRequirement(requirement.getStatus(), requirement.getApprovalStatus()),
+                "delete", canDeleteRequirement(requirement.getStatus(), requirement.getApprovalStatus()),
+                "revoke", canRevokeRequirementReview(requirement.getStatus(), requirement.getApprovalStatus(), requirement.getCreateUser(), userId()),
+                "resubmit", canSubmitForReview(requirement.getStatus(), requirement.getApprovalStatus()),
+                "advance", currentOwner && workflow.nextStage(requirement.getStage()) != null,
+                "return", currentOwner && currentStage != null && currentStage.returnable() && workflow.previousStage(requirement.getStage()) != null
+        ));
         return row;
     }
 
@@ -616,6 +982,182 @@ public class ProductManagementService {
                         .eq(ProductManagementRequirement::getRequirementNo, idOrNo)
         );
         return list.isEmpty() ? null : list.getFirst();
+    }
+
+    private void syncStatusFromApproval(ProductManagementRequirement requirement) {
+        if (requirement == null) {
+            return;
+        }
+        String resolvedStatus = resolveRequirementStatusByApproval(requirement.getStatus(), requirement.getApprovalStatus());
+        if (!Strings.CI.equals(requirement.getStatus(), resolvedStatus) || !Strings.CI.equals(requirement.getStage(), resolvedStatus)) {
+            List<Map<String, Object>> records = syncRequirementRecords(
+                    requirement,
+                    requirement.getStatus(),
+                    requirement.getApprovalStatus(),
+                    resolveLatestApprovalActorName(requirement)
+            );
+            requirement.setStatus(resolvedStatus);
+            requirement.setStage(resolvedStatus);
+            requirement.setStageRecordJson(JSON.toJSONString(records));
+            requirement.setUpdateTime(System.currentTimeMillis());
+            requirement.setUpdateUser(userId());
+            requirementMapper.updateById(requirement);
+        }
+    }
+
+    private List<Map<String, Object>> buildRequirementRecordsView(ProductManagementRequirement requirement) {
+        List<Map<String, Object>> records = readStageRecords(requirement);
+        if (CollectionUtils.isEmpty(records)) {
+            records = initRequirementRecords(requirement);
+        }
+        return records;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> readStageRecords(ProductManagementRequirement requirement) {
+        if (requirement == null || StringUtils.isBlank(requirement.getStageRecordJson())) {
+            return new ArrayList<>();
+        }
+        List<Map> rawRecords = JSON.parseArray(requirement.getStageRecordJson(), Map.class);
+        return rawRecords.stream()
+                .map(record -> new LinkedHashMap<String, Object>(record))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private List<Map<String, Object>> initRequirementRecords(ProductManagementRequirement requirement) {
+        List<Map<String, Object>> records = new ArrayList<>();
+        records.add(buildRecord(
+                "创建需求",
+                resolveUserDisplayName(requirement.getCreateUser(), requirement.getOwnerName()),
+                requirement.getCreateTime(),
+                "done",
+                null,
+                List.of()
+        ));
+        appendPendingStageRecord(records, "需求评审", StringUtils.defaultIfBlank(requirement.getOwnerName(), "审批流程角色"));
+        return records;
+    }
+
+    private List<Map<String, Object>> syncRequirementRecords(
+            ProductManagementRequirement requirement,
+            String previousStatus,
+            String previousApprovalStatus,
+            String actorName
+    ) {
+        List<Map<String, Object>> records = readStageRecords(requirement);
+        if (CollectionUtils.isEmpty(records)) {
+            records = initRequirementRecords(requirement);
+        }
+        String approvalStatus = requirement.getApprovalStatus();
+        String resolvedStatus = resolveRequirementStatusByApproval(previousStatus, approvalStatus);
+        if (Strings.CI.equals(approvalStatus, ApprovalStatus.APPROVING.name())) {
+            replaceLastPendingStage(records, "需求评审", StringUtils.defaultIfBlank(actorName, "审批流程角色"));
+            return records;
+        }
+        if (Strings.CI.equals(approvalStatus, ApprovalStatus.APPROVED.name())
+                && Strings.CI.equalsAny(previousStatus, "需求池", "需求评审")) {
+            removeLastPending(records);
+            appendDoneRecord(records, "需求通过", StringUtils.defaultIfBlank(actorName, requirement.getOwnerName()), null, List.of());
+            appendPendingStageRecord(records, resolvedStatus, StringUtils.defaultIfBlank(requirement.getOwnerName(), "审批流程角色"));
+            return records;
+        }
+        if (Strings.CI.equals(approvalStatus, ApprovalStatus.UNAPPROVED.name())
+                && Strings.CI.equals(previousStatus, "需求评审")) {
+            removeLastPending(records);
+            records.add(buildRecord("需求驳回", StringUtils.defaultIfBlank(actorName, "审批流程角色"), System.currentTimeMillis(), "rejected", null, List.of()));
+            appendPendingStageRecord(records, "需求池", resolveUserDisplayName(requirement.getCreateUser(), requirement.getOwnerName()));
+            return records;
+        }
+        if (Strings.CI.equals(approvalStatus, ApprovalStatus.REVOKED.name())
+                && Strings.CI.equals(previousStatus, "需求评审")) {
+            removeLastPending(records);
+            records.add(buildRecord("需求撤回", StringUtils.defaultIfBlank(actorName, requirement.getOwnerName()), System.currentTimeMillis(), "rejected", null, List.of()));
+            appendPendingStageRecord(records, "需求池", resolveUserDisplayName(requirement.getCreateUser(), requirement.getOwnerName()));
+        }
+        return records;
+    }
+
+    private void appendPendingStageRecord(List<Map<String, Object>> records, String title, String owner) {
+        removeLastPending(records);
+        records.add(buildRecord(title, owner, null, "pending", null, List.of()));
+    }
+
+    private void replaceLastPendingStage(List<Map<String, Object>> records, String title, String owner) {
+        removeLastPending(records);
+        records.add(buildRecord(title, owner, null, "pending", null, List.of()));
+    }
+
+    private void appendDoneRecord(
+            List<Map<String, Object>> records,
+            String title,
+            String owner,
+            String content,
+            List<Map<String, Object>> attachments
+    ) {
+        records.add(buildRecord(title, owner, System.currentTimeMillis(), "done", content, attachments));
+    }
+
+    private void removeLastPending(List<Map<String, Object>> records) {
+        if (CollectionUtils.isEmpty(records)) {
+            return;
+        }
+        Map<String, Object> last = records.getLast();
+        if (Strings.CI.equals(String.valueOf(last.get("state")), "pending")) {
+            records.removeLast();
+        }
+    }
+
+    private Map<String, Object> buildRecord(
+            String title,
+            String owner,
+            Long time,
+            String state,
+            String content,
+            List<Map<String, Object>> attachments
+    ) {
+        Map<String, Object> row = new LinkedHashMap<>();
+        row.put("title", title);
+        row.put("owner", owner);
+        row.put("time", time);
+        row.put("state", state);
+        row.put("content", content);
+        row.put("attachments", attachments == null ? List.of() : attachments);
+        return row;
+    }
+
+    private String resolveLatestApprovalActorName(ProductManagementRequirement requirement) {
+        if (requirement == null || StringUtils.isBlank(requirement.getId())) {
+            return "审批流程角色";
+        }
+        List<ApprovalInstance> instances = approvalInstanceMapper.selectListByLambda(
+                new LambdaQueryWrapper<ApprovalInstance>()
+                        .eq(ApprovalInstance::getResourceId, requirement.getId())
+                        .orderByDesc(ApprovalInstance::getSubmitTime)
+        );
+        if (CollectionUtils.isEmpty(instances)) {
+            return StringUtils.defaultIfBlank(requirement.getOwnerName(), "审批流程角色");
+        }
+        ApprovalInstance instance = instances.getFirst();
+        List<ApprovalRecord> records = approvalRecordMapper.selectListByLambda(
+                new LambdaQueryWrapper<ApprovalRecord>()
+                        .eq(ApprovalRecord::getInstanceId, instance.getId())
+                        .orderByDesc(ApprovalRecord::getCreateTime)
+        );
+        if (CollectionUtils.isEmpty(records)) {
+            return StringUtils.defaultIfBlank(requirement.getOwnerName(), "审批流程角色");
+        }
+        return resolveUserDisplayName(records.getFirst().getCreateUser(), requirement.getOwnerName());
+    }
+
+    private String resolveUserDisplayName(String userId, String fallback) {
+        if (StringUtils.isBlank(userId)) {
+            return StringUtils.defaultIfBlank(fallback, "审批流程角色");
+        }
+        User user = userMapper.selectByPrimaryKey(userId);
+        if (user == null || StringUtils.isBlank(user.getName())) {
+            return StringUtils.defaultIfBlank(fallback, "审批流程角色");
+        }
+        return user.getName();
     }
 
     private ProductManagementProduct resolveProduct(String productId, String productName) {
@@ -765,9 +1307,6 @@ public class ProductManagementService {
     }
 
     private String normalizeRequirementStatus(String status) {
-        if ("需求评估".equals(status)) {
-            return "需求评估";
-        }
         return status;
     }
 
@@ -783,7 +1322,7 @@ public class ProductManagementService {
         return switch (StringUtils.defaultString(status)) {
             case "已上线", "已发布" -> "online";
             case "开发中", "测试中" -> "developing";
-            case "待发布", "产品设计" -> "pending";
+            case "待发布", "产品设计", "需求评审" -> "pending";
             case "需求评估", "技术评审" -> "evaluating";
             default -> "planning";
         };

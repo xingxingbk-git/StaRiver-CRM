@@ -208,6 +208,16 @@ export interface ApprovalProcessForm {
   links: ApprovalNodeLinkResponse[];
   basicConfig: BasicFormParams;
   moreConfig: MoreSettingsParams;
+  businessConfig?: string;
+}
+
+export interface ProductRequirementStageConfig {
+  key: string;
+  name: string;
+  assigneeIds: string[];
+  assigneeNames: string[];
+  returnable: boolean;
+  requiresProductLink: boolean;
 }
 
 export interface ApproverItem extends Pick<UserInfo, 'id' | 'name' | 'avatar'> {
@@ -284,6 +294,7 @@ export interface TodoStatistic {
   contract: number;
   order: number;
   invoice: number;
+  productRequirement: number;
 }
 
 export interface ApprovalDetail {

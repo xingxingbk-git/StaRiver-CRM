@@ -61,4 +61,7 @@ public class ApprovalFlowUpdateRequest {
     @Schema(description = "节点连接配置列表")
     @Valid
     private List<ApprovalNodeLinkRequest> links;
+
+    @Schema(description = "业务流程扩展配置（JSON格式）")
+    private String businessConfig;
 }

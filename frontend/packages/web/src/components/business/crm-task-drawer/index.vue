@@ -121,9 +121,11 @@
 </template>
 
 <script setup lang="ts">
+  import { useRouter } from 'vue-router';
   import { NButton, NCheckbox, NCollapse, NCollapseItem } from 'naive-ui';
   import { cloneDeep } from 'lodash-es';
 
+  import { FormDesignKeyEnum } from '@lib/shared/enums/formDesignEnum';
   import { type ApprovalListTypeEnum, ApprovalResourceTypeEnum } from '@lib/shared/enums/process';
   import { useI18n } from '@lib/shared/hooks/useI18n';
   import type { ApprovalProcessDetail } from '@lib/shared/models/system/process';
@@ -140,11 +142,14 @@
 
   import { getApprovalConfigDetail, getTodoStatistic } from '@/api/modules';
 
+  import { ProductRouteEnum } from '@/enums/routeEnum';
+
   const props = defineProps<{
     type?: ApprovalListTypeEnum;
   }>();
 
   const { t } = useI18n();
+  const router = useRouter();
 
   const show = defineModel<boolean>('show', {
     required: true,
@@ -182,6 +187,11 @@
       title: t('module.invoiceApproval'),
       count: 0,
     },
+    {
+      name: ApprovalResourceTypeEnum.PRODUCT_REQUIREMENT,
+      title: '产品需求',
+      count: 0,
+    },
   ];
   const allItems = [
     {
@@ -217,7 +227,10 @@
           const [_, name] = child.name.split('-');
           return {
             ...child,
-            count: statistic.value[name.toLowerCase()],
+            count:
+              name === ApprovalResourceTypeEnum.PRODUCT_REQUIREMENT
+                ? statistic.value.productRequirement
+                : statistic.value[name.toLowerCase()],
           };
         });
       }
@@ -328,7 +341,14 @@
   async function initApprovalConfigDetail() {
     try {
       const [_, resourceType] = activeTaskType.value.split('-');
-      approvalConfigDetail.value = await getApprovalConfigDetail(resourceType);
+      const formTypeMap: Record<string, string> = {
+        [ApprovalResourceTypeEnum.QUOTATION]: FormDesignKeyEnum.OPPORTUNITY_QUOTATION,
+        [ApprovalResourceTypeEnum.CONTRACT]: FormDesignKeyEnum.CONTRACT,
+        [ApprovalResourceTypeEnum.ORDER]: FormDesignKeyEnum.ORDER,
+        [ApprovalResourceTypeEnum.INVOICE]: FormDesignKeyEnum.INVOICE,
+        [ApprovalResourceTypeEnum.PRODUCT_REQUIREMENT]: FormDesignKeyEnum.PRODUCT_REQUIREMENT,
+      };
+      approvalConfigDetail.value = await getApprovalConfigDetail(formTypeMap[resourceType] || resourceType);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
@@ -369,6 +389,16 @@
         break;
       case ApprovalResourceTypeEnum.INVOICE:
         invoiceDetailVisible.value = true;
+        break;
+      case ApprovalResourceTypeEnum.PRODUCT_REQUIREMENT:
+        show.value = false;
+        router.push({
+          name: ProductRouteEnum.PRODUCT_REQUIREMENT,
+          query: {
+            mode: 'detail',
+            id: resourceId,
+          },
+        });
         break;
       default:
         break;

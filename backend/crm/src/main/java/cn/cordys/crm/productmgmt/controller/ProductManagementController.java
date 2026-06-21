@@ -3,6 +3,7 @@ package cn.cordys.crm.productmgmt.controller;
 import cn.cordys.common.dto.BasePageRequest;
 import cn.cordys.common.pager.Pager;
 import cn.cordys.crm.productmgmt.dto.request.ProductManagementSaveRequest;
+import cn.cordys.crm.productmgmt.dto.request.ProductRequirementAdvanceStageRequest;
 import cn.cordys.crm.productmgmt.dto.request.ProductRequirementSaveRequest;
 import cn.cordys.crm.productmgmt.dto.request.ProductVersionSaveRequest;
 import cn.cordys.crm.productmgmt.service.ProductManagementService;
@@ -98,5 +99,41 @@ public class ProductManagementController {
     @Operation(summary = "新建产品需求")
     public Map<String, Object> addRequirement(@RequestBody ProductRequirementSaveRequest request) {
         return productManagementService.saveRequirement(request);
+    }
+
+    @PostMapping("/requirements/update")
+    @Operation(summary = "更新产品需求")
+    public Map<String, Object> updateRequirement(@RequestBody ProductRequirementSaveRequest request) {
+        return productManagementService.updateRequirement(request);
+    }
+
+    @PostMapping("/requirements/{id}/delete")
+    @Operation(summary = "删除产品需求")
+    public void deleteRequirement(@PathVariable String id) {
+        productManagementService.deleteRequirement(id);
+    }
+
+    @PostMapping("/requirements/{id}/submit-review")
+    @Operation(summary = "重新提交评审")
+    public Map<String, Object> submitForReview(@PathVariable String id) {
+        return productManagementService.submitForReview(id);
+    }
+
+    @PostMapping("/requirements/{id}/revoke-review")
+    @Operation(summary = "撤回评审")
+    public Map<String, Object> revokeRequirementReview(@PathVariable String id) {
+        return productManagementService.revokeRequirementReview(id);
+    }
+
+    @PostMapping("/requirements/{id}/advance-stage")
+    @Operation(summary = "推进阶段")
+    public Map<String, Object> advanceStage(@PathVariable String id, @RequestBody(required = false) ProductRequirementAdvanceStageRequest request) {
+        return productManagementService.advanceStage(id, request);
+    }
+
+    @PostMapping("/requirements/{id}/return-stage")
+    @Operation(summary = "退回上一阶段")
+    public Map<String, Object> returnStage(@PathVariable String id, @RequestBody(required = false) ProductRequirementAdvanceStageRequest request) {
+        return productManagementService.returnStage(id, request);
     }
 }

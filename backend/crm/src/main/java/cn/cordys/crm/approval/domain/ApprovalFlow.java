@@ -59,6 +59,9 @@ public class ApprovalFlow extends BaseModel {
     @Schema(description = "状态权限配置（JSON格式）")
     private String statusPermissions;
 
+    @Schema(description = "业务流程扩展配置（JSON格式）")
+    private String businessConfig;
+
     @Schema(description = "组织id")
     private String organizationId;
 }

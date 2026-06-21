@@ -40,6 +40,7 @@
         v-show="activeTab === 'process'"
         ref="approvalFlowDesignRef"
         v-model:basicConfig="form.basicConfig"
+        v-model:business-config="form.businessConfig"
         :need-detail="!!props.sourceId"
         :readonly="isDetail"
         :option-map="detailOptionMap"
@@ -101,6 +102,7 @@
     enable: false,
     nodes: [],
     links: [],
+    businessConfig: '',
     basicConfig: {
       ...cloneDeep(defaultBasicForm),
     },

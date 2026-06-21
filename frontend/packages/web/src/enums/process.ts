@@ -87,6 +87,7 @@ export enum ApprovalResourceTypeEnum {
   CONTRACT = 'CONTRACT',
   ORDER = 'ORDER',
   INVOICE = 'INVOICE',
+  PRODUCT_REQUIREMENT = 'PRODUCT_REQUIREMENT',
   ALL = 'ALL',
 }
 

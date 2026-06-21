@@ -88,4 +88,7 @@ public class ApprovalFlowDetailResponse {
 
     @Schema(description = "条件节点字段选项映射")
     private Map<String, List<OptionDTO>> optionMap;
+
+    @Schema(description = "业务流程扩展配置（JSON格式）")
+    private String businessConfig;
 }

@@ -164,90 +164,262 @@
         <div>
           <div class="prm-detail-code">
             <span>{{ activeRequirement.id }}</span>
-            <i class="prm-pill prm-pill--p2">P2中</i>
+            <i class="prm-pill" :class="pillClass(activeRequirement.status)">{{ activeRequirement.status }}</i>
           </div>
-          <h1>{{ activeRequirement.detailTitle }}</h1>
+          <div class="sr-product-hero__title-row">
+            <h1>{{ activeRequirement.detailTitle }}</h1>
+            <button v-if="showEditIcon" class="sr-icon-action" title="编辑需求" @click="enterEditMode">
+              <span v-html="editIcon"></span>
+            </button>
+            <button v-if="showDeleteIcon" class="sr-icon-action" title="删除需求" @click="handleDelete">
+              <span v-html="deleteIcon"></span>
+            </button>
+          </div>
           <p>
             {{ activeRequirement.product }} · {{ activeRequirement.type }} · 负责人 {{ activeRequirement.owner }} ·
             {{ activeRequirement.source }}需求 · 期望上线
             {{ activeRequirement.expectedRelease || activeRequirement.version }}
           </p>
         </div>
+        <div class="prm-hero-actions">
+          <button v-if="showRevokeBtn" class="sr-btn-revoke" @click="handleRevoke">撤回</button>
+          <button v-if="showResubmitBtn" class="prm-detail-primary-btn" @click="handleResubmit">重新提交评审 →</button>
+          <button v-if="showReturnBtn" class="prm-detail-return-btn" @click="handleReturnStage">退回上一阶段</button>
+          <button v-if="showAdvanceBtn" class="prm-detail-primary-btn" @click="handleAdvanceStage">推进阶段 →</button>
+          <button v-if="showPublishBtn" class="prm-detail-primary-btn" @click="goProductRelease">前往产品发布 →</button>
+        </div>
       </header>
 
       <main class="prm-body">
-        <section class="prm-panel prm-flow-panel">
-          <h2>交付流程 · BPMN</h2>
-          <div class="prm-flow-board">
-            <div class="prm-flow">
-              <div
-                v-for="(step, index) in flowSteps"
-                :key="step.label"
-                class="prm-flow-step"
-                :class="[`prm-flow-step--${step.state}`, { 'prm-flow-step--diamond': step.shape === 'diamond' }]"
-              >
-                <div class="prm-flow-node">
-                  <span v-if="step.shape === 'start'" class="prm-flow-dot"></span>
-                  <span v-else-if="step.shape === 'end'" class="prm-flow-stop"></span>
-                  <span v-else>{{ step.text }}</span>
-                </div>
-                <small v-if="['start', 'diamond', 'end'].includes(step.shape)">{{ step.label }}</small>
-                <i v-if="index < flowSteps.length - 1" class="prm-flow-line"></i>
+        <template v-if="editMode">
+          <section class="sr-panel">
+            <h2>编辑产品需求</h2>
+            <div class="sr-form-grid">
+              <label class="sr-field">
+                <span class="sr-field__label">需求标题 <span class="sr-field__req">*</span></span>
+                <input v-model="draft.title" class="sr-input" placeholder="如：BI 看板支持多维钻取" />
+              </label>
+              <div class="sr-field">
+                <span class="sr-field__label">需求类型</span>
+                <component
+                  :is="NSelect"
+                  v-model:value="draft.type"
+                  class="sr-native-control"
+                  :options="typeOptionItems"
+                />
+              </div>
+              <div class="sr-field">
+                <span class="sr-field__label">需求来源</span>
+                <component
+                  :is="NSelect"
+                  v-model:value="draft.source"
+                  class="sr-native-control"
+                  :options="sourceOptionItems"
+                />
+              </div>
+              <div class="sr-field">
+                <span class="sr-field__label">目标产品</span>
+                <component
+                  :is="NSelect"
+                  v-model:value="draft.product"
+                  class="sr-native-control"
+                  :options="productOptionItems"
+                />
+              </div>
+              <label class="sr-field">
+                <span class="sr-field__label">期望上线</span>
+                <input v-model="draft.release" class="sr-input" placeholder="2026-Q3" />
+              </label>
+              <div class="sr-field">
+                <span class="sr-field__label">优先级</span>
+                <component
+                  :is="NSelect"
+                  v-model:value="draft.priority"
+                  class="sr-native-control"
+                  :options="priorityOptionItems"
+                />
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section class="prm-detail-grid">
-          <div class="prm-detail-left">
-            <section class="prm-panel">
-              <h2>需求描述</h2>
-              <div class="prm-story-list">
+          <section class="sr-panel">
+            <h2>需求描述</h2>
+            <component
+              :is="StariverRichEditor"
+              v-model="draft.description"
+              min-height="large"
+              :placeholder="requirementDescriptionPlaceholder"
+            />
+          </section>
+
+          <section class="sr-panel">
+            <h2>验收标准 (AC)</h2>
+            <component :is="StariverRichEditor" v-model="draft.acceptance" :placeholder="acceptancePlaceholder" />
+          </section>
+
+          <div class="sr-create-actions" style="display: flex; justify-content: flex-end; margin-top: 16px; gap: 8px">
+            <button class="sr-btn sr-btn--ghost" @click="cancelEditMode">取消</button>
+            <button class="sr-btn sr-btn--primary" @click="handleEditSubmit">保存修改</button>
+          </div>
+        </template>
+
+        <template v-else>
+          <section class="prm-panel prm-flow-panel">
+            <h2>交付流程 · BPMN</h2>
+            <div class="prm-flow-board">
+              <div class="prm-flow">
+                <div
+                  v-for="(step, index) in flowSteps"
+                  :key="step.label"
+                  class="prm-flow-step"
+                  :class="[`prm-flow-step--${step.state}`, { 'prm-flow-step--diamond': step.shape === 'diamond' }]"
+                >
+                  <div class="prm-flow-node">
+                    <span v-if="step.shape === 'start'" class="prm-flow-dot"></span>
+                    <span v-else-if="step.shape === 'end'" class="prm-flow-stop"></span>
+                    <template v-else>
+                      <span>{{ step.text }}</span>
+                      <em v-if="step.state === 'current'" class="prm-flow-current-dot"></em>
+                      <small v-if="step.state === 'current'" class="prm-flow-current-label">当前</small>
+                    </template>
+                  </div>
+                  <small v-if="['start', 'diamond', 'end'].includes(step.shape)">{{ step.label }}</small>
+                  <span v-if="step.transitionLabel && index < flowSteps.length - 1" class="prm-flow-transition-label">
+                    {{ step.transitionLabel }}
+                  </span>
+                  <i v-if="index < flowSteps.length - 1" class="prm-flow-line"></i>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="prm-detail-grid">
+            <div class="prm-detail-left">
+              <section class="prm-panel">
+                <h2>需求描述</h2>
+                <div class="prm-story-list">
+                  <article
+                    class="prm-story prm-rich-display"
+                    v-html="activeRequirement.description || '暂无需求描述'"
+                  ></article>
+                </div>
+              </section>
+
+              <section class="prm-panel prm-ac-panel">
+                <h2>验收标准 (AC)</h2>
+                <div class="prm-ac-box" v-html="activeRequirement.acceptance || '暂无验收标准'"></div>
+              </section>
+            </div>
+
+            <aside class="prm-panel prm-record-panel">
+              <h2>流程记录</h2>
+              <div class="prm-record-list">
                 <article
-                  class="prm-story prm-rich-display"
-                  v-html="activeRequirement.description || '暂无需求描述'"
-                ></article>
+                  v-for="record in detailRecords"
+                  :key="`${record.title}-${record.time || record.owner}`"
+                  class="prm-record"
+                >
+                  <span :class="recordIconClass(record.state)">
+                    {{ recordIconText(record.state) }}
+                  </span>
+                  <div>
+                    <strong>{{ record.title }}</strong>
+                    <div v-if="record.content" class="prm-record__content" v-html="record.content"></div>
+                    <div v-if="record.attachments?.length" class="prm-record__attachments">
+                      <span v-for="attachment in record.attachments" :key="attachment.id">{{ attachment.name }}</span>
+                    </div>
+                    <p>
+                      <span>{{ record.owner }}</span>
+                      <time v-if="record.time">{{ formatRecordTime(record.time) }}</time>
+                    </p>
+                  </div>
+                </article>
               </div>
-            </section>
-
-            <section class="prm-panel prm-ac-panel">
-              <h2>验收标准 (AC)</h2>
-              <div class="prm-ac-box" v-html="activeRequirement.acceptance || '暂无验收标准'"></div>
-            </section>
-          </div>
-
-          <aside class="prm-panel prm-record-panel">
-            <h2>流程记录</h2>
-            <div class="prm-record-list">
-              <article v-for="record in records" :key="record.title" class="prm-record">
-                <span :class="record.done ? 'prm-record__icon prm-record__icon--done' : 'prm-record__icon'">
-                  {{ record.done ? '✓' : '...' }}
-                </span>
-                <div>
-                  <strong>{{ record.title }}</strong>
-                  <p>
-                    <span>{{ record.owner }}</span>
-                    <time v-if="record.time">{{ record.time }}</time>
-                  </p>
-                </div>
-              </article>
-            </div>
-          </aside>
-        </section>
+            </aside>
+          </section>
+        </template>
       </main>
     </template>
+
+    <component
+      :is="NModal"
+      v-model:show="designSubmitVisible"
+      preset="card"
+      class="prm-stage-modal"
+      :mask-closable="false"
+    >
+      <template #header>
+        <div class="prm-stage-modal__title">{{ stageModalTitle }}</div>
+      </template>
+      <div class="prm-stage-modal__body">
+        <component
+          :is="StariverRichEditor"
+          v-model="designAdvanceForm.content"
+          v-model:attachment-files="designAdvanceAttachments"
+          min-height="large"
+          placeholder="输入内容或上传文件"
+        />
+        <div v-if="requiresProductLink" class="prm-stage-link-grid">
+          <label>
+            <span>关联产品模块</span>
+            <component
+              :is="NSelect"
+              v-model:value="designAdvanceForm.moduleId"
+              :options="moduleOptions"
+              placeholder="请选择模块"
+            />
+          </label>
+          <label>
+            <span>预发布版本</span>
+            <component
+              :is="NSelect"
+              v-model:value="designAdvanceForm.versionId"
+              :options="versionOptions"
+              placeholder="请选择版本"
+            />
+          </label>
+        </div>
+      </div>
+      <template #footer>
+        <div class="prm-stage-modal__actions">
+          <button class="sr-btn sr-btn--ghost" @click="closeAdvanceModal">取消</button>
+          <button class="sr-btn sr-btn--primary" @click="submitAdvanceStage">确定</button>
+        </div>
+      </template>
+    </component>
   </section>
 </template>
 
 <script lang="ts">
   import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { NSelect } from 'naive-ui';
+  import { NModal, NSelect, useDialog, useMessage } from 'naive-ui';
+  import dayjs from 'dayjs';
+
+  import deleteIcon from '@/assets/icons/project/delete.svg?raw';
+  import editIcon from '@/assets/icons/project/edit.svg?raw';
+
+  import { ProcessStatusEnum } from '@lib/shared/enums/process';
 
   import StariverModulePage from '@/components/business/stariver-module-page/index.vue';
   import StariverRichEditor from '@/components/business/stariver-rich-editor/index.vue';
 
-  import { addRequirement, getProductList, getRequirementList } from '@/api/modules/productManagement';
+  import {
+    addRequirement,
+    advanceRequirementStage,
+    deleteRequirement,
+    getProductDetail,
+    getProductList,
+    getRequirementDetail,
+    getRequirementList,
+    returnRequirementStage,
+    revokeRequirementReview,
+    submitRequirementForReview,
+    updateRequirement,
+  } from '@/api/modules/productManagement';
+  import { useUserStore } from '@/store';
+
+  import { ProductRouteEnum } from '@/enums/routeEnum';
 
   export default defineComponent({
     name: 'ProductRequirements',
@@ -259,8 +431,23 @@
     setup() {
       const route = useRoute();
       const router = useRouter();
+      const message = useMessage();
+      const dialog = useDialog();
+      const userStore = useUserStore();
       const productFilter = ref('全部');
       const statusFilter = ref('全部状态');
+      const loadingDetail = ref(false);
+      const editMode = ref(false);
+      const designSubmitVisible = ref(false);
+      const designAdvanceForm = reactive({
+        content: '',
+        moduleId: null as string | null,
+        versionId: null as string | null,
+      });
+      const designAdvanceAttachments = ref<Array<{ id: string; name: string; size?: number }>>([]);
+      const stageActionMode = ref<'advance' | 'return'>('advance');
+      const moduleOptions = ref<Array<{ label: string; value: string }>>([]);
+      const versionOptions = ref<Array<{ label: string; value: string }>>([]);
 
       const typeOptions = ['功能新增', '体验优化', '性能改进'];
       const sourceOptions = ['客户', '售前', '内部', '竞品'];
@@ -274,7 +461,7 @@
       const productFilters = computed(() => ['全部', ...productOptions.value]);
       const requirementStatuses = [
         '需求池',
-        '需求评估',
+        '需求评审',
         '产品设计',
         '技术评审',
         '开发中',
@@ -304,7 +491,7 @@
         { label: '总需求', value: String(requirements.value.length), colorClass: '' },
         {
           label: '设计中',
-          value: String(requirements.value.filter((item) => ['产品设计', '需求评估'].includes(item.status)).length),
+          value: String(requirements.value.filter((item) => ['需求评审', '产品设计'].includes(item.status)).length),
           colorClass: 'is-indigo',
         },
         {
@@ -318,24 +505,6 @@
           colorClass: 'is-green',
         },
       ]);
-
-      const flowSteps = [
-        { label: '提交', text: '', state: 'done', shape: 'start' },
-        { label: '需求池', text: '需求池', state: 'done', shape: 'pill' },
-        { label: '需求评审', text: '?', state: 'current', shape: 'diamond' },
-        { label: '产品设计', text: '产品设计', state: 'todo', shape: 'rect' },
-        { label: '技术评审', text: '技术评审', state: 'todo', shape: 'rect' },
-        { label: '开发', text: '开发', state: 'todo', shape: 'rect' },
-        { label: '测试', text: '测试', state: 'todo', shape: 'rect' },
-        { label: '产品验收', text: '产品验收', state: 'todo', shape: 'rect' },
-        { label: '发布', text: '发布', state: 'todo', shape: 'rect' },
-        { label: '完成', text: '', state: 'todo', shape: 'end' },
-      ];
-
-      const records = [
-        { title: '创建需求', owner: '业务人员·陈思远', time: '2026-04-10 09:00', done: true },
-        { title: '需求评审', owner: '产品经理·陈立文', time: '', done: false },
-      ];
 
       const viewMode = computed(() => {
         if (route.query.mode === 'create') return 'create';
@@ -351,12 +520,17 @@
         })
       );
 
+      const requirementDetail = ref<any>(null);
+
       const activeRequirement = computed(() => {
+        if (requirementDetail.value) return requirementDetail.value;
         const id = String(route.query.id || '');
         return (
           requirements.value.find((item) => item.id === id) ||
+          requirements.value.find((item) => item.rawId === id) ||
           requirements.value[0] || {
             id: '',
+            rawId: '',
             detailTitle: '',
             product: '',
             type: '',
@@ -365,13 +539,92 @@
             version: '',
             description: '',
             acceptance: '',
+            status: '',
+            stage: '',
+            approvalStatus: '',
+            createUser: '',
+            expectedRelease: '',
+            records: [],
           }
         );
       });
 
+      const showEditIcon = computed(() => activeRequirement.value.availableActions?.edit ?? false);
+
+      const showDeleteIcon = computed(() => activeRequirement.value.availableActions?.delete ?? false);
+
+      const showRevokeBtn = computed(() => activeRequirement.value.availableActions?.revoke ?? false);
+
+      const showResubmitBtn = computed(() => activeRequirement.value.availableActions?.resubmit ?? false);
+
+      const currentWorkflowStage = computed(() =>
+        (activeRequirement.value.workflowStages || []).find(
+          (stage: any) => stage.name === (activeRequirement.value.stage || activeRequirement.value.status)
+        )
+      );
+      const showPublishBtn = computed(() => currentWorkflowStage.value?.key === 'RELEASE');
+      const showAdvanceBtn = computed(
+        () => (activeRequirement.value.availableActions?.advance ?? false) && !showPublishBtn.value
+      );
+      const showReturnBtn = computed(() => activeRequirement.value.availableActions?.return ?? false);
+      const requiresProductLink = computed(
+        () => stageActionMode.value === 'advance' && Boolean(currentWorkflowStage.value?.requiresProductLink)
+      );
+      const stageModalTitle = computed(() =>
+        stageActionMode.value === 'return'
+          ? '退回原因'
+          : (
+              {
+                产品设计: '提交产品设计',
+                技术评审: '提交产品详设',
+                开发: '提交开发说明',
+                测试: '提交测试结果',
+                产品验收: '提交验收说明',
+              } as Record<string, string>
+            )[activeRequirement.value.stage] || `提交${activeRequirement.value.stage || ''}`
+      );
+
+      const detailRecords = computed(() => activeRequirement.value.records || []);
+
+      const flowSteps = computed(() => {
+        const configuredStages = (activeRequirement.value.workflowStages || []).map((stage: any) => ({
+          key: stage.name,
+          label: stage.name,
+          text: stage.name,
+          shape: stage.key === 'COMPLETED' ? 'end' : 'rect',
+        }));
+        const stages = [
+          { key: '提交', label: '提交', text: '', shape: 'start' },
+          { key: '需求池', label: '需求池', text: '需求池', shape: 'pill' },
+          { key: '需求评审', label: '需求评审', text: '?', shape: 'diamond' },
+          ...configuredStages,
+        ];
+        const currentStage = activeRequirement.value.stage || activeRequirement.value.status;
+        let found = false;
+        return stages.map((stage) => {
+          if (found) return { ...stage, state: 'todo' };
+          if (stage.key === currentStage || stage.label === currentStage) {
+            found = true;
+            return { ...stage, state: 'current' };
+          }
+          return {
+            ...stage,
+            state: 'done',
+            transitionLabel:
+              ['需求评审', '技术评审'].includes(stage.key) &&
+              activeRequirement.value.approvalStatus === ProcessStatusEnum.APPROVED
+                ? '通过'
+                : '',
+          };
+        });
+      });
+
       const goCreate = () => router.push({ path: route.path, query: { mode: 'create' } });
-      const goDetail = (id: string) => router.push({ path: route.path, query: { mode: 'detail', id } });
-      const goList = () => router.push({ path: route.path });
+      const goList = () => {
+        requirementDetail.value = null;
+        editMode.value = false;
+        router.push({ path: route.path });
+      };
       const normalizeProductLabel = (name: string) => {
         if (name === 'STARIVER') return 'StaRiver';
         if (name === 'OPTIQA') return 'OptiQA';
@@ -423,6 +676,179 @@
         resetDraft();
         goList();
       };
+
+      const loadRequirementDetail = async (id: string) => {
+        loadingDetail.value = true;
+        try {
+          const data = await getRequirementDetail(id);
+          if (data) {
+            requirementDetail.value = data;
+          }
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error('加载需求详情失败', e);
+        } finally {
+          loadingDetail.value = false;
+        }
+      };
+
+      const goDetail = async (id: string) => {
+        router.push({ path: route.path, query: { mode: 'detail', id } });
+        await loadRequirementDetail(id);
+      };
+
+      const enterEditMode = () => {
+        const item = activeRequirement.value;
+        draft.title = item.detailTitle || item.title || '';
+        draft.type = item.type || '功能新增';
+        draft.source = item.source || '客户';
+        draft.product = item.product || 'StaRiver';
+        draft.release = item.expectedRelease || item.version || '';
+        draft.priority = item.priority || 'P2';
+        draft.description = item.description || '';
+        draft.acceptance = item.acceptance || '';
+        editMode.value = true;
+      };
+
+      const cancelEditMode = () => {
+        editMode.value = false;
+      };
+
+      const handleEditSubmit = async () => {
+        const item = activeRequirement.value;
+        const title = draft.title.trim() || '未命名产品需求';
+        await updateRequirement({
+          id: item.rawId,
+          title,
+          type: draft.type,
+          source: draft.source,
+          product: draft.product,
+          release: draft.release,
+          priority: draft.priority,
+          description: draft.description,
+          acceptance: draft.acceptance,
+        });
+        editMode.value = false;
+        requirementDetail.value = null;
+        await Promise.all([loadRequirements(), loadRequirementDetail(item.rawId)]);
+        message.success('需求已更新');
+      };
+
+      const handleDelete = () => {
+        dialog.warning({
+          title: '确认删除',
+          content: '确定要删除该需求吗？删除后不可恢复。',
+          positiveText: '确认删除',
+          negativeText: '取消',
+          onPositiveClick: async () => {
+            await deleteRequirement(activeRequirement.value.rawId);
+            message.success('需求已删除');
+            await loadRequirements();
+            goList();
+          },
+        });
+      };
+
+      const handleRevoke = () => {
+        dialog.warning({
+          title: '确认撤回',
+          content: '撤回后需求将回到需求池，不再需要审批。',
+          positiveText: '确认撤回',
+          negativeText: '取消',
+          onPositiveClick: async () => {
+            const item = activeRequirement.value;
+            await revokeRequirementReview(item.rawId);
+            requirementDetail.value = null;
+            await loadRequirements();
+            await loadRequirementDetail(item.rawId);
+            message.success('已撤回');
+          },
+        });
+      };
+
+      const handleResubmit = async () => {
+        const item = activeRequirement.value;
+        await submitRequirementForReview(item.rawId);
+        requirementDetail.value = null;
+        await loadRequirements();
+        await loadRequirementDetail(item.rawId);
+        message.success('已重新提交评审');
+      };
+
+      const loadStageLinkOptions = async () => {
+        const { productId } = activeRequirement.value;
+        if (!productId) return;
+        const product = await getProductDetail(productId);
+        moduleOptions.value = (product?.modules || []).map((item: any) => ({ label: item.name, value: item.id }));
+        versionOptions.value = (product?.versions || []).map((item: any) => ({
+          label: item.version,
+          value: item.id,
+        }));
+      };
+
+      const handleAdvanceStage = async () => {
+        stageActionMode.value = 'advance';
+        if (currentWorkflowStage.value?.requiresProductLink) await loadStageLinkOptions();
+        designSubmitVisible.value = true;
+      };
+
+      const handleReturnStage = () => {
+        stageActionMode.value = 'return';
+        designSubmitVisible.value = true;
+      };
+
+      const goProductRelease = () => {
+        router.push({ name: ProductRouteEnum.PRODUCT_DETAIL, params: { id: activeRequirement.value.productId } });
+      };
+
+      const closeAdvanceModal = () => {
+        designSubmitVisible.value = false;
+        designAdvanceForm.content = '';
+        designAdvanceForm.moduleId = null;
+        designAdvanceForm.versionId = null;
+        designAdvanceAttachments.value = [];
+      };
+
+      const submitAdvanceStage = async () => {
+        const item = activeRequirement.value;
+        const hasAttachments = designAdvanceAttachments.value.length > 0;
+        const plainText = designAdvanceForm.content.replace(/<[^>]+>/g, '').trim();
+        if (!plainText && !hasAttachments) {
+          message.warning('请填写阶段说明或上传附件');
+          return;
+        }
+        if (requiresProductLink.value && (!designAdvanceForm.moduleId || !designAdvanceForm.versionId)) {
+          message.warning('请选择关联产品模块和预发布版本');
+          return;
+        }
+        const payload = {
+          content: designAdvanceForm.content,
+          attachmentIds: designAdvanceAttachments.value.map((file) => file.id),
+          moduleId: designAdvanceForm.moduleId || undefined,
+          versionId: designAdvanceForm.versionId || undefined,
+        };
+        if (stageActionMode.value === 'return') await returnRequirementStage(item.rawId, payload);
+        else await advanceRequirementStage(item.rawId, payload);
+        requirementDetail.value = null;
+        await loadRequirements();
+        await loadRequirementDetail(item.rawId);
+        closeAdvanceModal();
+        message.success(stageActionMode.value === 'return' ? '已退回上一阶段' : '阶段已推进');
+      };
+
+      const recordIconClass = (state: string) => {
+        if (state === 'done') return 'prm-record__icon prm-record__icon--done';
+        if (state === 'rejected') return 'prm-record__icon prm-record__icon--rejected';
+        return 'prm-record__icon';
+      };
+
+      const recordIconText = (state: string) => {
+        if (state === 'done') return '✓';
+        if (state === 'rejected') return '×';
+        return '...';
+      };
+
+      const formatRecordTime = (value: number | string) => dayjs(value).format('YYYY-MM-DD HH:mm');
       const pillClass = (value: string) => {
         const map: Record<string, string> = {
           P0: 'prm-pill--p0',
@@ -443,17 +869,39 @@
 
       onMounted(async () => {
         await Promise.all([loadProducts(), loadRequirements()]);
+        if (route.query.mode === 'detail' && route.query.id) {
+          await loadRequirementDetail(String(route.query.id));
+        }
       });
 
       return {
         activeRequirement,
         acceptancePlaceholder,
+        cancelEditMode,
+        closeAdvanceModal,
+        designAdvanceAttachments,
+        designAdvanceForm,
+        designSubmitVisible,
+        deleteIcon,
+        detailRecords,
         draft,
+        editIcon,
+        editMode,
+        enterEditMode,
         filteredRequirements,
         flowSteps,
+        formatRecordTime,
         goCreate,
         goDetail,
         goList,
+        goProductRelease,
+        handleAdvanceStage,
+        handleReturnStage,
+        handleDelete,
+        handleEditSubmit,
+        handleResubmit,
+        handleRevoke,
+        loadingDetail,
         pillClass,
         priorityOptionItems,
         priorityOptions,
@@ -461,15 +909,29 @@
         productFilters,
         productOptionItems,
         productOptions,
-        records,
+        recordIconClass,
+        recordIconText,
         requirementDescriptionPlaceholder,
         requirementStatuses,
+        NModal,
         NSelect,
+        moduleOptions,
+        versionOptions,
+        requiresProductLink,
+        stageModalTitle,
+        showAdvanceBtn,
+        showPublishBtn,
+        showReturnBtn,
+        showDeleteIcon,
+        showEditIcon,
+        showResubmitBtn,
+        showRevokeBtn,
         sourceOptionItems,
         sourceOptions,
         StariverRichEditor,
         statCards,
         statusFilter,
+        submitAdvanceStage,
         submitRequirement,
         typeOptionItems,
         typeOptions,
@@ -867,10 +1329,16 @@
     background: #16a34a;
   }
   .prm-flow-step--current .prm-flow-node {
-    font-size: 18px;
-    font-weight: 700;
-    border-color: #4f46e5;
-    color: #4f46e5;
+    border-width: 2px;
+    border-color: #5b5bf7;
+    color: #0f172a;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgb(91 91 247 / 8%);
+  }
+  .prm-flow-step--current .prm-flow-node span:not(.prm-flow-dot):not(.prm-flow-stop) {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f172a;
   }
   .prm-flow-step--current .prm-flow-line {
     background: #94a3b8;
@@ -884,6 +1352,43 @@
   }
   .prm-flow-step--diamond .prm-flow-node span {
     transform: rotate(-45deg);
+  }
+  .prm-flow-current-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #5b5bf7;
+    box-shadow: 0 0 0 2px #eef2ff;
+  }
+  .prm-flow-current-label {
+    position: absolute;
+    right: 10px;
+    bottom: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #5b5bf7;
+    line-height: 12px;
+    letter-spacing: 0;
+  }
+  .prm-flow-transition-label {
+    position: absolute;
+    top: 16px;
+    right: -16px;
+    z-index: 3;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 8px;
+    height: 24px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #818cf8;
+    border-radius: 999px;
+    color: #4f46e5;
+    background: #ffffff;
   }
   .prm-flow-step--done:first-child .prm-flow-node,
   .prm-flow-step:last-child .prm-flow-node {
@@ -990,6 +1495,10 @@
     color: #16a34a;
     background: #ecfdf5;
   }
+  .prm-record__icon--rejected {
+    color: #dc2626;
+    background: #fee2e2;
+  }
   .prm-record strong {
     display: block;
     font-size: 13px;
@@ -1010,6 +1519,211 @@
   .prm-record time {
     white-space: nowrap;
     color: #94a3b8;
+  }
+  .prm-record__content {
+    margin-top: 4px;
+    padding: 6px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    color: #64748b;
+    background: #f8fafc;
+    line-height: 18px;
+  }
+  .prm-record__attachments {
+    display: flex;
+    margin-top: 4px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .prm-record__attachments span {
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 4px;
+    color: #4f46e5;
+    background: #eef2ff;
+  }
+  .prm-hero-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+  }
+  .prm-detail-primary-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 18px;
+    height: 42px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 0;
+    border-radius: 8px;
+    white-space: nowrap;
+    color: #ffffff;
+    background: #0f172a;
+    box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .prm-detail-primary-btn:hover {
+    background: #111827;
+    box-shadow: 0 12px 28px rgb(15 23 42 / 18%);
+    transform: translateY(-1px);
+  }
+  .prm-detail-return-btn {
+    padding: 0 16px;
+    height: 42px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    color: #ef4444;
+    background: #ffffff;
+    cursor: pointer;
+  }
+  .prm-detail-return-btn:hover {
+    color: #ffffff;
+    background: #ef4444;
+  }
+  .sr-btn-revoke {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 18px;
+    height: 42px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #dc2626;
+    border-radius: 8px;
+    white-space: nowrap;
+    color: #dc2626;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgb(220 38 38 / 8%);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .sr-btn-revoke:hover {
+    color: #ffffff;
+    background: #dc2626;
+    transform: translateY(-1px);
+  }
+  .sr-icon-action {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    border: 0;
+    color: #64748b;
+    background: transparent;
+    cursor: pointer;
+  }
+  .sr-icon-action:hover {
+    color: #4f46e5;
+  }
+  .sr-icon-action span,
+  .sr-icon-action svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+  }
+  .sr-icon-action svg [stroke]:not([stroke='none']) {
+    stroke: currentcolor !important;
+  }
+  .sr-icon-action svg [fill]:not([fill='none']) {
+    fill: currentcolor !important;
+  }
+  .sr-product-hero__title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  :deep(.prm-stage-modal) {
+    width: min(1120px, calc(100vw - 64px));
+    border-radius: 14px;
+  }
+  .prm-stage-modal__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .prm-stage-modal__body {
+    padding-top: 8px;
+  }
+  .prm-stage-link-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .prm-stage-link-grid label {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+  }
+  .prm-stage-link-grid label > span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+  }
+  .prm-stage-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .sr-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .sr-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sr-field__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    line-height: 18px;
+  }
+  .sr-field__req {
+    color: #dc2626;
+  }
+  .sr-input {
+    padding: 0 12px;
+    min-height: 38px;
+    font-size: 14px;
+    border: 1px solid #dbe3ef;
+    border-radius: 6px;
+    color: #0f172a;
+    background: #ffffff;
+    outline: none;
+  }
+  .sr-native-control {
+    min-height: 38px;
+  }
+  .sr-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 18px;
+    height: 36px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .sr-btn--ghost {
+    border: 1px solid #dbe3ef;
+    color: #334155;
+    background: #ffffff;
+  }
+  .sr-btn--primary {
+    border: 1px solid #0f172a;
+    color: #ffffff;
+    background: #0f172a;
   }
 
   @media (max-width: 1280px) {

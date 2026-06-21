@@ -158,6 +158,7 @@ const useAppStore = defineStore('app', {
       contract: 0,
       order: 0,
       invoice: 0,
+      productRequirement: 0,
     },
   }),
   getters: {

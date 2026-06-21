@@ -29,6 +29,7 @@ export enum FormDesignKeyEnum {
   PRICE = 'price', // 价格表
   OPPORTUNITY_QUOTATION = 'quotation', // 商机报价单
   OPPORTUNITY_QUOTATION_SNAPSHOT = 'quotationSnapshot', // 商机快照报价单
+  PRODUCT_REQUIREMENT = 'productRequirement', // 产品需求
   BUSINESS_TITLE = 'businessTitle', // 工商抬头(数据源，无表单配置入口)
   ORDER = 'order', // 订单
   ORDER_SNAPSHOT = 'orderSnapshot', // 订单快照

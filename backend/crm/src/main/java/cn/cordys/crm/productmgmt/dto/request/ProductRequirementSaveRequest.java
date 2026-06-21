@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 public class ProductRequirementSaveRequest {
+    @Schema(description = "需求ID（更新时必填）")
+    private String id;
     @Schema(description = "需求标题")
     private String title;
     @Schema(description = "需求类型")
