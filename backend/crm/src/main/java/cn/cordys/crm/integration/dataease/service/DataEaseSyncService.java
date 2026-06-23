@@ -59,31 +59,46 @@ public class DataEaseSyncService {
     @QuartzScheduled(cron = "0 0 0 * * ?")
     public void syncDataEase() {
         Set<String> orgIds = extOrganizationMapper.selectAllOrganizationIds();
-        // 同步角色
+        int successCount = 0;
+        int skippedCount = 0;
+        int failedCount = 0;
         for (String orgId : orgIds) {
             log.info("定时同步DataEase数据，组织ID: {}", orgId);
-            syncDataEase(orgId);
+            try {
+                SyncResult result = syncDataEase(orgId);
+                if (result == SyncResult.SUCCESS) {
+                    successCount++;
+                } else {
+                    skippedCount++;
+                }
+            } catch (Exception e) {
+                failedCount++;
+                log.error("同步DataEase数据失败，组织ID: {}", orgId, e);
+            }
         }
+        log.info("定时同步DataEase数据完成，成功: {}，跳过: {}，失败: {}", successCount, skippedCount, failedCount);
     }
 
-    public void syncDataEase(String orgId) {
+    public SyncResult syncDataEase(String orgId) {
         LocaleContextHolder.setLocale(Locale.SIMPLIFIED_CHINESE);
         DeThirdConfigRequest thirdConfig;
         try {
             thirdConfig = dataEaseService.getDeConfig(orgId);
         } catch (Exception e) {
-            log.error("获取DataEase配置失败，组织ID: {}", orgId, e);
-            return;
+            log.warn("跳过DataEase同步，组织未配置DataEase，组织ID: {}，原因: {}", orgId, e.getMessage());
+            return SyncResult.SKIPPED;
         }
         if (thirdConfig == null || StringUtils.isAnyBlank(thirdConfig.getDeAccessKey(), thirdConfig.getDeSecretKey(), thirdConfig.getDeOrgID(), thirdConfig.getRedirectUrl())) {
-            return;
+            log.warn("跳过DataEase同步，组织配置不完整，组织ID: {}", orgId);
+            return SyncResult.SKIPPED;
         }
-        try {
-            syncDataEase(orgId, thirdConfig);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw e;
-        }
+        syncDataEase(orgId, thirdConfig);
+        return SyncResult.SUCCESS;
+    }
+
+    public enum SyncResult {
+        SUCCESS,
+        SKIPPED
     }
 
     public void syncDataEase(String orgId, DeThirdConfigRequest thirdConfig) {

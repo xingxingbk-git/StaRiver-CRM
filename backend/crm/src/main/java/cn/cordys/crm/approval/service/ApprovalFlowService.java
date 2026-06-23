@@ -919,8 +919,12 @@ public class ApprovalFlowService {
     }
 
     private List<Permission> getPermissionsByFormType(String formType) {
+        ApprovalFormTypeEnum approvalFormType = ApprovalFormTypeEnum.getByValue(formType);
+        if (approvalFormType == null) {
+            throw new GenericException("非法的表单标识");
+        }
         List<PermissionDefinitionItem> permissionSetting = roleService.getPermissionSetting();
-        String permissionId = Objects.requireNonNull(ApprovalFormTypeEnum.getByValue(formType)).getPermissionId();
+        String permissionId = approvalFormType.getPermissionId();
         List<Permission> permissions = findPermissionsByPermissionId(permissionSetting, permissionId);
         if (permissions == null) {
             return List.of();

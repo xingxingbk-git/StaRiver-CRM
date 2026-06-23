@@ -1,5 +1,6 @@
 package cn.cordys.crm.system.utils;
 
+import cn.cordys.common.exception.GenericException;
 import cn.cordys.common.util.JSON;
 import cn.cordys.crm.system.constants.OrganizationConfigConstants;
 import cn.cordys.crm.system.domain.OrganizationConfig;
@@ -96,7 +97,7 @@ public class MailSender {
         sender.setDefaultEncoding(StandardCharsets.UTF_8.name());
         sender.setProtocol("smtp");
         sender.setHost(emailDTO.getHost());
-        sender.setPort(Integer.parseInt(emailDTO.getPort()));
+        sender.setPort(parsePort(emailDTO.getPort()));
         sender.setUsername(emailDTO.getAccount());
         sender.setPassword(emailDTO.getPassword());
 
@@ -118,6 +119,21 @@ public class MailSender {
 
         sender.setJavaMailProperties(props);
         return sender;
+    }
+
+    private int parsePort(String port) {
+        if (StringUtils.isBlank(port)) {
+            throw new GenericException("邮件服务器端口不能为空");
+        }
+        try {
+            int parsedPort = Integer.parseInt(port);
+            if (parsedPort < 1 || parsedPort > 65535) {
+                throw new GenericException("邮件服务器端口必须在 1 到 65535 之间");
+            }
+            return parsedPort;
+        } catch (NumberFormatException e) {
+            throw new GenericException("邮件服务器端口必须是数字");
+        }
     }
 
     private InternetAddress buildFromAddress(JavaMailSenderImpl sender, EmailDTO emailDTO) throws Exception {
